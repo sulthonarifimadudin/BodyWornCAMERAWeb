@@ -43,11 +43,16 @@ function getDeviceInfo(deviceId: string) {
 function rowToPersonnel(row: GpsRow): Personnel {
     const info = getDeviceInfo(row.device_id);
 
-    // Hitung status: ONLINE jika data terakhir < 15 detik, OFFLINE jika > 15 detik
-    const lastTime = new Date(row.created_at);
+    // Konversi waktu ke WIB (Asia/Jakarta)
+    const waktu = new Date(row.created_at);
     const now = new Date();
-    const diff = (now.getTime() - lastTime.getTime()) / 1000;
+    const diff = (now.getTime() - waktu.getTime()) / 1000;
     const status: 'online' | 'offline' = diff < 15 ? 'online' : 'offline';
+
+    // Format waktu WIB untuk display
+    const waktuWIB = waktu.toLocaleString('id-ID', {
+        timeZone: 'Asia/Jakarta',
+    });
 
     return {
         id: row.device_id,
@@ -60,7 +65,7 @@ function rowToPersonnel(row: GpsRow): Personnel {
         speed: row.speed,
         battery: 100,
         heart_rate: 70,
-        updated_at: row.created_at,
+        updated_at: waktuWIB,
     };
 }
 
@@ -73,7 +78,6 @@ export function useRealtimePersonnel() {
     // Ambil data terakhir dari Supabase per device
     const loadGPS = useCallback(async () => {
         try {
-            // Ambil data terbaru, order by created_at desc
             const { data, error: fetchError } = await supabase
                 .from('gps_tracking')
                 .select('*')
@@ -112,7 +116,7 @@ export function useRealtimePersonnel() {
         // Auto update tiap 5 detik (polling)
         const interval = setInterval(loadGPS, 5000);
 
-        // Subscribe ke realtime INSERT untuk update langsung tanpa tunggu polling
+        // Subscribe ke realtime INSERT untuk update langsung
         const channel = supabase
             .channel('gps')
             .on(
@@ -120,7 +124,6 @@ export function useRealtimePersonnel() {
                 { event: 'INSERT', schema: 'public', table: 'gps_tracking' },
                 (payload) => {
                     const newRow = payload.new as GpsRow;
-                    // Update marker langsung
                     latestPerDevice.current.set(newRow.device_id, newRow);
                     setPersonnel(
                         Array.from(latestPerDevice.current.values()).map(rowToPersonnel)
