@@ -59,6 +59,11 @@ const Index = () => {
             </span>
           </div>
           <div className="flex items-center gap-4">
+            <Link to="/login">
+              <Button variant="outline" size="lg" className="border-primary/50 text-white hover:bg-primary/20">
+                <span>Login</span>
+              </Button>
+            </Link>
             <Link to="/dashboard">
               <Button variant="hero" size="lg">
                 <span>Masuk Dashboard</span>
@@ -109,7 +114,7 @@ const Index = () => {
               transition={{ delay: 0.5 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <Link to="/dashboard">
+              <Link to="/login">
                 <Button variant="hero" size="xl" className="group">
                   <span>Akses Command Center</span>
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -198,7 +203,7 @@ const Index = () => {
             <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
               Mulai pantau dan kelola tim keamanan Anda dengan platform command center terdepan
             </p>
-            <Link to="/dashboard">
+            <Link to="/login">
               <Button variant="hero" size="xl">
                 Mulai Sekarang
                 <ChevronRight className="w-5 h-5" />
