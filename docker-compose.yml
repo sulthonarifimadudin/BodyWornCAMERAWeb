@@ -30,8 +30,7 @@ services:
       - DB_PASSWORD=
       - DB_NAME=guardwatch_db
       - PORT=3000
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASS=${EMAIL_PASS}
+
     env_file:
       - ./backend/.env
     depends_on:
