@@ -7,14 +7,15 @@ const DB_USER = process.env.DB_USER || 'root';
 const DB_PASSWORD = process.env.DB_PASSWORD || '';
 const DB_NAME = process.env.DB_NAME || 'guardwatch_db';
 
-// Pool tanpa database dulu — agar bisa CREATE DATABASE kalau belum ada
+// Pool koneksi utama — tanpa specify database agar tidak crash jika DB belum ada
 const pool = mysql.createPool({
     host: DB_HOST,
     user: DB_USER,
     password: DB_PASSWORD,
     database: DB_NAME,
     connectionLimit: 10,
-    waitForConnections: true
+    waitForConnections: true,
+    connectTimeout: 20000
 });
 
 // Auto-bootstrap: pastikan database & semua tabel selalu ada
