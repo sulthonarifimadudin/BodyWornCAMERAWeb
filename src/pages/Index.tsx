@@ -142,7 +142,7 @@ const Index = () => {
               transition={{ delay: 0.5 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <Link to="/login">
+              <Link to={isLoggedIn ? "/dashboard" : "/login"}>
                 <button className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-xl font-semibold text-lg shadow-xl shadow-blue-500/25 transition-all duration-300 group">
                   <span>Akses Command Center</span>
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -239,9 +239,9 @@ const Index = () => {
             <p className="text-gray-400 mb-8 max-w-xl mx-auto">
               Mulai pantau dan kelola tim keamanan Anda dengan platform command center terdepan
             </p>
-            <Link to="/login">
+            <Link to={isLoggedIn ? "/dashboard" : "/login"}>
               <button className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-xl font-semibold text-lg shadow-xl shadow-blue-500/25 transition-all duration-300 group">
-                Mulai Sekarang
+                {isLoggedIn ? "Buka Dashboard" : "Mulai Sekarang"}
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
