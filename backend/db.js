@@ -20,19 +20,37 @@ const pool = mysql.createPool({
 
 // Auto-bootstrap: pastikan database & semua tabel selalu ada
 export const initDB = async () => {
-    // Coba koneksi tanpa database dulu untuk CREATE DATABASE IF NOT EXISTS
     let bootstrapConn;
+    let retries = 5;
+    
+    // Retry loop untuk menunggu MySQL siap
+    while (retries > 0) {
+        try {
+            bootstrapConn = await mysql.createConnection({
+                host: DB_HOST,
+                user: DB_USER,
+                password: DB_PASSWORD
+            });
+            console.log('[DB] Berhasil terhubung ke MySQL untuk bootstrap.');
+            break; // Berhasil, keluar dari loop
+        } catch (err) {
+            retries--;
+            console.log(`[DB] Menunggu MySQL siap... (${retries} percobaan tersisa)`);
+            if (retries === 0) {
+                console.error('[DB] Gagal bootstrap database setelah beberapa kali percobaan:', err.message);
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 3000)); // Tunggu 3 detik sebelum coba lagi
+        }
+    }
+
     try {
-        bootstrapConn = await mysql.createConnection({
-            host: DB_HOST,
-            user: DB_USER,
-            password: DB_PASSWORD
-        });
         await bootstrapConn.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
         await bootstrapConn.query(`USE \`${DB_NAME}\``);
         console.log(`[DB] Database '${DB_NAME}' dipastikan ada.`);
     } catch (err) {
-        console.error('[DB] Gagal bootstrap database:', err.message);
+        console.error('[DB] Gagal membuat/memilih database:', err.message);
+        await bootstrapConn.end();
         return;
     }
 
