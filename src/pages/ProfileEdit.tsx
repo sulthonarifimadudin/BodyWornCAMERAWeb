@@ -34,7 +34,7 @@ const ProfilePage = () => {
     };
 
     const avatarSrc = displayUser.profile_image 
-        ? `http://localhost:3000/uploads/${displayUser.profile_image}` 
+        ? `/uploads/${displayUser.profile_image}` 
         : displayUser.avatar;
 
     // Form edit initial configuration
@@ -84,7 +84,7 @@ const ProfilePage = () => {
 
         try {
             const token = localStorage.getItem("jwtToken");
-            const response = await fetch('http://localhost:3000/api/update-profile', {
+            const response = await fetch('/api/update-profile', {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -169,7 +169,7 @@ const ProfilePage = () => {
         
         try {
             const token = localStorage.getItem("jwtToken");
-            const res = await fetch("http://localhost:3000/api/update-profile-image", {
+            const res = await fetch("/api/update-profile-image", {
                 method: "PUT",
                 headers: {
                     'Authorization': `Bearer ${token}`

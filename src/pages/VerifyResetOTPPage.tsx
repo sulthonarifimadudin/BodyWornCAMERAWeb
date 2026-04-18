@@ -26,7 +26,7 @@ const VerifyResetOTPPage = () => {
         setError("");
 
         try {
-            const response = await fetch('http://localhost:3000/api/verify-reset-otp', {
+            const response = await fetch('/api/verify-reset-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, otp: otpCode })
@@ -49,7 +49,7 @@ const VerifyResetOTPPage = () => {
         setLoading(true);
         setError("");
         try {
-            const response = await fetch('http://localhost:3000/api/forgot-password', {
+            const response = await fetch('/api/forgot-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })

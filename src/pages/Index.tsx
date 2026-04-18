@@ -67,7 +67,7 @@ const Index = () => {
                   <Link to="/profile">
                     <Button variant="outline" size="sm" className="border-primary/50 text-white hover:bg-primary/20 hidden md:flex gap-2">
                         {user?.profile_image && (
-                            <img src={`http://localhost:3000/uploads/${user.profile_image}`} alt="Avatar" className="w-5 h-5 rounded-full object-cover" />
+                            <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-5 h-5 rounded-full object-cover" />
                         )}
                         <span>Halo, {user?.full_name?.split(' ')[0] || 'Personil'}</span>
                     </Button>

@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const token = localStorage.getItem("jwtToken");
         if (token) {
             try {
-                await fetch('http://localhost:3000/api/logout', {
+                await fetch('/api/logout', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         try {
-            const response = await fetch('http://localhost:3000/api/profile', {
+            const response = await fetch('/api/profile', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();

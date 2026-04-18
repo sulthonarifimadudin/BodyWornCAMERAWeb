@@ -82,7 +82,7 @@ const SignupPage = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:3000/api/register', {
+            const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -116,7 +116,7 @@ const SignupPage = () => {
         setSuccess("");
         
         try {
-            const response = await fetch('http://localhost:3000/api/verify-otp', {
+            const response = await fetch('/api/verify-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: formData.email, otp: otpCode })

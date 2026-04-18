@@ -24,7 +24,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("jwtToken");
         if (!token) return;
-        const res = await fetch("http://localhost:3000/api/online-users", {
+        const res = await fetch("/api/online-users", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -105,7 +105,7 @@ const Dashboard = () => {
             <Link to="/profile">
               <Button variant="ghost" className="w-full justify-start gap-3 mb-2 h-auto py-2">
                 {user?.profile_image ? (
-                    <img src={`http://localhost:3000/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+                    <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
                 ) : (
                     <User className="w-5 h-5 text-blue-400" />
                 )}

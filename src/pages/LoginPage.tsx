@@ -29,7 +29,7 @@ const LoginPage = () => {
         setSuccess("");
 
         try {
-            const response = await fetch('http://localhost:3000/api/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -64,7 +64,7 @@ const LoginPage = () => {
         setSuccess("");
         
         try {
-            const response = await fetch('http://localhost:3000/api/verify-otp', {
+            const response = await fetch('/api/verify-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, otp: otpCode })
