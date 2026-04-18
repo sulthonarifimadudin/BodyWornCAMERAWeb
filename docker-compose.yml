@@ -14,7 +14,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       # Auto-import sql file
-      - ./guardwatch_db.sql:/docker-entrypoint-initdb.d/guardwatch_db.sql
+      - ./guardwatch_db_utf8.sql:/docker-entrypoint-initdb.d/guardwatch_db.sql
 
   api-server:
     build:
