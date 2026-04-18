@@ -57,10 +57,9 @@ const Dashboard = () => {
       )}
 
       {/* Sidebar */}
-      <motion.aside
-        initial={{ x: -280 }}
-        animate={{ x: sidebarOpen ? 0 : -280 }}
-        className="fixed lg:static z-50 w-[260px] h-screen bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col lg:translate-x-0 shadow-2xl"
+      <aside
+        className={`fixed lg:static z-50 w-[260px] h-screen bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col shadow-2xl transition-transform duration-300
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         {/* Logo */}
         <div className="p-6 border-b border-white/10 flex items-center justify-between">
@@ -140,7 +139,7 @@ const Dashboard = () => {
             </p>
           </div>
         </div>
-      </motion.aside>
+      </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10">
