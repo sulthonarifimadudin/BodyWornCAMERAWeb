@@ -6,21 +6,22 @@ services:
     container_name: mysql-db
     restart: always
     environment:
-      # Password Root MySQL (Untuk keamanan ubah pada saat produksi)
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root} 
+      # Menggunakan konfigurasi tanpa password seperti default Laragon/XAMPP teman Anda
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: guardwatch_db
     ports:
       - "3306:3306"
     volumes:
-      # Data persisten MySQL agar tidak hilang saat container mati
       - db_data:/var/lib/mysql
-      # Skrip backup sql dieksekusi otomatis pertama kali
+      # Auto-import sql file
       - ./guardwatch_db.sql:/docker-entrypoint-initdb.d/guardwatch_db.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-root}"]
+      # Ping tanpa password karena empty password diizinkan
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 40s # Memberi waktu ekstra bagi MySQL VPS untuk Setup awal
 
   api-server:
     build:
@@ -31,10 +32,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # Memaksa host DB menjadi nama container ditiap jaringan docker
       - DB_HOST=mysql-db
       - DB_USER=root
-      - DB_PASSWORD=${DB_PASSWORD:-root}
+      - DB_PASSWORD=
       - DB_NAME=guardwatch_db
       - PORT=3000
     env_file:
