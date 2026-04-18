@@ -1,13 +1,14 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 
-// Data mentah dari tabel gps_tracking
+// Data mentah dari API MySQL backend
 interface GpsRow {
     id: number;
     device_id: string;
     latitude: number;
     longitude: number;
     speed: number | null;
+    battery: number | null;
+    heart_rate: number | null;
     created_at: string;
 }
 
@@ -28,12 +29,12 @@ export interface Personnel {
 
 // Mapping device_id ke info personil
 const DEVICE_INFO: Record<string, { name: string; role: string }> = {
-    bodycam01: { name: 'Bodycam 01', role: 'Guard' },
-    bodycam02: { name: 'Bodycam 02', role: 'Guard' },
-    bodycam03: { name: 'Bodycam 03', role: 'Guard' },
-    bodycam04: { name: 'Bodycam 04', role: 'Guard' },
-    bodycam05: { name: 'Bodycam 05', role: 'Guard' },
-    bodycam06: { name: 'Bodycam 06', role: 'Guard' },
+    bodycam01: { name: 'Bodycam 01', role: 'Security Officer' },
+    bodycam02: { name: 'Bodycam 02', role: 'Security Officer' },
+    bodycam03: { name: 'Bodycam 03', role: 'Security Officer' },
+    bodycam04: { name: 'Bodycam 04', role: 'Security Officer' },
+    bodycam05: { name: 'Bodycam 05', role: 'Security Officer' },
+    bodycam06: { name: 'Bodycam 06', role: 'Security Officer' },
 };
 
 function getDeviceInfo(deviceId: string) {
@@ -47,11 +48,16 @@ function rowToPersonnel(row: GpsRow): Personnel {
     const waktu = new Date(row.created_at);
     const now = new Date();
     const diff = (now.getTime() - waktu.getTime()) / 1000;
-    const status: 'online' | 'offline' = diff < 15 ? 'online' : 'offline';
+    
+    // Status online jika update dalam 30 detik terakhir
+    const status: 'online' | 'offline' = diff < 30 ? 'online' : 'offline';
 
     // Format waktu WIB untuk display
     const waktuWIB = waktu.toLocaleString('id-ID', {
         timeZone: 'Asia/Jakarta',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
     });
 
     return {
@@ -63,8 +69,8 @@ function rowToPersonnel(row: GpsRow): Personnel {
         lat: row.latitude,
         lng: row.longitude,
         speed: row.speed,
-        battery: 100,
-        heart_rate: 70,
+        battery: row.battery || 100,
+        heart_rate: row.heart_rate || 75,
         updated_at: waktuWIB,
     };
 }
@@ -73,34 +79,20 @@ export function useRealtimePersonnel() {
     const [personnel, setPersonnel] = useState<Personnel[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const latestPerDevice = useRef<Map<string, GpsRow>>(new Map());
 
-    // Ambil data terakhir dari Supabase per device
+    // Ambil data terbaru dari Backend API VPS
     const loadGPS = useCallback(async () => {
         try {
-            const { data, error: fetchError } = await supabase
-                .from('gps_tracking')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(50);
-
-            if (fetchError) throw fetchError;
-            if (!data || data.length === 0) {
-                setPersonnel([]);
-                return;
+            const response = await fetch('/api/gps/latest');
+            if (!response.ok) throw new Error('Gagal mengambil data GPS dari server');
+            
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                const processed = result.data.map(rowToPersonnel);
+                setPersonnel(processed);
+                setError(null);
             }
-
-            // Ambil row terbaru per device_id
-            const deviceMap = new Map<string, GpsRow>();
-            data.forEach((row: GpsRow) => {
-                if (!deviceMap.has(row.device_id)) {
-                    deviceMap.set(row.device_id, row);
-                }
-            });
-
-            latestPerDevice.current = deviceMap;
-            setPersonnel(Array.from(deviceMap.values()).map(rowToPersonnel));
-            setError(null);
         } catch (err: any) {
             console.error('Error fetching GPS data:', err);
             setError(err.message || 'Gagal memuat data GPS');
@@ -113,28 +105,11 @@ export function useRealtimePersonnel() {
         // Fetch pertama kali
         loadGPS();
 
-        // Auto update tiap 5 detik (polling)
+        // Polling tiap 5 detik untuk simulasi realtime
         const interval = setInterval(loadGPS, 5000);
-
-        // Subscribe ke realtime INSERT untuk update langsung
-        const channel = supabase
-            .channel('gps')
-            .on(
-                'postgres_changes',
-                { event: 'INSERT', schema: 'public', table: 'gps_tracking' },
-                (payload) => {
-                    const newRow = payload.new as GpsRow;
-                    latestPerDevice.current.set(newRow.device_id, newRow);
-                    setPersonnel(
-                        Array.from(latestPerDevice.current.values()).map(rowToPersonnel)
-                    );
-                }
-            )
-            .subscribe();
 
         return () => {
             clearInterval(interval);
-            supabase.removeChannel(channel);
         };
     }, [loadGPS]);
 

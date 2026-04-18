@@ -85,6 +85,22 @@ export const initDB = async () => {
         `);
         console.log('[DB] Tabel videos siap.');
 
+        // Buat tabel gps_tracking kalau belum ada
+        await bootstrapConn.query(`
+            CREATE TABLE IF NOT EXISTS gps_tracking (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                device_id VARCHAR(50) NOT NULL,
+                latitude DOUBLE NOT NULL,
+                longitude DOUBLE NOT NULL,
+                speed DOUBLE DEFAULT 0,
+                battery INT DEFAULT 100,
+                heart_rate INT DEFAULT 75,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                KEY device_id_idx (device_id)
+            )
+        `);
+        console.log('[DB] Tabel gps_tracking siap.');
+
         // Migrasi kolom lama (abaikan jika sudah ada)
         const migrations = [
             "ALTER TABLE users ADD COLUMN full_name VARCHAR(255)",
