@@ -2,8 +2,11 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Shield, MapPin, Video, Users, Activity, Radio, ChevronRight, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 const Index = () => {
+  const { isLoggedIn, logout, user } = useAuth();
+  
   const features = [
     {
       icon: MapPin,
@@ -59,14 +62,30 @@ const Index = () => {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button variant="outline" size="lg" className="border-primary/50 text-white hover:bg-primary/20">
-                <span>Login</span>
-              </Button>
-            </Link>
+            {isLoggedIn ? (
+                <>
+                  <Link to="/profile">
+                    <Button variant="outline" size="sm" className="border-primary/50 text-white hover:bg-primary/20 hidden md:flex gap-2">
+                        {user?.profile_image && (
+                            <img src={`http://localhost:3000/uploads/${user.profile_image}`} alt="Avatar" className="w-5 h-5 rounded-full object-cover" />
+                        )}
+                        <span>Halo, {user?.full_name?.split(' ')[0] || 'Personil'}</span>
+                    </Button>
+                  </Link>
+                  <Button onClick={() => logout()} variant="outline" size="sm" className="border-red-500/50 text-red-400 hover:bg-red-500/20">
+                      <span>Logout</span>
+                  </Button>
+                </>
+            ) : (
+                <Link to="/login">
+                  <Button variant="outline" size="lg" className="border-primary/50 text-white hover:bg-primary/20">
+                    <span>Login</span>
+                  </Button>
+                </Link>
+            )}
             <Link to="/dashboard">
               <Button variant="hero" size="lg">
-                <span>Masuk Dashboard</span>
+                <span>{isLoggedIn ? "Masuk Dashboard" : "Lihat Dashboard"}</span>
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </Link>

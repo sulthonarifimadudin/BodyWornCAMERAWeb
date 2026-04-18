@@ -6,9 +6,12 @@ import {
     Camera, Edit2, Save, X, LogOut, CheckCircle, AlertCircle,
     Lock, Key, Eye, EyeOff, Upload
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const ProfilePage = () => {
     const navigate = useNavigate();
+    const { user, fetchUser, logout } = useAuth();
+    
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState("");
@@ -17,20 +20,42 @@ const ProfilePage = () => {
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
 
-    // Data user
-    const [userData, setUserData] = useState({
-        full_name: "Budi Santoso",
-        email: "budi.santoso@bodyworncam.com",
-        phone: "081234567890",
-        position: "Komandan Regu",
-        location: "Gedung A, Kampus Utama",
-        join_date: "2024-01-15",
-        role: "security",
-        avatar: null as string | null
-    });
+    // Provide default fallback values for UI safely
+    const displayUser = {
+        full_name: user?.full_name || "Pengguna Baru",
+        email: user?.email || "-",
+        phone: user?.phone || "-",
+        position: user?.position || "-",
+        location: user?.location || "-",
+        join_date: (user as any)?.join_date || "-",
+        role: user?.role || "user",
+        profile_image: user?.profile_image || null,
+        avatar: user?.avatar || null
+    };
 
-    // Form edit
-    const [editForm, setEditForm] = useState({ ...userData });
+    const avatarSrc = displayUser.profile_image 
+        ? `http://localhost:3000/uploads/${displayUser.profile_image}` 
+        : displayUser.avatar;
+
+    // Form edit initial configuration
+    const [editForm, setEditForm] = useState({ ...displayUser });
+
+    // Sync form whenever 'user' context updates
+    useEffect(() => {
+        if (user) {
+            setEditForm({
+                full_name: user.full_name || "",
+                email: user.email || "",
+                phone: user.phone || "",
+                position: user.position || "",
+                location: user.location || "",
+                join_date: (user as any)?.join_date || "",
+                role: user.role || "",
+                profile_image: user.profile_image || null,
+                avatar: user.avatar || null
+            });
+        }
+    }, [user]);
 
     // Form ganti password
     const [passwordForm, setPasswordForm] = useState({
@@ -38,16 +63,6 @@ const ProfilePage = () => {
         new_password: "",
         confirm_password: ""
     });
-
-    useEffect(() => {
-        // Load user data dari localStorage (simulasi)
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-            const user = JSON.parse(savedUser);
-            setUserData(prev => ({ ...prev, ...user }));
-            setEditForm(prev => ({ ...prev, ...user }));
-        }
-    }, []);
 
     const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setEditForm({
@@ -61,16 +76,43 @@ const ProfilePage = () => {
         setError("");
         setSuccess("");
 
-        // Simulasi save ke database
-        setTimeout(() => {
-            setUserData({ ...editForm });
-            localStorage.setItem("user", JSON.stringify(editForm));
-            setSuccess("Profil berhasil diperbarui!");
-            setIsEditing(false);
+        if (!editForm.full_name || !editForm.phone) {
+            setError("Nama lengkap dan nomor telepon wajib diisi.");
             setLoading(false);
+            return;
+        }
 
+        try {
+            const token = localStorage.getItem("jwtToken");
+            const response = await fetch('http://localhost:3000/api/update-profile', {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({
+                    full_name: editForm.full_name,
+                    phone: editForm.phone,
+                    position: editForm.position,
+                    location: editForm.location
+                })
+            });
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                setSuccess("Profil berhasil diperbarui!");
+                setIsEditing(false);
+                // Refresh data user di sistem Context agar sinkron
+                await fetchUser();
+            } else {
+                setError(data.message || "Gagal memperbarui profil.");
+            }
+        } catch (err) {
+            setError("Gagal terhubung ke server.");
+        } finally {
+            setLoading(false);
             setTimeout(() => setSuccess(""), 3000);
-        }, 1000);
+        }
     };
 
     const handleChangePassword = async () => {
@@ -106,23 +148,49 @@ const ProfilePage = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("user");
+        logout();
         navigate("/login");
     };
 
-    const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const avatarUrl = reader.result as string;
-                setUserData(prev => ({ ...prev, avatar: avatarUrl }));
-                setEditForm(prev => ({ ...prev, avatar: avatarUrl }));
-                localStorage.setItem("user", JSON.stringify({ ...userData, avatar: avatarUrl }));
-                setSuccess("Foto profil berhasil diupdate!");
-                setTimeout(() => setSuccess(""), 3000);
-            };
-            reader.readAsDataURL(file);
+        if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+            setError("Ukuran gambar terlalu besar (Maks 2MB)");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        setLoading(true);
+        setError("");
+        
+        try {
+            const token = localStorage.getItem("jwtToken");
+            const res = await fetch("http://localhost:3000/api/update-profile-image", {
+                method: "PUT",
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData,
+            });
+
+            const data = await res.json();
+            
+            if (res.ok && data.success) {
+                setSuccess("Foto profil berhasil diperbarui!");
+                // Refresh Context untuk menarik image string yang baru
+                await fetchUser();
+            } else {
+                setError(data.message || "Upload foto gagal.");
+            }
+        } catch (err) {
+            setError("Gagal terhubung ke server untuk upload foto.");
+        } finally {
+            setLoading(false);
+            setTimeout(() => setSuccess(""), 3000);
         }
     };
 
@@ -193,9 +261,14 @@ const ProfilePage = () => {
                     <div className="h-32 bg-gradient-to-r from-blue-600/20 to-purple-600/20 relative">
                         <div className="absolute -bottom-12 left-8">
                             <div className="relative">
-                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-4 border-slate-800 shadow-xl overflow-hidden">
-                                    {userData.avatar ? (
-                                        <img src={userData.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-4 border-slate-800 shadow-xl overflow-hidden relative group">
+                                    {loading && (
+                                        <div className="absolute inset-0 bg-black/50 z-10 flex items-center justify-center">
+                                            <div className="w-6 h-6 border-2 border-white/60 border-t-white rounded-full animate-spin"></div>
+                                        </div>
+                                    )}
+                                    {avatarSrc ? (
+                                        <img src={avatarSrc} alt="Avatar" className="w-full h-full object-cover" />
                                     ) : (
                                         <User className="w-10 h-10 text-white" />
                                     )}
@@ -213,14 +286,18 @@ const ProfilePage = () => {
                         <div className="flex justify-between items-start flex-wrap gap-4">
                             <div>
                                 <h1 className="text-2xl font-bold text-white">
-                                    {userData.full_name}
+                                    {displayUser.full_name}
                                 </h1>
                                 <div className="flex items-center gap-2 mt-1">
                                     <Briefcase className="w-4 h-4 text-blue-400" />
-                                    <span className="text-gray-300 text-sm">{userData.position}</span>
-                                    <span className="text-gray-500 text-sm">•</span>
-                                    <Calendar className="w-4 h-4 text-gray-500" />
-                                    <span className="text-gray-500 text-sm">Bergabung: {userData.join_date}</span>
+                                    <span className="text-gray-300 text-sm">{displayUser.position}</span>
+                                    {displayUser.join_date && displayUser.join_date !== "-" && (
+                                        <>
+                                            <span className="text-gray-500 text-sm">•</span>
+                                            <Calendar className="w-4 h-4 text-gray-500" />
+                                            <span className="text-gray-500 text-sm">Bergabung: {displayUser.join_date}</span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
@@ -237,7 +314,7 @@ const ProfilePage = () => {
                                     <button
                                         onClick={() => {
                                             setIsEditing(false);
-                                            setEditForm(userData);
+                                            setEditForm({ ...displayUser });
                                         }}
                                         className="flex items-center gap-2 px-4 py-2 bg-gray-500/20 hover:bg-gray-500/30 text-gray-400 rounded-lg transition"
                                     >
@@ -283,7 +360,7 @@ const ProfilePage = () => {
                                         className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                     />
                                 ) : (
-                                    <p className="text-white">{userData.full_name}</p>
+                                    <p className="text-white">{displayUser.full_name}</p>
                                 )}
                             </div>
 
@@ -295,10 +372,12 @@ const ProfilePage = () => {
                                         name="email"
                                         value={editForm.email}
                                         onChange={handleEditChange}
-                                        className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        disabled
+                                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-gray-400 text-sm outline-none cursor-not-allowed"
+                                        title="Email tidak dapat diubah"
                                     />
                                 ) : (
-                                    <p className="text-white">{userData.email}</p>
+                                    <p className="text-white">{displayUser.email}</p>
                                 )}
                             </div>
 
@@ -313,7 +392,7 @@ const ProfilePage = () => {
                                         className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                     />
                                 ) : (
-                                    <p className="text-white">{userData.phone || "-"}</p>
+                                    <p className="text-white">{displayUser.phone || "-"}</p>
                                 )}
                             </div>
                         </div>
@@ -334,7 +413,7 @@ const ProfilePage = () => {
                                         name="position"
                                         value={editForm.position}
                                         onChange={handleEditChange}
-                                        className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none [&>option]:bg-slate-800"
                                     >
                                         <option value="Petugas Security">Petugas Security</option>
                                         <option value="Komandan Regu">Komandan Regu</option>
@@ -342,7 +421,7 @@ const ProfilePage = () => {
                                         <option value="Administrator">Administrator</option>
                                     </select>
                                 ) : (
-                                    <p className="text-white">{userData.position}</p>
+                                    <p className="text-white">{displayUser.position}</p>
                                 )}
                             </div>
 
@@ -357,13 +436,13 @@ const ProfilePage = () => {
                                         className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                     />
                                 ) : (
-                                    <p className="text-white">{userData.location || "-"}</p>
+                                    <p className="text-white">{displayUser.location || "-"}</p>
                                 )}
                             </div>
 
                             <div>
                                 <label className="text-xs text-gray-500 block mb-1">Role Sistem</label>
-                                <p className="text-white capitalize">{userData.role}</p>
+                                <p className="text-white capitalize">{displayUser.role}</p>
                             </div>
                         </div>
                     </div>

@@ -3,10 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
     Shield, Mail, Lock, ArrowRight, Eye, EyeOff,
-    LogIn, AlertCircle, CheckCircle, Fingerprint
+    LogIn, AlertCircle, CheckCircle, Fingerprint, RefreshCcw
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useOTPTimer } from "@/hooks/useOTPTimer";
 
 const LoginPage = () => {
+    const { login } = useAuth();
+    const { timeLeft, startTimer, formatTime, isTimerActive } = useOTPTimer('loginOtpUnlockTime');
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -18,8 +22,8 @@ const LoginPage = () => {
     const [userPhone, setUserPhone] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleLogin = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         setLoading(true);
         setError("");
         setSuccess("");
@@ -32,10 +36,17 @@ const LoginPage = () => {
             });
             const data = await response.json();
             
-            if (response.ok && data.success) {
+            if (response.status === 429) {
+                setError(data.message || "Terlalu banyak percobaan.");
+                if (data.retry_after) {
+                    startTimer(data.retry_after); // DUAL LAYER: Override limit via Backend
+                }
+            } else if (response.ok && data.success) {
                 setSuccess(`Otentikasi berhasil. OTP 2FA dikirim ke WA Anda.`);
                 setUserPhone(data.userPhone || "nomor terdaftar");
                 setStep('otp');
+                // DUAL LAYER: Frontend Cooldown standar (60s) setiap berhasil kirim
+                startTimer(60);
             } else {
                 setError(data.message || "Email atau password salah.");
             }
@@ -61,8 +72,8 @@ const LoginPage = () => {
             const data = await response.json();
 
             if (response.ok && data.success) {
-                // Simpan user asli yang divalidasi dari DB MySQL
-                localStorage.setItem("user", JSON.stringify(data.user));
+                // Gunakan context global login
+                login(data.token, data.user);
 
                 setSuccess("Otentikasi 2FA Berhasil! Memasuki sistem...");
                 setTimeout(() => {
@@ -180,6 +191,11 @@ const LoginPage = () => {
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
                             </div>
+                            <div className="mt-2 text-right">
+                                <Link to="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 hover:underline transition">
+                                    Lupa Password?
+                                </Link>
+                            </div>
                         </div>
 
                         <button
@@ -245,8 +261,20 @@ const LoginPage = () => {
                             </button>
                             <button
                                 type="button"
+                                disabled={isTimerActive || loading}
+                                onClick={() => handleLogin()}
+                                className="w-full text-sm font-medium transition mt-4 py-2.5 border border-white/10 rounded-lg flex justify-center items-center gap-2
+                                         disabled:text-gray-500 disabled:bg-transparent text-blue-400 hover:bg-white/5"
+                            >
+                                <RefreshCcw className={`w-4 h-4 ${!isTimerActive && !loading ? 'group-hover:animate-spin' : ''}`} />
+                                {isTimerActive 
+                                    ? (timeLeft > 60 ? `Coba lagi dalam ${formatTime()}` : `Kirim ulang dalam ${formatTime()}`) 
+                                    : "Kirim Ulang OTP"}
+                            </button>
+                            <button
+                                type="button"
                                 onClick={() => { setStep('login'); setError(""); setSuccess(""); }}
-                                className="w-full text-sm text-gray-400 hover:text-white transition mt-2"
+                                className="w-full text-sm text-gray-400 hover:text-white transition mt-2 py-2"
                             >
                                 Batal
                             </button>

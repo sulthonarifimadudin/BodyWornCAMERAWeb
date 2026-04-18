@@ -16,11 +16,13 @@ export const initDB = async () => {
         const connection = await pool.getConnection();
         console.log('[DB] Connected to MySQL successfully.');
         
-        // Cek dan tambahkan kolom baru jika belum ada
         const newColumns = [
             "ALTER TABLE users ADD COLUMN full_name VARCHAR(255)",
             "ALTER TABLE users ADD COLUMN position VARCHAR(100)",
-            "ALTER TABLE users ADD COLUMN location VARCHAR(255)"
+            "ALTER TABLE users ADD COLUMN location VARCHAR(255)",
+            "ALTER TABLE users ADD COLUMN profile_image VARCHAR(255)",
+            "ALTER TABLE users ADD COLUMN is_online BOOLEAN DEFAULT FALSE",
+            "ALTER TABLE users ADD COLUMN last_seen DATETIME NULL"
         ];
 
         for (const query of newColumns) {
@@ -34,6 +36,24 @@ export const initDB = async () => {
                 }
             }
         }
+        
+        // Memastikan tabel videos untuk sistem Video Approval ada
+        const createVideosTableQuery = `
+            CREATE TABLE IF NOT EXISTS videos (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                video_path VARCHAR(255) NOT NULL,
+                status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                approved_by INT NULL,
+                approved_at TIMESTAMP NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE SET NULL
+            )
+        `;
+        await connection.query(createVideosTableQuery);
+        console.log('[DB Migration] Tabel videos siap digunakan untuk sistem approval.');
+        console.log('[DB] Semua struktur database video diverifikasi normal.');
         
         connection.release();
     } catch (err) {

@@ -1,19 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRealtimePersonnel } from "@/hooks/useRealtimePersonnel";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { Shield, Home, Bell, Settings, Search, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Shield, Home, Bell, Settings, Search, Menu, X, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import SecurityMap from "@/components/SecurityMap";
 import PersonnelList from "@/components/PersonnelList";
 import VideoFeed from "@/components/VideoFeed";
 import StatusOverview from "@/components/StatusOverview";
+import { useAuth } from "@/context/AuthContext";
 
 const Dashboard = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedPersonnel, setSelectedPersonnel] = useState<string | null>(null);
   const { personnel, loading, error } = useRealtimePersonnel();
+  const [onlineUsersCount, setOnlineUsersCount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchOnlineUsers = async () => {
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) return;
+        const res = await fetch("http://localhost:3000/api/online-users", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          setOnlineUsersCount(data.count);
+        }
+      } catch (err) {
+        console.error("Gagal menarik data user online:", err);
+      }
+    };
+
+    fetchOnlineUsers();
+    const interval = setInterval(fetchOnlineUsers, 10000); // Tiap 10 detik
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -75,6 +101,25 @@ const Dashboard = () => {
             <Settings className="w-5 h-5" />
             Pengaturan
           </Button>
+          <div className="pt-4 mt-4 border-t border-border/50">
+            <Link to="/profile">
+              <Button variant="ghost" className="w-full justify-start gap-3 mb-2 h-auto py-2">
+                {user?.profile_image ? (
+                    <img src={`http://localhost:3000/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+                ) : (
+                    <User className="w-5 h-5 text-blue-400" />
+                )}
+                <div className="flex flex-col items-start text-sm">
+                  <span>{user?.full_name?.split(' ')[0] || 'Profil'}</span>
+                  <span className="text-xs text-muted-foreground">{user?.role || 'User'}</span>
+                </div>
+              </Button>
+            </Link>
+            <Button onClick={logout} variant="ghost" className="w-full justify-start gap-3 text-red-400 hover:text-red-300 hover:bg-red-500/10">
+              <LogOut className="w-5 h-5" />
+              Keluar
+            </Button>
+          </div>
         </nav>
 
         {/* Status Card */}
@@ -82,10 +127,10 @@ const Dashboard = () => {
           <div className="glass-card rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-              <span className="text-sm font-medium">Sistem Aktif</span>
+              <span className="text-sm font-medium">Sistem Web Aktif</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Semua layanan berjalan normal
+              {onlineUsersCount} personel saat ini terhubung.
             </p>
           </div>
         </div>
@@ -127,7 +172,7 @@ const Dashboard = () => {
         {/* Dashboard Content */}
         <main className="flex-1 p-4 lg:p-6 space-y-6">
           {/* Status Overview */}
-          <StatusOverview personnel={personnel} />
+          <StatusOverview personnel={personnel} onlineUsersCount={onlineUsersCount} />
 
           {/* Main Grid */}
           <div className="grid lg:grid-cols-3 gap-6">

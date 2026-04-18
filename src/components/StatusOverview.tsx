@@ -4,41 +4,42 @@ import type { Personnel } from "@/hooks/useRealtimePersonnel";
 
 interface StatusOverviewProps {
   personnel: Personnel[];
+  onlineUsersCount?: number;
 }
 
-const StatusOverview = ({ personnel }: StatusOverviewProps) => {
+const StatusOverview = ({ personnel, onlineUsersCount = 0 }: StatusOverviewProps) => {
   const totalPersonnel = personnel.length;
-  const onlineCount = personnel.filter((p) => p.status === "online").length;
-  const offlineCount = personnel.filter((p) => p.status === "offline").length;
-  const connectionPercent = totalPersonnel > 0 ? Math.round((onlineCount / totalPersonnel) * 100) : 0;
+  const bodycamOnlineCount = personnel.filter((p) => p.status === "online").length;
+  const bodycamOfflineCount = personnel.filter((p) => p.status === "offline").length;
+  const connectionPercent = totalPersonnel > 0 ? Math.round((bodycamOnlineCount / totalPersonnel) * 100) : 0;
 
   const stats = [
     {
       icon: Users,
       label: "Total Personil",
       value: String(totalPersonnel),
-      subtext: `${onlineCount} online sekarang`,
+      subtext: `${bodycamOnlineCount} bodycam aktif`,
       color: "primary",
     },
     {
       icon: Shield,
-      label: "Online",
-      value: String(onlineCount),
-      subtext: totalPersonnel > 0 ? `${Math.round((onlineCount / totalPersonnel) * 100)}% dari total` : "0%",
+      label: "Web Admin Online",
+      value: String(onlineUsersCount),
+      subtext: "User aktif di dashboard",
       color: "success",
     },
     {
       icon: AlertTriangle,
-      label: "Offline",
-      value: String(offlineCount),
-      subtext: offlineCount > 0 ? "Perlu perhatian" : "Semua online",
+      label: "Bodycam Offline",
+      value: String(bodycamOfflineCount),
+      subtext: bodycamOfflineCount > 0 ? "Perlu perhatian" : "Semua online",
       color: "destructive",
     },
     {
       icon: Radio,
-      label: "Koneksi",
+      label: "Koneksi Bodycam",
       value: `${connectionPercent}%`,
-      subtext: connectionPercent === 100 ? "Semua terhubung" : `${offlineCount} offline`,
+      subtext: connectionPercent === 100 ? "Semua terhubung" : `${bodycamOfflineCount} offline`,
       color: "primary",
     },
   ];
