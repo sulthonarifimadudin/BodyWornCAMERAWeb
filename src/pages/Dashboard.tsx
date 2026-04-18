@@ -58,7 +58,7 @@ const Dashboard = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static z-50 w-[260px] h-screen bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col shadow-2xl transition-transform duration-300
+        className={`fixed top-0 left-0 lg:sticky lg:flex-shrink-0 z-50 w-[260px] h-screen bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col shadow-2xl transition-transform duration-300
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         {/* Logo */}
