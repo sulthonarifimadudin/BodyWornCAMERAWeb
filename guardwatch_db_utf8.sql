@@ -1,4 +1,4 @@
-﻿-- MySQL dump 10.13  Distrib 8.4.3, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.3, for Win64 (x86_64)
 --
 -- Host: localhost    Database: guardwatch_db
 -- ------------------------------------------------------
@@ -119,4 +119,3 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-04-18 11:11:21
-
