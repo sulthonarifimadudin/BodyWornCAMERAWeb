@@ -76,7 +76,7 @@ const SignupPage = () => {
         }
 
         if (!formData.phone) {
-            setError("Nomor HP harus diisi untuk verifikasi WhatsApp");
+            setError("Nomor HP harus diisi");
             setLoading(false);
             return;
         }
@@ -97,7 +97,7 @@ const SignupPage = () => {
             const data = await response.json();
             
             if (response.ok && data.success) {
-                setSuccess("Akun berhasil dibuat. OTP telah dikirim ke WhatsApp Anda untuk verifikasi.");
+                setSuccess("Akun berhasil dibuat. OTP telah dikirim ke Email Anda untuk verifikasi.");
                 setStep('otp');
             } else {
                 setError(data.message || "Gagal melakukan registrasi");
@@ -234,7 +234,7 @@ const SignupPage = () => {
 
                         {/* No HP */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">Nomor WhatsApp/HP</label>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">Nomor HP</label>
                             <div className="relative group">
                                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-blue-400 transition" />
                                 <input

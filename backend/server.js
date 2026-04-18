@@ -6,7 +6,18 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import multer from 'multer';
+import nodemailer from 'nodemailer';
 import pool, { initDB } from './db.js';
+
+dotenv.config();
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 
 // Setup Multer untuk file upload
 const storage = multer.diskStorage({
@@ -154,21 +165,29 @@ app.post('/api/register', async (req, res) => {
 
         console.log(`[OTP Generate - Signup] Dibuat OTP: ${otpCode} untuk user ID: ${newUserId} ke HP: ${formattedPhone}`);
 
-        // Kirim OTP via Fonnte
-        const message = `*GUARDWATCH COMMAND CENTER*\n\nTerima kasih telah mendaftar. Kode verifikasi keamanan (OTP) pendaftaran Anda adalah: *${otpCode}*\n\nKode ini berlaku selama 5 menit.`;
+        // Kirim OTP via Email
+        const mailOptions = {
+            from: `"GuardWatch Center" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Kode Verifikasi Pendaftaran - GuardWatch',
+            text: `Terima kasih telah mendaftar di GuardWatch.\n\nKode verifikasi keamanan (OTP) Anda adalah: ${otpCode}\n\nKode ini berlaku selama 5 menit.`,
+            html: `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                     <h2>GuardWatch Command Center</h2>
+                     <p>Terima kasih telah mendaftar.</p>
+                     <p>Kode verifikasi keamanan (OTP) pendaftaran Anda adalah:</p>
+                     <h1 style="color: #4F46E5; letter-spacing: 2px;">${otpCode}</h1>
+                     <p>Kode ini berlaku selama 5 menit.</p>
+                   </div>`
+        };
         try {
-            await axios.post(
-                'https://api.fonnte.com/send',
-                { target: formattedPhone, message: message, delay: '2' },
-                { headers: { 'Authorization': process.env.FONNTE_TOKEN } }
-            );
-        } catch (fonnteErr) {
-            console.error('[WA Fonnte Error - Signup]', fonnteErr.message);
+            await transporter.sendMail(mailOptions);
+        } catch (mailErr) {
+            console.error('[Nodemailer Error - Signup]', mailErr.message);
         }
 
         return res.status(200).json({
             success: true,
-            message: 'Registrasi berhasil. OTP telah dikirimkan ke nomor WhatsApp Anda untuk verifikasi.',
+            message: 'Registrasi berhasil. OTP telah dikirimkan ke Email Anda untuk verifikasi.',
             test_otp: otpCode // untuk debug
         });
     } catch (error) {
@@ -218,39 +237,39 @@ app.post('/api/login', otpLimiter, async (req, res) => {
 
         console.log(`[OTP Generate] Dibuat OTP: ${otpCode} untuk user ID: ${user.id} ke HP: ${userPhone}`);
 
-        // Pesan yang akan dikirim ke WhatsApp
-        const message = `*GUARDWATCH COMMAND CENTER*\n\nKode verifikasi keamanan (OTP) Anda adalah: *${otpCode}*\n\nKode ini berlaku selama 5 menit. Jangan berikan kode ini kepada siapapun demi keamanan sistem.\n\n_Login terdeteksi di akun ${email}_`;
+        // Kirim OTP via Email
+        const mailOptions = {
+            from: `"GuardWatch Center" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Kode Login Verifikasi - GuardWatch',
+            text: `Terima kasih telah login di GuardWatch.\n\nKode verifikasi keamanan (OTP) Anda adalah: ${otpCode}\n\nKode ini berlaku selama 5 menit. Jangan berikan kode ini kepada siapapun demi keamanan sistem.\n\nLogin terdeteksi di akun ${email}`,
+            html: `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                     <h2>GuardWatch Command Center</h2>
+                     <p>Permintaan otentikasi (login) terdeteksi.</p>
+                     <p>Kode verifikasi keamanan (OTP) Anda adalah:</p>
+                     <h1 style="color: #4F46E5; letter-spacing: 2px;">${otpCode}</h1>
+                     <p>Kode ini berlaku selama 5 menit. Jangan berikan kode ini kepada siapapun demi keamanan sistem.</p>
+                     <p><small>Login terdeteksi di akun ${email}</small></p>
+                   </div>`
+        };
 
-        // Panggil Fonnte API 
         try {
-            const response = await axios.post(
-                'https://api.fonnte.com/send',
-                {
-                    target: userPhone,
-                    message: message,
-                    delay: '2', // Jeda antrean
-                },
-                {
-                    headers: { 'Authorization': process.env.FONNTE_TOKEN }
-                }
-            );
-            console.log(`[WA Fonnte Success] Balasan Fonnte:`, response.data);
-        } catch (fonnteErr) {
-            console.error('[WA Fonnte Error] Gagal mengirim pesan via Fonnte:', fonnteErr.response?.data || fonnteErr.message);
-            // Meskipun WA gagal, kita tetap tidak membocorkan kesalahan ini sebagai sistem down ke user jika tidak diinginkan. 
-            // Namun agar developer tahu, kita pass messagenya ke frontend (karena masih fase development).
+            await transporter.sendMail(mailOptions);
+        } catch (mailErr) {
+            console.error('[Nodemailer Error - Login] Gagal mengirim pesan:', mailErr.message);
+            // Tetap izinkan pass jika gagal
             return res.status(500).json({
                 success: false,
-                message: 'Login benar, tapi gagal mengirim kode OTP ke server WhatsApp (Fonnte Error)',
-                error: fonnteErr.response?.data?.reason || fonnteErr.message
+                message: 'Login benar, tapi gagal mengirim email OTP.',
+                error: mailErr.message
             });
         }
 
         return res.status(200).json({
             success: true,
-            message: 'Otentikasi berhasil. OTP telah dikirimkan ke nomor terdaftar Anda.',
+            message: 'Otentikasi berhasil. OTP telah dikirimkan ke Email Anda.',
             userEmail: user.email,
-            userPhone: userPhone, // Dibalikkan ke frontend sekedar sebagai info UI agar terlihat nomor WA tujuannya
+            userPhone: user.email, // Override as email for frontend logging
             test_otp: otpCode // [WARNING] Hapus di tahap Production! 
         });
 
@@ -353,20 +372,28 @@ app.post('/api/forgot-password', otpLimiter, emailForgotPasswordLimiter, async (
             [user.id, otpCode, expiresAt]
         );
 
-        const message = `*GUARDWATCH COMMAND CENTER*\n\nPermintaan Reset Password.\nKode OTP Anda adalah: *${otpCode}*\n\nKode ini berlaku selama 5 menit. JANGAN BERIKAN KODE INI KEPADA SIAPAPUN.`;
+        const mailOptions = {
+            from: `"GuardWatch Center" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Kode Reset Password - GuardWatch',
+            text: `Permintaan Reset Password GuardWatch.\n\nKode OTP Anda adalah: ${otpCode}\n\nKode ini berlaku selama 5 menit. JANGAN BERIKAN KODE INI KEPADA SIAPAPUN.`,
+            html: `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                     <h2>GuardWatch Command Center</h2>
+                     <p>Permintaan Reset Password.</p>
+                     <p>Kode verifikasi (OTP) Anda adalah:</p>
+                     <h1 style="color: #4F46E5; letter-spacing: 2px;">${otpCode}</h1>
+                     <p>Kode ini berlaku selama 5 menit. <strong>JANGAN BERIKAN KODE INI KEPADA SIAPAPUN.</strong></p>
+                   </div>`
+        };
         
         try {
-            await axios.post(
-                'https://api.fonnte.com/send',
-                { target: userPhone, message: message, delay: '2' },
-                { headers: { 'Authorization': process.env.FONNTE_TOKEN } }
-            );
-        } catch (fonnteErr) {
-            console.error(`[FORGOT PASSWORD] ERROR Fonnte.`, fonnteErr.message);
-            return res.status(500).json({ success: false, message: 'Gagal mengirim OTP ke WhatsApp.' });
+            await transporter.sendMail(mailOptions);
+        } catch (mailErr) {
+            console.error(`[FORGOT PASSWORD] ERROR Nodemailer.`, mailErr.message);
+            return res.status(500).json({ success: false, message: 'Gagal mengirim OTP ke Email.' });
         }
 
-        return res.status(200).json({ success: true, message: 'OTP Reset Password telah dikirimkan ke nomor WhatsApp Anda.' });
+        return res.status(200).json({ success: true, message: 'OTP Reset Password telah dikirimkan ke Email Anda.' });
     } catch (error) {
         console.error('Error di /api/forgot-password:', error);
         return res.status(500).json({ success: false, message: 'Terjadi kesalahan sistem internal.' });

@@ -65,7 +65,7 @@ const ForgotPasswordPage = () => {
                          <Shield className="w-8 h-8 text-white" />
                      </motion.div>
                     <h1 className="text-xl font-bold text-white">Lupa Password</h1>
-                    <p className="text-gray-400 text-sm mt-1">Kami akan mengirimkan instruksi via WhatsApp</p>
+                    <p className="text-gray-400 text-sm mt-1">Kami akan mengirimkan instruksi via Email</p>
                 </div>
 
                 <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-2xl">

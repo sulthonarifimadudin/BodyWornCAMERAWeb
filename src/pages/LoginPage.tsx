@@ -233,7 +233,7 @@ const LoginPage = () => {
                                     <Shield className="w-6 h-6 text-blue-400" />
                                 </div>
                                 <p className="text-gray-300 text-sm mb-4">
-                                    Untuk keamanan sistem, silakan verifikasi sesi login Anda dengan 6-digit kode OTP (2FA) yang kami kirim ke WhatsApp <strong>{userPhone}</strong>.
+                                    Untuk keamanan sistem, silakan verifikasi sesi login Anda dengan 6-digit kode OTP (2FA) yang kami kirim ke Email <strong>{userPhone}</strong>.
                                 </p>
                                 <input
                                     type="text"

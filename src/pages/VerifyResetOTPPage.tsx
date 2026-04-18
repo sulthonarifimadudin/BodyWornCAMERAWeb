@@ -94,7 +94,7 @@ const VerifyResetOTPPage = () => {
                          <Shield className="w-8 h-8 text-white" />
                      </motion.div>
                     <h1 className="text-xl font-bold text-white">Verifikasi OTP</h1>
-                    <p className="text-gray-400 text-sm mt-1">Masukkan kode 6 digit dari WhatsApp Anda</p>
+                    <p className="text-gray-400 text-sm mt-1">Masukkan kode 6 digit dari Email Anda</p>
                 </div>
 
                 <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-2xl">
