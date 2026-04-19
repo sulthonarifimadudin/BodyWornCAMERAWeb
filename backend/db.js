@@ -107,14 +107,15 @@ export const initDB = async () => {
         await bootstrapConn.query(`
             CREATE TABLE IF NOT EXISTS gps_tracking (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                device_id VARCHAR(50) NOT NULL,
+                user_id INT,
                 latitude DOUBLE NOT NULL,
                 longitude DOUBLE NOT NULL,
                 speed DOUBLE DEFAULT 0,
                 battery INT DEFAULT 100,
                 heart_rate INT DEFAULT 75,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                KEY device_id_idx (device_id)
+                KEY user_id_idx (user_id),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )
         `);
         console.log('[DB] Tabel gps_tracking siap.');

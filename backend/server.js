@@ -617,16 +617,16 @@ app.use((err, req, res, next) => {
 // 1. Endpoint untuk Raspberry Pi mengirim data GPS
 app.post('/api/gps/update', async (req, res) => {
     try {
-        const { device_id, latitude, longitude, speed, battery, heart_rate } = req.body;
+        const { user_id, latitude, longitude, speed, battery, heart_rate } = req.body;
 
-        if (!device_id || latitude === undefined || longitude === undefined) {
-            return res.status(400).json({ success: false, message: 'Data GPS tidak lengkap (device_id, lat, lng wajib)' });
+        if (!user_id || latitude === undefined || longitude === undefined) {
+            return res.status(400).json({ success: false, message: 'Data GPS tidak lengkap (user_id, lat, lng wajib)' });
         }
 
         await pool.query(
-            `INSERT INTO gps_tracking (device_id, latitude, longitude, speed, battery, heart_rate, created_at) 
+            `INSERT INTO gps_tracking (user_id, latitude, longitude, speed, battery, heart_rate, created_at) 
              VALUES (?, ?, ?, ?, ?, ?, NOW())`,
-            [device_id, latitude, longitude, speed || 0, battery || 100, heart_rate || 75]
+            [user_id, latitude, longitude, speed || 0, battery || 100, heart_rate || 75]
         );
 
         res.status(200).json({ success: true, message: 'Data GPS berhasil disimpan.' });
@@ -636,18 +636,19 @@ app.post('/api/gps/update', async (req, res) => {
     }
 });
 
-// 2. Endpoint untuk Dashboard mengambil data posisi terbaru semua personil
+// 2. Endpoint untuk Dashboard mengambil data posisi terbaru semua personil (Joined with Users)
 app.get('/api/gps/latest', async (req, res) => {
     try {
-        // Ambil koordinat terbaru untuk setiap device_id unik
+        // Ambil koordinat terbaru untuk setiap user_id unik dan join dengan data user
         const query = `
-            SELECT t1.* 
+            SELECT t1.*, u.full_name as name, u.position as role, u.profile_image
             FROM gps_tracking t1
             INNER JOIN (
-                SELECT device_id, MAX(created_at) as max_created_at
+                SELECT user_id, MAX(created_at) as max_created_at
                 FROM gps_tracking
-                GROUP BY device_id
-            ) t2 ON t1.device_id = t2.device_id AND t1.created_at = t2.max_created_at
+                GROUP BY user_id
+            ) t2 ON t1.user_id = t2.user_id AND t1.created_at = t2.max_created_at
+            LEFT JOIN users u ON t1.user_id = u.id
         `;
         const [rows] = await pool.query(query);
         res.status(200).json({ success: true, data: rows });

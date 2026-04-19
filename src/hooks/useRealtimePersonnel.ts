@@ -1,9 +1,12 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
-// Data mentah dari API MySQL backend
+// Data mentah dari API MySQL backend (Hasil Join dengan Users)
 interface GpsRow {
     id: number;
-    device_id: string;
+    user_id: number;
+    name: string;
+    role: string;
+    profile_image: string | null;
     latitude: number;
     longitude: number;
     speed: number | null;
@@ -12,9 +15,9 @@ interface GpsRow {
     created_at: string;
 }
 
-// Data yang sudah diproses per device (untuk komponen UI)
+// Data yang sudah diproses untuk komponen UI
 export interface Personnel {
-    id: string;
+    id: string; // kita pakai user_id sebagai string ID
     name: string;
     role: string;
     location: string;
@@ -25,32 +28,17 @@ export interface Personnel {
     battery: number;
     heart_rate: number;
     updated_at: string;
-}
-
-// Mapping device_id ke info personil
-const DEVICE_INFO: Record<string, { name: string; role: string }> = {
-    bodycam01: { name: 'Bodycam 01', role: 'Security Officer' },
-    bodycam02: { name: 'Bodycam 02', role: 'Security Officer' },
-    bodycam03: { name: 'Bodycam 03', role: 'Security Officer' },
-    bodycam04: { name: 'Bodycam 04', role: 'Security Officer' },
-    bodycam05: { name: 'Bodycam 05', role: 'Security Officer' },
-    bodycam06: { name: 'Bodycam 06', role: 'Security Officer' },
-};
-
-function getDeviceInfo(deviceId: string) {
-    return DEVICE_INFO[deviceId] || { name: deviceId, role: 'Unknown' };
+    profile_image?: string;
 }
 
 function rowToPersonnel(row: GpsRow): Personnel {
-    const info = getDeviceInfo(row.device_id);
-
     // Konversi waktu ke WIB (Asia/Jakarta)
     const waktu = new Date(row.created_at);
     const now = new Date();
     const diff = (now.getTime() - waktu.getTime()) / 1000;
     
-    // Status online jika update dalam 30 detik terakhir
-    const status: 'online' | 'offline' = diff < 30 ? 'online' : 'offline';
+    // Status online jika update dalam 60 detik terakhir (lebih longgar untuk Raspi)
+    const status: 'online' | 'offline' = diff < 60 ? 'online' : 'offline';
 
     // Format waktu WIB untuk display
     const waktuWIB = waktu.toLocaleString('id-ID', {
@@ -61,9 +49,9 @@ function rowToPersonnel(row: GpsRow): Personnel {
     });
 
     return {
-        id: row.device_id,
-        name: info.name,
-        role: info.role,
+        id: row.user_id.toString(),
+        name: row.name || `User ${row.user_id}`,
+        role: row.role || 'Personnel',
         location: `${row.latitude.toFixed(5)}, ${row.longitude.toFixed(5)}`,
         status,
         lat: row.latitude,
@@ -72,6 +60,7 @@ function rowToPersonnel(row: GpsRow): Personnel {
         battery: row.battery || 100,
         heart_rate: row.heart_rate || 75,
         updated_at: waktuWIB,
+        profile_image: row.profile_image || undefined
     };
 }
 
