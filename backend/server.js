@@ -691,6 +691,17 @@ app.put('/api/admin/users/:id', verifyToken, verifyAdmin, async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`GuardWatch Backend server berjalan di http://localhost:${port}`);
-});
+// Inisialisasi Database & Start Server
+const startServer = async () => {
+    try {
+        await initDB();
+        app.listen(port, () => {
+            console.log(`GuardWatch Backend server berjalan di http://localhost:${port}`);
+        });
+    } catch (err) {
+        console.error("[CRITICAL] Gagal inisialisasi database. Server tidak dijalankan.", err);
+        process.exit(1);
+    }
+};
+
+startServer();
