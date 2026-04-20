@@ -62,6 +62,9 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-sm truncate">{person.name}</span>
+                  <span className="text-[10px] font-mono bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">
+                    ID: {person.id}
+                  </span>
                   {person.status === "alert" && (
                     <span className="text-xs px-1.5 py-0.5 rounded bg-destructive/20 text-destructive">
                       ALERT
