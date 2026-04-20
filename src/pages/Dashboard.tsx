@@ -16,6 +16,24 @@ const Dashboard = () => {
   const [selectedPersonnel, setSelectedPersonnel] = useState<string | null>(null);
   const { personnel, loading, error } = useRealtimePersonnel();
   const [onlineUsersCount, setOnlineUsersCount] = useState<number>(0);
+  const [systemHealthy, setSystemHealthy] = useState<boolean>(true);
+
+  // Poll System Health
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const res = await fetch("/api/health");
+        const data = await res.json();
+        setSystemHealthy(data.success);
+      } catch (err) {
+        setSystemHealthy(false);
+      }
+    };
+    
+    checkHealth();
+    const interval = setInterval(checkHealth, 30000); // Check every 30s
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchOnlineUsers = async () => {
@@ -131,11 +149,16 @@ const Dashboard = () => {
         <div className="p-4 border-t border-white/10">
           <div className="bg-white/5 rounded-xl p-3 border border-white/10">
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-sm font-medium text-white">Sistem Aktif</span>
+              <span className={cn(
+                "w-2 h-2 rounded-full animate-pulse",
+                systemHealthy ? "bg-green-400" : "bg-red-500"
+              )} />
+              <span className="text-sm font-medium text-white">
+                {systemHealthy ? "Sistem Aktif" : "Server Terputus"}
+              </span>
             </div>
             <p className="text-xs text-gray-400">
-              {onlineUsersCount} personel terhubung
+              {systemHealthy ? `${onlineUsersCount} personel terhubung` : "Cek koneksi internet/server"}
             </p>
           </div>
         </div>

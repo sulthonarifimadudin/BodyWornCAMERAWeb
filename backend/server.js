@@ -622,8 +622,28 @@ app.use((err, req, res, next) => {
 });
 
 /**
- * GPS TRACKING ENDPOINTS
+ * GPS TRACKING ENDPOINTS & SYSTEM MONITORING
  */
+
+// Health Check Endpoint (For monitoring and keeping the server warm)
+app.get('/api/health', async (req, res) => {
+    try {
+        await pool.query('SELECT 1');
+        res.status(200).json({ success: true, status: 'Healthy', timestamp: new Date() });
+    } catch (error) {
+        res.status(500).json({ success: false, status: 'Unhealthy', error: error.message });
+    }
+});
+
+// Periodic Heartbeat (Pings DB every 30 minutes to prevent idle timeout)
+setInterval(async () => {
+    try {
+        await pool.query('SELECT 1');
+        console.log(`[HEARTBEAT] System pinged at ${new Date().toLocaleString()}`);
+    } catch (err) {
+        console.error('[HEARTBEAT ERROR] Failed to ping database:', err.message);
+    }
+}, 30 * 60 * 1000);
 
 // 1. Endpoint untuk Raspberry Pi mengirim data GPS
 app.post('/api/gps/update', async (req, res) => {
