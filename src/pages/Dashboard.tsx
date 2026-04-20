@@ -8,6 +8,7 @@ import PersonnelList from "@/components/PersonnelList";
 import VideoFeed from "@/components/VideoFeed";
 import StatusOverview from "@/components/StatusOverview";
 import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
