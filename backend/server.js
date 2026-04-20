@@ -482,6 +482,17 @@ const verifyToken = (req, res, next) => {
 };
 
 /**
+ * MIDDLEWARE: verifyAdmin (Check if user is commander)
+ */
+const verifyAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).json({ success: false, message: 'Akses ditolak. Hanya Admin/Komandan yang diizinkan.' });
+    }
+};
+
+/**
  * Endpoint Tambahan: POST /api/logout
  * Untuk menset user jadi offline saat mereka logout
  */
@@ -641,7 +652,7 @@ app.get('/api/gps/latest', async (req, res) => {
     try {
         // Ambil koordinat terbaru untuk setiap user_id unik dan join dengan data user
         const query = `
-            SELECT t1.*, u.full_name as name, u.position as role, u.profile_image
+            SELECT t1.*, u.full_name as name, u.position as job, u.role as system_role, u.profile_image
             FROM gps_tracking t1
             INNER JOIN (
                 SELECT user_id, MAX(created_at) as max_created_at
@@ -655,6 +666,28 @@ app.get('/api/gps/latest', async (req, res) => {
     } catch (error) {
         console.error('[GPS FETCH ERROR]', error);
         res.status(500).json({ success: false, message: 'Gagal mengambil data GPS terbaru.' });
+    }
+});
+
+// 3. Endpoint Admin: Update data Satpam/Perangkat (Hanya oleh Admin)
+app.put('/api/admin/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+    try {
+        const targetId = req.params.id;
+        const { full_name, position, location } = req.body;
+
+        if (!full_name) {
+            return res.status(400).json({ success: false, message: 'Nama lengkap wajib diisi.' });
+        }
+
+        await pool.query(
+            `UPDATE users SET full_name = ?, position = ?, location = ? WHERE id = ?`,
+            [full_name, position || '', location || '', targetId]
+        );
+
+        res.status(200).json({ success: true, message: 'Data personil berhasil diperbarui.' });
+    } catch (error) {
+        console.error('[ADMIN UPDATE ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal memperbarui data personil.' });
     }
 });
 

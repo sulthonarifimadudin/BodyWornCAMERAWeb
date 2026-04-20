@@ -5,7 +5,8 @@ interface GpsRow {
     id: number;
     user_id: number;
     name: string;
-    role: string;
+    job: string;
+    system_role: string;
     profile_image: string | null;
     latitude: number;
     longitude: number;
@@ -19,9 +20,10 @@ interface GpsRow {
 export interface Personnel {
     id: string; // kita pakai user_id sebagai string ID
     name: string;
-    role: string;
+    role: string; // Ini posisi/jabatan (job)
+    system_role: string; // admin atau personnel
     location: string;
-    status: 'online' | 'offline';
+    status: 'online' | 'offline' | 'alert' | 'idle';
     lat: number;
     lng: number;
     speed: number | null;
@@ -38,7 +40,7 @@ function rowToPersonnel(row: GpsRow): Personnel {
     const diff = (now.getTime() - waktu.getTime()) / 1000;
     
     // Status online jika update dalam 60 detik terakhir (lebih longgar untuk Raspi)
-    const status: 'online' | 'offline' = diff < 60 ? 'online' : 'offline';
+    const status: 'online' | 'offline' | 'alert' | 'idle' = diff < 60 ? 'online' : 'offline';
 
     // Format waktu WIB untuk display
     const waktuWIB = waktu.toLocaleString('id-ID', {
@@ -51,7 +53,8 @@ function rowToPersonnel(row: GpsRow): Personnel {
     return {
         id: row.user_id.toString(),
         name: row.name || `User ${row.user_id}`,
-        role: row.role || 'Personnel',
+        role: row.job || 'Personnel',
+        system_role: row.system_role || 'personnel',
         location: `${row.latitude.toFixed(5)}, ${row.longitude.toFixed(5)}`,
         status,
         lat: row.latitude,

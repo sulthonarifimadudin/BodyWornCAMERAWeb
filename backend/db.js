@@ -67,6 +67,7 @@ export const initDB = async () => {
                 position VARCHAR(100),
                 location VARCHAR(255),
                 profile_image VARCHAR(255),
+                role ENUM('admin', 'personnel') DEFAULT 'personnel',
                 is_online BOOLEAN DEFAULT FALSE,
                 last_seen DATETIME NULL
             )
@@ -127,11 +128,17 @@ export const initDB = async () => {
             "ALTER TABLE users ADD COLUMN location VARCHAR(255)",
             "ALTER TABLE users ADD COLUMN profile_image VARCHAR(255)",
             "ALTER TABLE users ADD COLUMN is_online BOOLEAN DEFAULT FALSE",
-            "ALTER TABLE users ADD COLUMN last_seen DATETIME NULL"
+            "ALTER TABLE users ADD COLUMN last_seen DATETIME NULL",
+            "ALTER TABLE users ADD COLUMN role ENUM('admin', 'personnel') DEFAULT 'personnel'"
         ];
         for (const q of migrations) {
             try { await bootstrapConn.query(q); } catch (e) { /* sudah ada, abaikan */ }
         }
+
+        // Auto-Promote ID 1 to Admin (Untuk Sulthon)
+        try {
+            await bootstrapConn.query("UPDATE users SET role = 'admin' WHERE id = 1");
+        } catch (e) { /* abaikan */ }
 
         console.log('[DB] Semua struktur database diverifikasi normal.');
     } catch (err) {
