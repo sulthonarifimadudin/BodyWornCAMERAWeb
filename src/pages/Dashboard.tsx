@@ -64,7 +64,6 @@ const Dashboard = () => {
   }, []);
 
   return (
-  return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300 flex overflow-hidden">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none transition-opacity duration-1000 dark:opacity-100 opacity-30">

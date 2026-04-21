@@ -200,7 +200,6 @@ const ProfilePage = () => {
     };
 
     return (
-    return (
         <div className="min-h-screen bg-background text-foreground transition-colors duration-300 overflow-hidden">
             {/* Background */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-30 dark:opacity-100 transition-opacity duration-1000">
