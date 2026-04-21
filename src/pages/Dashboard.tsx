@@ -9,10 +9,15 @@ import VideoFeed from "@/components/VideoFeed";
 import StatusOverview from "@/components/StatusOverview";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "next-themes";
+import { Languages, Moon, Sun, Globe } from "lucide-react";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedPersonnel, setSelectedPersonnel] = useState<string | null>(null);
   const { personnel, loading, error } = useRealtimePersonnel();
@@ -108,16 +113,16 @@ const Dashboard = () => {
           </Link>
           <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl text-sm font-medium">
             <Shield className="w-4 h-4" />
-            Command Center
+            {t('dashboard.title')}
           </button>
           <button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-sm font-medium">
             <Bell className="w-4 h-4" />
-            Notifikasi
+            {t('dashboard.notifications')}
             <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">3</span>
           </button>
           <button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-sm font-medium">
             <Settings className="w-4 h-4" />
-            Pengaturan
+            {t('dashboard.settings')}
           </button>
 
           <div className="pt-4 mt-4 border-t border-white/10 space-y-1">
@@ -141,7 +146,7 @@ const Dashboard = () => {
               className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all duration-200 text-sm font-medium"
             >
               <LogOut className="w-4 h-4" />
-              Keluar
+              {t('dashboard.logout')}
             </button>
           </div>
         </nav>
@@ -155,11 +160,11 @@ const Dashboard = () => {
                 systemHealthy ? "bg-green-400" : "bg-red-500"
               )} />
               <span className="text-sm font-medium text-white">
-                {systemHealthy ? "Sistem Aktif" : "Server Terputus"}
+                {systemHealthy ? t('dashboard.systemActive') : t('dashboard.serverDisconnected')}
               </span>
             </div>
             <p className="text-xs text-gray-400">
-              {systemHealthy ? `${onlineUsersCount} personel terhubung` : "Cek koneksi internet/server"}
+              {systemHealthy ? `${onlineUsersCount} ${t('dashboard.personnelConnected')}` : t('dashboard.checkConnection')}
             </p>
           </div>
         </div>
@@ -181,7 +186,7 @@ const Dashboard = () => {
                 <h1 className="text-xl font-bold text-white">
                   Command <span className="text-blue-400">Center</span>
                 </h1>
-                <p className="text-xs text-gray-400 hidden sm:block">Sistem Pemantauan Personil Keamanan</p>
+                <p className="text-xs text-gray-400 hidden sm:block">{t('dashboard.subtitle')}</p>
               </div>
             </div>
 
@@ -189,7 +194,7 @@ const Dashboard = () => {
               <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-2">
                 <Search className="w-4 h-4 text-gray-400" />
                 <input
-                  placeholder="Cari personil..."
+                  placeholder={t('dashboard.searchPlaceholder')}
                   className="bg-transparent outline-none text-white text-sm placeholder:text-gray-500 w-40"
                 />
               </div>
@@ -206,9 +211,28 @@ const Dashboard = () => {
                       <User className="w-3.5 h-3.5 text-blue-400" />
                     </div>
                   )}
-                  <span className="text-sm text-white hidden sm:block">{user?.full_name?.split(' ')[0] || 'Profil'}</span>
+                  <span className="text-sm text-white hidden sm:block">{user?.full_name?.split(' ')[0] || t('dashboard.profile')}</span>
                 </div>
               </Link>
+
+              {/* Language Toggle */}
+              <button
+                onClick={() => i18n.changeLanguage(i18n.language === 'id' ? 'en' : 'id')}
+                className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2"
+                title="Switch Language"
+              >
+                <Globe className="w-5 h-5" />
+                <span className="text-xs font-bold uppercase">{i18n.language}</span>
+              </button>
+
+              {/* Theme Toggle */}
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition"
+                title="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
             </div>
           </div>
         </header>
@@ -230,9 +254,9 @@ const Dashboard = () => {
                 <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                    <h2 className="font-semibold text-white">Peta Lokasi Personil</h2>
+                    <h2 className="font-semibold text-white">{t('dashboard.personnelMap')}</h2>
                   </div>
-                  <span className="text-xs text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded-full">Live Update</span>
+                  <span className="text-xs text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded-full">{t('dashboard.liveUpdate')}</span>
                 </div>
                 <SecurityMap 
                   personnel={personnel} 

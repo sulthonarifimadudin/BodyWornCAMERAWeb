@@ -2,8 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, MapPin, Battery, Heart, Radio, Pencil, X, Save, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Personnel } from "@/hooks/useRealtimePersonnel";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 interface PersonnelListProps {
   personnel: Personnel[];
@@ -12,6 +12,7 @@ interface PersonnelListProps {
 }
 
 const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) => {
+  const { t } = useTranslation();
   const { user: currentUser } = useAuth();
   const isAdmin = currentUser?.role === 'admin';
   const onlineCount = personnel.filter((p) => p.status !== "offline").length;
@@ -66,14 +67,14 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
         className="glass-card rounded-xl h-[500px] flex flex-col"
       >
         <div className="p-4 border-b border-border/50 flex items-center justify-between">
-          <h2 className="font-display font-semibold">Daftar Personil</h2>
-          <span className="text-xs text-muted-foreground">{onlineCount} aktif</span>
+          <h2 className="font-display font-semibold">{t('dashboard.personnelList')}</h2>
+          <span className="text-xs text-muted-foreground">{onlineCount} {t('dashboard.online')}</span>
         </div>
 
         <div className="flex-1 overflow-y-auto p-2 space-y-2">
           {personnel.length === 0 && (
             <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-              Tidak ada data personil
+              No personnel data
             </div>
           )}
           {personnel.map((person, i) => (

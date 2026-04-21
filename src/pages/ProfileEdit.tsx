@@ -7,10 +7,15 @@ import {
     Lock, Key, Eye, EyeOff, Upload
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "next-themes";
+import { Globe, Sun, Moon, Languages } from "lucide-react";
 
 const ProfilePage = () => {
     const navigate = useNavigate();
     const { user, fetchUser, logout } = useAuth();
+    const { t, i18n } = useTranslation();
+    const { theme, setTheme } = useTheme();
     
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -212,18 +217,37 @@ const ProfilePage = () => {
                             <span className="text-lg font-bold text-white">BODY<span className="text-blue-500">WORNCAM</span></span>
                         </div>
                         <div className="flex items-center gap-3">
+                            {/* Language Toggle */}
+                            <button
+                                onClick={() => i18n.changeLanguage(i18n.language === 'id' ? 'en' : 'id')}
+                                className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition flex items-center gap-2"
+                                title="Switch Language"
+                            >
+                                <Globe className="w-5 h-5" />
+                                <span className="text-xs font-bold uppercase">{i18n.language}</span>
+                            </button>
+
+                            {/* Theme Toggle */}
+                            <button
+                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition"
+                                title="Toggle Theme"
+                            >
+                                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                            </button>
+
                             <button
                                 onClick={() => navigate("/dashboard")}
                                 className="text-gray-300 hover:text-white text-sm transition"
                             >
-                                Dashboard
+                                {t('dashboard.home')}
                             </button>
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center gap-2 px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition text-sm"
                             >
                                 <LogOut className="w-4 h-4" />
-                                Logout
+                                {t('dashboard.logout')}
                             </button>
                         </div>
                     </div>
@@ -295,7 +319,7 @@ const ProfilePage = () => {
                                         <>
                                             <span className="text-gray-500 text-sm">•</span>
                                             <Calendar className="w-4 h-4 text-gray-500" />
-                                            <span className="text-gray-500 text-sm">Bergabung: {displayUser.join_date}</span>
+                                            <span className="text-gray-500 text-sm">{t('profile.joined')}: {displayUser.join_date}</span>
                                         </>
                                     )}
                                 </div>
@@ -307,7 +331,7 @@ const ProfilePage = () => {
                                     className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition"
                                 >
                                     <Edit2 className="w-4 h-4" />
-                                    Edit Profil
+                                    {t('profile.editProfile')}
                                 </button>
                             ) : (
                                 <div className="flex gap-3">
@@ -319,7 +343,7 @@ const ProfilePage = () => {
                                         className="flex items-center gap-2 px-4 py-2 bg-gray-500/20 hover:bg-gray-500/30 text-gray-400 rounded-lg transition"
                                     >
                                         <X className="w-4 h-4" />
-                                        Batal
+                                        {t('profile.cancel')}
                                     </button>
                                     <button
                                         onClick={handleSaveProfile}
@@ -331,7 +355,7 @@ const ProfilePage = () => {
                                         ) : (
                                             <Save className="w-4 h-4" />
                                         )}
-                                        Simpan
+                                        {t('profile.saveChanges')}
                                     </button>
                                 </div>
                             )}
@@ -345,12 +369,12 @@ const ProfilePage = () => {
                     <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
                         <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                             <User className="w-5 h-5 text-blue-400" />
-                            Informasi Pribadi
+                            {t('profile.personalInfo')}
                         </h2>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">Nama Lengkap</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t('profile.fullName')}</label>
                                 {isEditing ? (
                                     <input
                                         type="text"
@@ -365,7 +389,7 @@ const ProfilePage = () => {
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">Email</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t('profile.email')}</label>
                                 {isEditing ? (
                                     <input
                                         type="email"
@@ -382,7 +406,7 @@ const ProfilePage = () => {
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">Nomor WhatsApp</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t('profile.phone')}</label>
                                 {isEditing ? (
                                     <input
                                         type="tel"
@@ -402,12 +426,12 @@ const ProfilePage = () => {
                     <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
                         <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                             <Briefcase className="w-5 h-5 text-blue-400" />
-                            Informasi Profesi
+                            {t('profile.profInfo')}
                         </h2>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">Posisi</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t('profile.position')}</label>
                                 {isEditing ? (
                                     <select
                                         name="position"
@@ -426,7 +450,7 @@ const ProfilePage = () => {
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">Lokasi Tugas</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t('profile.location')}</label>
                                 {isEditing ? (
                                     <input
                                         type="text"
@@ -441,7 +465,7 @@ const ProfilePage = () => {
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">Role Sistem</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t('profile.systemRole')}</label>
                                 <p className="text-white capitalize">{displayUser.role}</p>
                             </div>
                         </div>
@@ -457,7 +481,7 @@ const ProfilePage = () => {
                         >
                             <div className="flex items-center gap-2">
                                 <Key className="w-5 h-5 text-blue-400" />
-                                <h2 className="text-lg font-semibold text-white">Ganti Password</h2>
+                                <h2 className="text-lg font-semibold text-white">{t('profile.changePassword')}</h2>
                             </div>
                             <span className="text-gray-400">{showChangePassword ? "▲" : "▼"}</span>
                         </button>
@@ -469,14 +493,14 @@ const ProfilePage = () => {
                                 className="mt-4 space-y-4"
                             >
                                 <div>
-                                    <label className="text-sm text-gray-300 mb-1 block">Password Saat Ini</label>
+                                    <label className="text-sm text-gray-300 mb-1 block">{t('profile.currentPassword')}</label>
                                     <div className="relative">
                                         <input
                                             type={showCurrentPassword ? "text" : "password"}
                                             value={passwordForm.current_password}
                                             onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })}
                                             className="w-full px-4 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none pr-10"
-                                            placeholder="Masukkan password saat ini"
+                                            placeholder={t('profile.currentPassword')}
                                         />
                                         <button
                                             type="button"
@@ -489,7 +513,7 @@ const ProfilePage = () => {
                                 </div>
 
                                 <div>
-                                    <label className="text-sm text-gray-300 mb-1 block">Password Baru</label>
+                                    <label className="text-sm text-gray-300 mb-1 block">{t('profile.newPassword')}</label>
                                     <div className="relative">
                                         <input
                                             type={showNewPassword ? "text" : "password"}
@@ -509,13 +533,13 @@ const ProfilePage = () => {
                                 </div>
 
                                 <div>
-                                    <label className="text-sm text-gray-300 mb-1 block">Konfirmasi Password Baru</label>
+                                    <label className="text-sm text-gray-300 mb-1 block">{t('profile.confirmPassword')}</label>
                                     <input
                                         type="password"
                                         value={passwordForm.confirm_password}
                                         onChange={(e) => setPasswordForm({ ...passwordForm, confirm_password: e.target.value })}
                                         className="w-full px-4 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="Ulangi password baru"
+                                        placeholder={t('profile.confirmPassword')}
                                     />
                                 </div>
 
@@ -529,7 +553,7 @@ const ProfilePage = () => {
                                     ) : (
                                         <Lock className="w-4 h-4" />
                                     )}
-                                    Update Password
+                                    {t('profile.updatePassword')}
                                 </button>
                             </motion.div>
                         )}

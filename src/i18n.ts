@@ -1,0 +1,189 @@
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+const resources = {
+  en: {
+    translation: {
+      "dashboard": {
+        "title": "Command Center",
+        "subtitle": "Security Personnel Monitoring System",
+        "liveUpdate": "Live Update",
+        "personnelMap": "Personnel Location Map",
+        "personnelList": "Personnel List",
+        "online": "online",
+        "offline": "offline",
+        "alert": "alert",
+        "idle": "idle",
+        "searchPlaceholder": "Search personnel...",
+        "totalPersonnel": "Total Personnel",
+        "activeBodycams": "bodycams active",
+        "webAdminOnline": "Web Admin Online",
+        "activeUsers": "Users active on dashboard",
+        "bodycamOffline": "Bodycam Offline",
+        "needAttention": "Need attention",
+        "allOnline": "All online",
+        "bodycamConnection": "Bodycam Connection",
+        "allConnected": "All connected",
+        "systemActive": "System Active",
+        "serverDisconnected": "Server Disconnected",
+        "personnelConnected": "personnel connected",
+        "checkConnection": "Check internet/server connection",
+        "notifications": "Notifications",
+        "settings": "Settings",
+        "home": "Home",
+        "logout": "Logout",
+        "profile": "Profile"
+      },
+      "login": {
+        "title": "Login to Account",
+        "subtitle": "Campus Security System",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "forgotPassword": "Forgot Password?",
+        "loginButton": "Login",
+        "verifyButton": "Verify OTP",
+        "resendButton": "Resend OTP",
+        "noAccount": "Don't have an account?",
+        "signupLink": "Register Now",
+        "demoAccount": "Demo Account",
+        "otpTitle": "Two-Factor Auth",
+        "otpSubtitle": "One-Time Password has been sent to your WhatsApp number",
+        "otpPlaceholder": "Enter 6-digit OTP",
+        "tooManyAttempts": "Too many attempts.",
+        "otpSent": "Authentication successful. 2FA OTP sent to your WhatsApp.",
+        "loginError": "Invalid email or password.",
+        "backendError": "Failed to connect to backend. Ensure server is running.",
+        "otpSuccess": "2FA Authenticated! Entering system...",
+        "otpError": "OTP is expired or invalid.",
+        "errorInternal": "Internal server error during login."
+      },
+      "profile": {
+        "title": "My Profile",
+        "editProfile": "Edit Profile",
+        "fullName": "Full Name",
+        "email": "Email",
+        "position": "Position",
+        "location": "Location",
+        "phone": "WhatsApp Number",
+        "saveChanges": "Save Changes",
+        "cancel": "Cancel",
+        "notFilled": "Not filled",
+        "joined": "Joined",
+        "personalInfo": "Personal Information",
+        "profInfo": "Professional Information",
+        "systemRole": "System Role",
+        "changePassword": "Change Password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "updatePassword": "Update Password",
+        "changeLanguage": "Language",
+        "changeTheme": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "successUpdate": "Profile updated successfully!",
+        "errorUpdate": "Failed to update profile.",
+        "successPassword": "Password changed successfully!"
+      }
+    }
+  },
+  id: {
+    translation: {
+      "dashboard": {
+        "title": "Command Center",
+        "subtitle": "Sistem Pemantauan Personil Keamanan",
+        "liveUpdate": "Live Update",
+        "personnelMap": "Peta Lokasi Personil",
+        "personnelList": "Daftar Personil",
+        "online": "online",
+        "offline": "offline",
+        "alert": "waspada",
+        "idle": "diam",
+        "searchPlaceholder": "Cari personil...",
+        "totalPersonnel": "Total Personil",
+        "activeBodycams": "bodycam aktif",
+        "webAdminOnline": "Web Admin Online",
+        "activeUsers": "User aktif di dashboard",
+        "bodycamOffline": "Bodycam Offline",
+        "needAttention": "Perlu perhatian",
+        "allOnline": "Semua online",
+        "bodycamConnection": "Koneksi Bodycam",
+        "allConnected": "Semua terhubung",
+        "systemActive": "Sistem Aktif",
+        "serverDisconnected": "Server Terputus",
+        "personnelConnected": "personel terhubung",
+        "checkConnection": "Cek koneksi internet/server",
+        "notifications": "Notifikasi",
+        "settings": "Pengaturan",
+        "home": "Beranda",
+        "logout": "Keluar",
+        "profile": "Profil"
+      },
+      "login": {
+        "title": "Login ke Akun",
+        "subtitle": "Sistem Keamanan Kampus",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "forgotPassword": "Lupa Password?",
+        "loginButton": "Login",
+        "verifyButton": "Verifikasi OTP",
+        "resendButton": "Kirim Ulang OTP",
+        "noAccount": "Belum punya akun?",
+        "signupLink": "Daftar Sekarang",
+        "demoAccount": "Demo Akun",
+        "otpTitle": "Otentikasi Dua Faktor",
+        "otpSubtitle": "Password Sekali Pakai telah dikirim ke nomor WhatsApp Anda",
+        "otpPlaceholder": "Masukkan 6-digit OTP",
+        "tooManyAttempts": "Terlalu banyak percobaan.",
+        "otpSent": "Otentikasi berhasil. OTP 2FA dikirim ke WA Anda.",
+        "loginError": "Email atau password salah.",
+        "backendError": "Gagal terhubung ke backend 2FA. Pastikan server aktif.",
+        "otpSuccess": "Otentikasi 2FA Berhasil! Memasuki sistem...",
+        "otpError": "OTP Kadaluarsa atau Tidak Valid.",
+        "errorInternal": "Terjadi kesalahan internal server saat login."
+      },
+      "profile": {
+        "title": "Profil Saya",
+        "editProfile": "Edit Profil",
+        "fullName": "Nama Lengkap",
+        "email": "Email",
+        "position": "Jabatan",
+        "location": "Lokasi Tugas",
+        "phone": "Nomor WhatsApp",
+        "saveChanges": "Simpan",
+        "cancel": "Batal",
+        "notFilled": "Belum diisi",
+        "joined": "Bergabung",
+        "personalInfo": "Informasi Pribadi",
+        "profInfo": "Informasi Profesi",
+        "systemRole": "Role Sistem",
+        "changePassword": "Ganti Password",
+        "currentPassword": "Password Saat Ini",
+        "newPassword": "Password Baru",
+        "confirmPassword": "Konfirmasi Password Baru",
+        "updatePassword": "Update Password",
+        "changeLanguage": "Bahasa",
+        "changeTheme": "Tema",
+        "light": "Terang",
+        "dark": "Gelap",
+        "successUpdate": "Profil berhasil diperbarui!",
+        "errorUpdate": "Gagal memperbarui profil.",
+        "successPassword": "Password berhasil diubah!"
+      }
+    }
+  }
+};
+
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources,
+    fallbackLng: 'id',
+    interpolation: {
+      escapeValue: false,
+    }
+  });
+
+export default i18n;

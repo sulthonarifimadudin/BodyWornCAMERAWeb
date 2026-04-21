@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useOTPTimer } from "@/hooks/useOTPTimer";
+import { useTranslation } from "react-i18next";
+import { Globe } from "lucide-react";
 
 const LoginPage = () => {
     const { login } = useAuth();
@@ -21,6 +23,7 @@ const LoginPage = () => {
     const [otpCode, setOtpCode] = useState("");
     const [userPhone, setUserPhone] = useState("");
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
 
     const handleLogin = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -37,21 +40,21 @@ const LoginPage = () => {
             const data = await response.json();
             
             if (response.status === 429) {
-                setError(data.message || "Terlalu banyak percobaan.");
+                setError(data.message || t('login.tooManyAttempts'));
                 if (data.retry_after) {
-                    startTimer(data.retry_after); // DUAL LAYER: Override limit via Backend
+                    startTimer(data.retry_after); 
                 }
             } else if (response.ok && data.success) {
-                setSuccess(`Otentikasi berhasil. OTP 2FA dikirim ke WA Anda.`);
+                setSuccess(t('login.otpSent'));
                 setUserPhone(data.userPhone || "nomor terdaftar");
                 setStep('otp');
                 // DUAL LAYER: Frontend Cooldown standar (60s) setiap berhasil kirim
                 startTimer(60);
             } else {
-                setError(data.message || "Email atau password salah.");
+                setError(data.message || t('login.loginError'));
             }
         } catch (err) {
-            setError("Gagal terhubung ke backend 2FA. Pastikan Node.js berjalan.");
+            setError(t('login.backendError'));
         } finally {
             setLoading(false);
         }
@@ -75,15 +78,15 @@ const LoginPage = () => {
                 // Gunakan context global login
                 login(data.token, data.user);
 
-                setSuccess("Otentikasi 2FA Berhasil! Memasuki sistem...");
+                setSuccess(t('login.otpSuccess'));
                 setTimeout(() => {
                     navigate("/profile");
                 }, 1500);
             } else {
-                setError(data.message || "OTP Kadaluarsa atau Tidak Valid.");
+                setError(data.message || t('login.otpError'));
             }
         } catch (err) {
-            setError("Gagal memverifikasi OTP melalui backend.");
+            setError(t('login.backendError'));
         } finally {
             setLoading(false);
         }
@@ -111,6 +114,17 @@ const LoginPage = () => {
                 className="max-w-md w-full relative z-10"
             >
                 {/* Logo */}
+                <div className="absolute top-4 right-4 z-20">
+                    <button
+                        onClick={() => i18n.changeLanguage(i18n.language === 'id' ? 'en' : 'id')}
+                        className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition flex items-center gap-2"
+                        title="Switch Language"
+                    >
+                        <Globe className="w-5 h-5" />
+                        <span className="text-xs font-bold uppercase">{i18n.language}</span>
+                    </button>
+                </div>
+
                 <div className="text-center mb-8">
                     <motion.div
                         initial={{ scale: 0 }}
@@ -120,8 +134,12 @@ const LoginPage = () => {
                     >
                         <Shield className="w-10 h-10 text-white" />
                     </motion.div>
-                    <h1 className="text-2xl font-bold text-white">BODYWORNCAM</h1>
-                    <p className="text-gray-400 mt-1">Sistem Keamanan Kampus</p>
+                    <h1 className="text-2xl font-bold text-white">
+                        {step === 'login' ? t('login.title') : t('login.otpTitle')}
+                    </h1>
+                    <p className="text-gray-400 mt-1">
+                        {step === 'login' ? t('login.subtitle') : t('login.otpSubtitle')}
+                    </p>
                 </div>
 
                 {/* Login Card */}
@@ -157,7 +175,7 @@ const LoginPage = () => {
                         <>
                             <form onSubmit={handleLogin} className="space-y-5">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">{t('login.emailLabel')}</label>
                             <div className="relative group">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-blue-400 transition" />
                                 <input
@@ -172,7 +190,7 @@ const LoginPage = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">{t('login.passwordLabel')}</label>
                             <div className="relative group">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-blue-400 transition" />
                                 <input
@@ -193,7 +211,7 @@ const LoginPage = () => {
                             </div>
                             <div className="mt-2 text-right">
                                 <Link to="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 hover:underline transition">
-                                    Lupa Password?
+                                    {t('login.forgotPassword')}
                                 </Link>
                             </div>
                         </div>
@@ -207,7 +225,7 @@ const LoginPage = () => {
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                             ) : (
                                 <>
-                                    Login
+                                    {t('login.loginButton')}
                                     <ArrowRight className="w-4 h-4" />
                                 </>
                             )}
@@ -222,7 +240,7 @@ const LoginPage = () => {
                             className="w-full flex items-center justify-center gap-3 py-2 px-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition group"
                         >
                             <Fingerprint className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />
-                            <span className="text-sm text-gray-300">Demo Akun: security@bodyworncam.com</span>
+                            <span className="text-sm text-gray-300">{t('login.demoAccount')}: security@bodyworncam.com</span>
                         </button>
                     </div>
                         </>
@@ -283,9 +301,9 @@ const LoginPage = () => {
 
                     <div className="mt-6 text-center">
                         <p className="text-gray-400">
-                            Belum punya akun?{" "}
+                            {t('login.noAccount')}{" "}
                             <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-medium transition">
-                                Daftar Sekarang
+                                {t('login.signupLink')}
                             </Link>
                         </p>
                     </div>

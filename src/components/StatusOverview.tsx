@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Users, AlertTriangle, Shield, Radio } from "lucide-react";
-import type { Personnel } from "@/hooks/useRealtimePersonnel";
+import { useTranslation } from "react-i18next";
 
 interface StatusOverviewProps {
   personnel: Personnel[];
@@ -8,6 +8,7 @@ interface StatusOverviewProps {
 }
 
 const StatusOverview = ({ personnel, onlineUsersCount = 0 }: StatusOverviewProps) => {
+  const { t } = useTranslation();
   const totalPersonnel = personnel.length;
   const bodycamOnlineCount = personnel.filter((p) => p.status === "online").length;
   const bodycamOfflineCount = personnel.filter((p) => p.status === "offline").length;
@@ -16,30 +17,30 @@ const StatusOverview = ({ personnel, onlineUsersCount = 0 }: StatusOverviewProps
   const stats = [
     {
       icon: Users,
-      label: "Total Personil",
+      label: t('dashboard.totalPersonnel'),
       value: String(totalPersonnel),
-      subtext: `${bodycamOnlineCount} bodycam aktif`,
+      subtext: `${bodycamOnlineCount} ${t('dashboard.activeBodycams')}`,
       color: "primary",
     },
     {
       icon: Shield,
-      label: "Web Admin Online",
+      label: t('dashboard.webAdminOnline'),
       value: String(onlineUsersCount),
-      subtext: "User aktif di dashboard",
+      subtext: t('dashboard.activeUsers'),
       color: "success",
     },
     {
       icon: AlertTriangle,
-      label: "Bodycam Offline",
+      label: t('dashboard.bodycamOffline'),
       value: String(bodycamOfflineCount),
-      subtext: bodycamOfflineCount > 0 ? "Perlu perhatian" : "Semua online",
+      subtext: bodycamOfflineCount > 0 ? t('dashboard.needAttention') : t('dashboard.allOnline'),
       color: bodycamOfflineCount > 0 ? "destructive" : "success",
     },
     {
       icon: Radio,
-      label: "Koneksi Bodycam",
+      label: t('dashboard.bodycamConnection'),
       value: `${connectionPercent}%`,
-      subtext: connectionPercent === 100 ? "Semua terhubung" : `${bodycamOfflineCount} offline`,
+      subtext: connectionPercent === 100 ? t('dashboard.allConnected') : `${bodycamOfflineCount} ${t('dashboard.offline')}`,
       color: "primary",
     },
   ];
