@@ -24,8 +24,8 @@ const VideoFeed = ({ selectedPersonnelId }: VideoFeedProps) => {
   const [streamType, setStreamType] = useState<'raw' | 'ai'>('ai');
 
   const streamUrl = streamType === 'ai' 
-    ? 'http://193.183.22.54:8888/live/output/index.m3u8'
-    : 'http://193.183.22.54:8888/live/stream/index.m3u8';
+    ? 'http://193.183.22.60:8888/live/output/index.m3u8'
+    : 'http://193.183.22.60:8888/live/stream/index.m3u8';
 
   return (
     <motion.div 
