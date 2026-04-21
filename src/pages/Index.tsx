@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Shield, MapPin, Video, Users, Activity, Radio, ChevronRight, Eye, Lock, Zap, Globe, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
@@ -57,7 +59,7 @@ const Index = () => {
         transition={{ duration: 0.5 }}
         className="relative z-50 bg-background/80 backdrop-blur-xl border-b border-border shadow-lg"
       >
-        <div className="max-width-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25">
               <Shield className="w-5 h-5 text-primary-foreground" />
