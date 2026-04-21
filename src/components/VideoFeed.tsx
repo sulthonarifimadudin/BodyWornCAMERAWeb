@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Video, VideoOff, Maximize2, Volume2, AlertTriangle } from "lucide-react";
+import { Video, VideoOff, Maximize2, Volume2, AlertTriangle, Activity } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import HLSPlayer from "./HLSPlayer";
 
 interface VideoFeedProps {
   selectedPersonnelId: string | null;
@@ -18,28 +21,58 @@ const personnelData: Record<string, { name: string; location: string; status: st
 
 const VideoFeed = ({ selectedPersonnelId }: VideoFeedProps) => {
   const selectedPerson = selectedPersonnelId ? personnelData[selectedPersonnelId] : null;
+  const [streamType, setStreamType] = useState<'raw' | 'ai'>('ai');
+
+  const streamUrl = streamType === 'ai' 
+    ? 'http://193.183.22.54:8888/live/output/index.m3u8'
+    : 'http://193.183.22.54:8888/live/stream/index.m3u8';
 
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="glass-card rounded-xl overflow-hidden"
+      className="glass-card rounded-xl overflow-hidden shadow-2xl border-border/50"
     >
-      <div className="p-4 border-b border-border/50 flex items-center justify-between">
+      <div className="p-4 border-b border-border/50 flex items-center justify-between bg-card/50 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <h2 className="font-display font-semibold">Video Feed - Bodyworn Camera</h2>
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+            <Video className="w-4 h-4 text-primary" />
+          </div>
+          <h2 className="font-display font-semibold text-foreground">{t('dashboard.videoFeed')}</h2>
           {selectedPerson && (
-            <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 font-bold uppercase tracking-wider">
               {selectedPerson.name}
             </span>
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
+          {/* Stream Type Switcher */}
+          <div className="flex bg-muted/50 p-1 rounded-lg border border-border/50 mr-2">
+            <button 
+              onClick={() => setStreamType('raw')}
+              className={cn(
+                "px-3 py-1 text-[10px] font-bold rounded-md transition-all",
+                streamType === 'raw' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              RAW
+            </button>
+            <button 
+              onClick={() => setStreamType('ai')}
+              className={cn(
+                "px-3 py-1 text-[10px] font-bold rounded-md transition-all flex items-center gap-1",
+                streamType === 'ai' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Activity className="w-3 h-3" />
+              AI DETECT
+            </button>
+          </div>
+          <Button variant="ghost" size="icon" className="text-muted-foreground">
             <Volume2 className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="text-muted-foreground">
             <Maximize2 className="w-4 h-4" />
           </Button>
         </div>
@@ -48,55 +81,21 @@ const VideoFeed = ({ selectedPersonnelId }: VideoFeedProps) => {
       <div className="grid md:grid-cols-3 gap-4 p-4">
         {/* Main Video Feed */}
         <div className={cn(
-          "relative aspect-video rounded-lg overflow-hidden bg-background border border-border/50",
-          "md:col-span-2"
+          "relative aspect-video rounded-lg overflow-hidden bg-black border border-border shadow-inner",
+          "md:col-span-2 group"
         )}>
           {selectedPerson ? (
-            <>
-              {/* Simulated video feed */}
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-muted to-background">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/20 border border-primary/50 flex items-center justify-center mx-auto mb-4 animate-pulse-glow">
-                    <Video className="w-8 h-8 text-primary" />
-                  </div>
-                  <p className="text-muted-foreground text-sm">Live Stream</p>
-                  <p className="text-foreground font-medium">{selectedPerson.name}</p>
-                </div>
-              </div>
-
-              {/* Video overlay */}
-              <div className="absolute top-3 left-3 flex items-center gap-2">
-                <span className="flex items-center gap-1.5 px-2 py-1 rounded bg-background/80 backdrop-blur text-xs">
-                  <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-                  LIVE
-                </span>
-                {selectedPerson.status === "alert" && (
-                  <span className="flex items-center gap-1.5 px-2 py-1 rounded bg-destructive/80 backdrop-blur text-xs text-destructive-foreground">
-                    <AlertTriangle className="w-3 h-3" />
-                    ALERT
-                  </span>
-                )}
-              </div>
-
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                <span className="text-xs text-foreground bg-background/80 backdrop-blur px-2 py-1 rounded">
-                  {selectedPerson.location}
-                </span>
-                <span className="text-xs text-muted-foreground bg-background/80 backdrop-blur px-2 py-1 rounded font-mono">
-                  {new Date().toLocaleTimeString('id-ID')}
-                </span>
-              </div>
-
-              {/* Scanline effect */}
-              <div className="absolute inset-0 scanline opacity-30 pointer-events-none" />
-            </>
+            <HLSPlayer 
+              url={streamUrl} 
+              className="w-full h-full"
+            />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
               <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                  <VideoOff className="w-8 h-8 text-muted-foreground" />
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4 border border-border">
+                  <VideoOff className="w-8 h-8 text-muted-foreground opacity-50" />
                 </div>
-                <p className="text-muted-foreground text-sm">Pilih personil untuk melihat video feed</p>
+                <p className="text-muted-foreground text-xs uppercase tracking-widest">{t('dashboard.selectPersonnelFeed')}</p>
               </div>
             </div>
           )}
