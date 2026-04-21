@@ -57,22 +57,22 @@ const StatusOverview = ({ personnel, onlineUsersCount = 0 }: StatusOverviewProps
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
-              <p className={`font-display text-2xl font-bold ${stat.color === "primary" ? "text-blue-400" :
-                stat.color === "success" ? "text-green-500" :
-                  "text-red-500"
+              <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
+              <p className={`font-display text-2xl font-bold ${stat.color === "primary" ? "text-primary" :
+                stat.color === "success" ? "text-success" :
+                  "text-destructive"
                 }`}>
                 {stat.value}
               </p>
-              <p className="text-xs text-gray-500 mt-1">{stat.subtext}</p>
+              <p className="text-xs text-muted-foreground mt-1">{stat.subtext}</p>
             </div>
             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.color === "primary" ? "bg-primary/10" :
               stat.color === "success" ? "bg-success/10" :
                 "bg-destructive/10"
               }`}>
-               <stat.icon className={`w-5 h-5 ${stat.color === "primary" ? "text-blue-400" :
-                stat.color === "success" ? "text-green-500" :
-                  "text-red-500"
+               <stat.icon className={`w-5 h-5 ${stat.color === "primary" ? "text-primary" :
+                stat.color === "success" ? "text-success" :
+                  "text-destructive"
                 }`} />
             </div>
           </div>
