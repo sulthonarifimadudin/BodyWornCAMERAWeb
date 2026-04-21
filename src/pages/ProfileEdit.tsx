@@ -200,51 +200,52 @@ const ProfilePage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    return (
+        <div className="min-h-screen bg-background text-foreground transition-colors duration-300 overflow-hidden">
             {/* Background */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl" />
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
+            <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-30 dark:opacity-100 transition-opacity duration-1000">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+                <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--border)/0.2)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--border)/0.2)_1px,transparent_1px)] bg-[size:50px_50px]" />
             </div>
 
             {/* Navbar */}
-            <nav className="relative z-10 border-b border-white/10 bg-white/5 backdrop-blur-sm">
+            <nav className="relative z-10 border-b border-border bg-background/80 backdrop-blur-md">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center gap-2">
-                            <Shield className="w-8 h-8 text-blue-500" />
-                            <span className="text-lg font-bold text-white">BODY<span className="text-blue-500">WORNCAM</span></span>
+                            <Shield className="w-8 h-8 text-primary" />
+                            <span className="text-lg font-bold text-foreground">BODY<span className="text-primary font-orbitron">WORNCAM</span></span>
                         </div>
                         <div className="flex items-center gap-3">
                             {/* Language Toggle */}
                             <button
                                 onClick={() => i18n.changeLanguage(i18n.language === 'id' ? 'en' : 'id')}
-                                className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition flex items-center gap-2"
+                                className="p-2 bg-muted/50 border border-border rounded-xl text-muted-foreground hover:text-foreground transition-all flex items-center gap-2"
                                 title="Switch Language"
                             >
                                 <Globe className="w-5 h-5" />
-                                <span className="text-xs font-bold uppercase">{i18n.language}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-tight">{i18n.language}</span>
                             </button>
 
                             {/* Theme Toggle */}
                             <button
                                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition"
+                                className="p-2 bg-muted/50 border border-border rounded-xl text-muted-foreground hover:text-foreground transition-all"
                                 title="Toggle Theme"
                             >
-                                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5 text-primary" />}
                             </button>
 
                             <button
                                 onClick={() => navigate("/dashboard")}
-                                className="text-gray-300 hover:text-white text-sm transition"
+                                className="text-muted-foreground hover:text-foreground text-sm font-semibold transition"
                             >
                                 {t('dashboard.home')}
                             </button>
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition text-sm"
+                                className="flex items-center gap-2 px-3 py-1.5 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition text-sm font-bold shadow-sm"
                             >
                                 <LogOut className="w-4 h-4" />
                                 {t('dashboard.logout')}
@@ -280,25 +281,25 @@ const ProfilePage = () => {
                 )}
 
                 {/* Profile Header */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+                <div className="bg-card backdrop-blur-xl rounded-3xl border border-border overflow-hidden shadow-xl shadow-primary/5">
                     {/* Cover Photo */}
-                    <div className="h-32 bg-gradient-to-r from-blue-600/20 to-purple-600/20 relative">
+                    <div className="h-32 bg-gradient-to-r from-primary/10 to-purple-500/10 relative">
                         <div className="absolute -bottom-12 left-8">
                             <div className="relative">
-                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-4 border-slate-800 shadow-xl overflow-hidden relative group">
+                                <div className="w-24 h-24 rounded-2xl bg-primary flex items-center justify-center border-4 border-background shadow-2xl overflow-hidden relative group">
                                     {loading && (
-                                        <div className="absolute inset-0 bg-black/50 z-10 flex items-center justify-center">
-                                            <div className="w-6 h-6 border-2 border-white/60 border-t-white rounded-full animate-spin"></div>
+                                        <div className="absolute inset-0 bg-background/50 z-10 flex items-center justify-center">
+                                            <div className="w-6 h-6 border-2 border-primary/60 border-t-primary rounded-full animate-spin"></div>
                                         </div>
                                     )}
                                     {avatarSrc ? (
-                                        <img src={avatarSrc} alt="Avatar" className="w-full h-full object-cover" />
+                                        <img src={avatarSrc} alt="Avatar" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                     ) : (
-                                        <User className="w-10 h-10 text-white" />
+                                        <User className="w-10 h-10 text-primary-foreground" />
                                     )}
                                 </div>
-                                <label className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-600 transition shadow-lg">
-                                    <Camera className="w-4 h-4 text-white" />
+                                <label className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-all shadow-lg text-primary-foreground border-4 border-background">
+                                    <Camera className="w-4 h-4" />
                                     <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
                                 </label>
                             </div>
@@ -309,17 +310,17 @@ const ProfilePage = () => {
                     <div className="pt-14 pb-6 px-8">
                         <div className="flex justify-between items-start flex-wrap gap-4">
                             <div>
-                                <h1 className="text-2xl font-bold text-white">
+                                <h1 className="text-3xl font-bold text-foreground tracking-tight">
                                     {displayUser.full_name}
                                 </h1>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <Briefcase className="w-4 h-4 text-blue-400" />
-                                    <span className="text-gray-300 text-sm">{displayUser.position}</span>
+                                    <Briefcase className="w-4 h-4 text-primary" />
+                                    <span className="text-muted-foreground text-sm font-medium">{displayUser.position}</span>
                                     {displayUser.join_date && displayUser.join_date !== "-" && (
                                         <>
-                                            <span className="text-gray-500 text-sm">•</span>
-                                            <Calendar className="w-4 h-4 text-gray-500" />
-                                            <span className="text-gray-500 text-sm">{t('profile.joined')}: {displayUser.join_date}</span>
+                                            <span className="text-border text-sm">•</span>
+                                            <Calendar className="w-4 h-4 text-muted-foreground" />
+                                            <span className="text-muted-foreground text-sm font-medium">{t('profile.joined')}: {displayUser.join_date}</span>
                                         </>
                                     )}
                                 </div>
@@ -328,7 +329,7 @@ const ProfilePage = () => {
                             {!isEditing ? (
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition"
+                                    className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl transition-all font-bold shadow-sm"
                                 >
                                     <Edit2 className="w-4 h-4" />
                                     {t('profile.editProfile')}
@@ -340,7 +341,7 @@ const ProfilePage = () => {
                                             setIsEditing(false);
                                             setEditForm({ ...displayUser });
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2 bg-gray-500/20 hover:bg-gray-500/30 text-gray-400 rounded-lg transition"
+                                        className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 text-muted-foreground rounded-xl transition-all font-bold shadow-sm"
                                     >
                                         <X className="w-4 h-4" />
                                         {t('profile.cancel')}
@@ -348,10 +349,10 @@ const ProfilePage = () => {
                                     <button
                                         onClick={handleSaveProfile}
                                         disabled={loading}
-                                        className="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg transition"
+                                        className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl transition-all font-bold shadow-lg shadow-primary/20"
                                     >
                                         {loading ? (
-                                            <div className="w-4 h-4 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin" />
+                                            <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                                         ) : (
                                             <Save className="w-4 h-4" />
                                         )}
@@ -366,30 +367,32 @@ const ProfilePage = () => {
                 {/* Profile Details */}
                 <div className="grid md:grid-cols-2 gap-6 mt-6">
                     {/* Informasi Pribadi */}
-                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <User className="w-5 h-5 text-blue-400" />
+                    <div className="bg-card backdrop-blur-xl rounded-3xl border border-border p-6 shadow-sm">
+                        <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-3">
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <User className="w-5 h-5 text-primary" />
+                            </div>
                             {t('profile.personalInfo')}
                         </h2>
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">{t('profile.fullName')}</label>
+                                <label className="text-[10px] font-bold text-muted-foreground block mb-1 uppercase tracking-widest">{t('profile.fullName')}</label>
                                 {isEditing ? (
                                     <input
                                         type="text"
                                         name="full_name"
                                         value={editForm.full_name}
                                         onChange={handleEditChange}
-                                        className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-foreground font-medium text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     />
                                 ) : (
-                                    <p className="text-white">{displayUser.full_name}</p>
+                                    <p className="text-foreground font-semibold px-1">{displayUser.full_name}</p>
                                 )}
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">{t('profile.email')}</label>
+                                <label className="text-[10px] font-bold text-muted-foreground block mb-1 uppercase tracking-widest">{t('profile.email')}</label>
                                 {isEditing ? (
                                     <input
                                         type="email"
@@ -397,47 +400,49 @@ const ProfilePage = () => {
                                         value={editForm.email}
                                         onChange={handleEditChange}
                                         disabled
-                                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-gray-400 text-sm outline-none cursor-not-allowed"
+                                        className="w-full px-4 py-2.5 bg-muted/10 border border-border rounded-xl text-muted-foreground text-sm outline-none cursor-not-allowed opacity-70"
                                         title="Email tidak dapat diubah"
                                     />
                                 ) : (
-                                    <p className="text-white">{displayUser.email}</p>
+                                    <p className="text-foreground font-semibold px-1">{displayUser.email}</p>
                                 )}
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">{t('profile.phone')}</label>
+                                <label className="text-[10px] font-bold text-muted-foreground block mb-1 uppercase tracking-widest">{t('profile.phone')}</label>
                                 {isEditing ? (
                                     <input
                                         type="tel"
                                         name="phone"
                                         value={editForm.phone}
                                         onChange={handleEditChange}
-                                        className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-foreground font-medium text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     />
                                 ) : (
-                                    <p className="text-white">{displayUser.phone || "-"}</p>
+                                    <p className="text-foreground font-semibold px-1">{displayUser.phone || "-"}</p>
                                 )}
                             </div>
                         </div>
                     </div>
 
                     {/* Informasi Profesi */}
-                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <Briefcase className="w-5 h-5 text-blue-400" />
+                    <div className="bg-card backdrop-blur-xl rounded-3xl border border-border p-6 shadow-sm">
+                        <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-3">
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <Briefcase className="w-5 h-5 text-primary" />
+                            </div>
                             {t('profile.profInfo')}
                         </h2>
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">{t('profile.position')}</label>
+                                <label className="text-[10px] font-bold text-muted-foreground block mb-1 uppercase tracking-widest">{t('profile.position')}</label>
                                 {isEditing ? (
                                     <select
                                         name="position"
                                         value={editForm.position}
                                         onChange={handleEditChange}
-                                        className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none [&>option]:bg-slate-800"
+                                        className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-foreground font-medium text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     >
                                         <option value="Petugas Security">Petugas Security</option>
                                         <option value="Komandan Regu">Komandan Regu</option>
@@ -445,28 +450,28 @@ const ProfilePage = () => {
                                         <option value="Administrator">Administrator</option>
                                     </select>
                                 ) : (
-                                    <p className="text-white">{displayUser.position}</p>
+                                    <p className="text-foreground font-semibold px-1">{displayUser.position}</p>
                                 )}
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">{t('profile.location')}</label>
+                                <label className="text-[10px] font-bold text-muted-foreground block mb-1 uppercase tracking-widest">{t('profile.location')}</label>
                                 {isEditing ? (
                                     <input
                                         type="text"
                                         name="location"
                                         value={editForm.location}
                                         onChange={handleEditChange}
-                                        className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-foreground font-medium text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     />
                                 ) : (
-                                    <p className="text-white">{displayUser.location || "-"}</p>
+                                    <p className="text-foreground font-semibold px-1">{displayUser.location || "-"}</p>
                                 )}
                             </div>
 
                             <div>
-                                <label className="text-xs text-gray-500 block mb-1">{t('profile.systemRole')}</label>
-                                <p className="text-white capitalize">{displayUser.role}</p>
+                                <label className="text-[10px] font-bold text-muted-foreground block mb-1 uppercase tracking-widest">{t('profile.systemRole')}</label>
+                                <p className="text-primary font-bold px-1 uppercase tracking-tighter text-sm">{displayUser.role}</p>
                             </div>
                         </div>
                     </div>
@@ -474,16 +479,18 @@ const ProfilePage = () => {
 
                 {/* Change Password Section */}
                 <div className="mt-6">
-                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+                    <div className="bg-card backdrop-blur-xl rounded-3xl border border-border p-6 shadow-sm">
                         <button
                             onClick={() => setShowChangePassword(!showChangePassword)}
-                            className="flex items-center justify-between w-full"
+                            className="flex items-center justify-between w-full group"
                         >
-                            <div className="flex items-center gap-2">
-                                <Key className="w-5 h-5 text-blue-400" />
-                                <h2 className="text-lg font-semibold text-white">{t('profile.changePassword')}</h2>
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-primary/10 rounded-lg group-hover:scale-110 transition-transform">
+                                    <Key className="w-5 h-5 text-primary" />
+                                </div>
+                                <h2 className="text-lg font-bold text-foreground tracking-tight">{t('profile.changePassword')}</h2>
                             </div>
-                            <span className="text-gray-400">{showChangePassword ? "▲" : "▼"}</span>
+                            <span className="text-muted-foreground transition-transform duration-300" style={{ transform: showChangePassword ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
                         </button>
 
                         {showChangePassword && (
@@ -493,19 +500,19 @@ const ProfilePage = () => {
                                 className="mt-4 space-y-4"
                             >
                                 <div>
-                                    <label className="text-sm text-gray-300 mb-1 block">{t('profile.currentPassword')}</label>
+                                    <label className="text-[10px] font-bold text-muted-foreground mb-1 block uppercase tracking-widest">{t('profile.currentPassword')}</label>
                                     <div className="relative">
                                         <input
                                             type={showCurrentPassword ? "text" : "password"}
                                             value={passwordForm.current_password}
                                             onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })}
-                                            className="w-full px-4 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none pr-10"
+                                            className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-foreground font-medium text-sm focus:ring-2 focus:ring-primary/20 outline-none pr-10"
                                             placeholder={t('profile.currentPassword')}
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                         >
                                             {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -513,19 +520,19 @@ const ProfilePage = () => {
                                 </div>
 
                                 <div>
-                                    <label className="text-sm text-gray-300 mb-1 block">{t('profile.newPassword')}</label>
+                                    <label className="text-[10px] font-bold text-muted-foreground mb-1 block uppercase tracking-widest">{t('profile.newPassword')}</label>
                                     <div className="relative">
                                         <input
                                             type={showNewPassword ? "text" : "password"}
                                             value={passwordForm.new_password}
                                             onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })}
-                                            className="w-full px-4 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none pr-10"
+                                            className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-foreground font-medium text-sm focus:ring-2 focus:ring-primary/20 outline-none pr-10"
                                             placeholder="Minimal 6 karakter"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowNewPassword(!showNewPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                         >
                                             {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -533,12 +540,12 @@ const ProfilePage = () => {
                                 </div>
 
                                 <div>
-                                    <label className="text-sm text-gray-300 mb-1 block">{t('profile.confirmPassword')}</label>
+                                    <label className="text-[10px] font-bold text-muted-foreground mb-1 block uppercase tracking-widest">{t('profile.confirmPassword')}</label>
                                     <input
                                         type="password"
                                         value={passwordForm.confirm_password}
                                         onChange={(e) => setPasswordForm({ ...passwordForm, confirm_password: e.target.value })}
-                                        className="w-full px-4 py-2 bg-white/10 border border-white/10 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-foreground font-medium text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                         placeholder={t('profile.confirmPassword')}
                                     />
                                 </div>
@@ -546,10 +553,10 @@ const ProfilePage = () => {
                                 <button
                                     onClick={handleChangePassword}
                                     disabled={loading}
-                                    className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition text-sm flex items-center gap-2"
+                                    className="px-6 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl transition-all font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20"
                                 >
                                     {loading ? (
-                                        <div className="w-4 h-4 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin" />
+                                        <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                                     ) : (
                                         <Lock className="w-4 h-4" />
                                     )}

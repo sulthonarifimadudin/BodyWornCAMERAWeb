@@ -64,12 +64,13 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex">
+  return (
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 flex overflow-hidden">
       {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none transition-opacity duration-1000 dark:opacity-100 opacity-30">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--border)/0.05)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--border)/0.05)_1px,transparent_1px)] bg-[size:50px_50px]" />
       </div>
 
       {/* Mobile Sidebar Overlay */}
@@ -82,22 +83,24 @@ const Dashboard = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 lg:sticky lg:flex-shrink-0 z-50 w-[260px] h-screen bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col shadow-2xl transition-transform duration-300
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        className={cn(
+          "fixed top-0 left-0 lg:sticky lg:flex-shrink-0 z-50 w-[260px] h-screen bg-card/80 backdrop-blur-xl border-r border-border/50 flex flex-col shadow-2xl transition-all duration-300",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        )}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <Shield className="w-5 h-5 text-white" />
+        <div className="p-6 border-b border-border/50 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
+              <Shield className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg tracking-wider text-white">
-              BODY<span className="text-blue-400">WORNCAM</span>
+            <span className="font-bold text-lg tracking-wider text-foreground">
+              BODY<span className="text-primary font-orbitron">WORNCAM</span>
             </span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-gray-400 hover:text-white transition"
+            className="lg:hidden text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -106,38 +109,38 @@ const Dashboard = () => {
         {/* Nav */}
         <nav className="flex-1 p-4 space-y-1">
           <Link to="/">
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-sm font-medium">
+            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium">
               <Home className="w-4 h-4" />
-              Beranda
+              {t('dashboard.home')}
             </button>
           </Link>
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl text-sm font-medium">
+          <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-primary/10 text-primary border border-primary/20 rounded-xl text-sm font-medium">
             <Shield className="w-4 h-4" />
             {t('dashboard.title')}
           </button>
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-sm font-medium">
+          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium">
             <Bell className="w-4 h-4" />
             {t('dashboard.notifications')}
-            <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">3</span>
+            <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-bold">3</span>
           </button>
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-sm font-medium">
+          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium">
             <Settings className="w-4 h-4" />
             {t('dashboard.settings')}
           </button>
 
-          <div className="pt-4 mt-4 border-t border-white/10 space-y-1">
-            <Link to="/profile">
-              <button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-sm font-medium">
+          <div className="pt-4 mt-4 border-t border-border/50 space-y-1">
+            <Link to="/profile" className="block">
+              <button className="w-full flex items-center gap-3 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200">
                 {user?.profile_image ? (
-                  <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-6 h-6 rounded-full object-cover" />
+                  <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full border border-border/50 object-cover" />
                 ) : (
-                  <div className="w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
-                    <User className="w-3 h-3 text-blue-400" />
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary" />
                   </div>
                 )}
-                <div className="flex flex-col items-start text-left">
-                  <span className="text-white text-sm">{user?.full_name?.split(' ')[0] || 'Profil'}</span>
-                  <span className="text-xs text-gray-500">{user?.position || 'Personil'}</span>
+                <div className="flex flex-col items-start text-left ml-2 overflow-hidden">
+                  <span className="text-foreground text-sm font-semibold truncate w-full">{user?.full_name?.split(' ')[0] || t('dashboard.profile')}</span>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-tight truncate w-full">{user?.position || 'Personnel'}</span>
                 </div>
               </button>
             </Link>
@@ -153,17 +156,17 @@ const Dashboard = () => {
 
         {/* Status Card */}
         <div className="p-4 border-t border-white/10">
-          <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+          <div className="bg-card rounded-xl p-3 border border-border">
             <div className="flex items-center gap-2 mb-1">
               <span className={cn(
                 "w-2 h-2 rounded-full animate-pulse",
-                systemHealthy ? "bg-green-400" : "bg-red-500"
+                systemHealthy ? "status-online" : "status-alert"
               )} />
-              <span className="text-sm font-medium text-white">
+              <span className="text-sm font-bold text-foreground">
                 {systemHealthy ? t('dashboard.systemActive') : t('dashboard.serverDisconnected')}
               </span>
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-[10px] text-muted-foreground font-medium">
               {systemHealthy ? `${onlineUsersCount} ${t('dashboard.personnelConnected')}` : t('dashboard.checkConnection')}
             </p>
           </div>
@@ -171,67 +174,67 @@ const Dashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10">
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10 overflow-auto">
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg">
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden text-gray-400 hover:text-white transition"
+                className="lg:hidden text-muted-foreground hover:text-foreground transition-colors p-2 hover:bg-muted rounded-lg"
               >
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5" />
               </button>
               <div>
-                <h1 className="text-xl font-bold text-white">
-                  Command <span className="text-blue-400">Center</span>
+                <h1 className="text-xl font-bold text-foreground">
+                  Command <span className="text-primary font-orbitron">Center</span>
                 </h1>
-                <p className="text-xs text-gray-400 hidden sm:block">{t('dashboard.subtitle')}</p>
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider hidden sm:block">{t('dashboard.subtitle')}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                <Search className="w-4 h-4 text-gray-400" />
+              <div className="hidden md:flex items-center gap-2 bg-muted/30 border border-border/50 rounded-xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                <Search className="w-4 h-4 text-muted-foreground" />
                 <input
                   placeholder={t('dashboard.searchPlaceholder')}
-                  className="bg-transparent outline-none text-white text-sm placeholder:text-gray-500 w-40"
+                  className="bg-transparent outline-none text-foreground text-sm placeholder:text-muted-foreground w-40"
                 />
               </div>
-              <button className="relative p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition">
+              <button className="relative p-2 bg-muted/30 border border-border/50 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                 <Bell className="w-5 h-5" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full glow-destructive" />
               </button>
               <Link to="/profile">
-                <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-2 hover:bg-white/10 transition cursor-pointer">
+                <div className="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-xl px-2 py-1.5 hover:bg-muted transition-colors cursor-pointer group">
                   {user?.profile_image ? (
-                    <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-7 h-7 rounded-full object-cover" />
+                    <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-6 h-6 rounded-full object-cover border border-border/50 group-hover:scale-110 transition-transform" />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
-                      <User className="w-3.5 h-3.5 text-blue-400" />
+                    <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <User className="w-3.5 h-3.5 text-primary" />
                     </div>
                   )}
-                  <span className="text-sm text-white hidden sm:block">{user?.full_name?.split(' ')[0] || t('dashboard.profile')}</span>
+                  <span className="text-sm font-semibold text-foreground hidden sm:block">{user?.full_name?.split(' ')[0] || t('dashboard.profile')}</span>
                 </div>
               </Link>
 
               {/* Language Toggle */}
               <button
                 onClick={() => i18n.changeLanguage(i18n.language === 'id' ? 'en' : 'id')}
-                className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2"
+                className="p-2 bg-muted/30 border border-border/50 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2"
                 title="Switch Language"
               >
                 <Globe className="w-5 h-5" />
-                <span className="text-xs font-bold uppercase">{i18n.language}</span>
+                <span className="text-[10px] font-bold uppercase tracking-tight">{i18n.language}</span>
               </button>
 
               {/* Theme Toggle */}
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition"
+                className="p-2 bg-muted/30 border border-border/50 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 title="Toggle Theme"
               >
-                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5 text-primary" />}
               </button>
             </div>
           </div>
@@ -249,14 +252,14 @@ const Dashboard = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden h-[500px] shadow-xl"
+                className="bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden h-[500px] shadow-sm"
               >
-                <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between">
+                <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                    <h2 className="font-semibold text-white">{t('dashboard.personnelMap')}</h2>
+                    <div className="w-2 h-2 rounded-full bg-green-500 glow-success" />
+                    <h2 className="font-bold text-foreground tracking-tight">{t('dashboard.personnelMap')}</h2>
                   </div>
-                  <span className="text-xs text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded-full">{t('dashboard.liveUpdate')}</span>
+                  <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full uppercase tracking-wider">{t('dashboard.liveUpdate')}</span>
                 </div>
                 <SecurityMap 
                   personnel={personnel} 

@@ -98,13 +98,14 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
+    return (
+        <div className="min-h-screen bg-background text-foreground transition-colors duration-300 flex items-center justify-center px-4 overflow-hidden">
             {/* Animated Background */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
+            <div className="absolute inset-0 overflow-hidden pointer-events-none transition-opacity duration-1000 dark:opacity-100 opacity-20">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+                <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--border)/0.3)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--border)/0.3)_1px,transparent_1px)] bg-[size:50px_50px]" />
             </div>
 
             <motion.div
@@ -117,11 +118,11 @@ const LoginPage = () => {
                 <div className="absolute top-4 right-4 z-20">
                     <button
                         onClick={() => i18n.changeLanguage(i18n.language === 'id' ? 'en' : 'id')}
-                        className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition flex items-center gap-2"
+                        className="p-2 bg-muted/30 border border-border/50 rounded-xl text-muted-foreground hover:text-foreground transition-all flex items-center gap-2"
                         title="Switch Language"
                     >
                         <Globe className="w-5 h-5" />
-                        <span className="text-xs font-bold uppercase">{i18n.language}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-tight">{i18n.language}</span>
                     </button>
                 </div>
 
@@ -130,23 +131,23 @@ const LoginPage = () => {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", duration: 0.6 }}
-                        className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-2xl shadow-blue-500/30 mb-4"
+                        className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-2xl shadow-xl shadow-primary/20 mb-4"
                     >
-                        <Shield className="w-10 h-10 text-white" />
+                        <Shield className="w-10 h-10 text-primary-foreground" />
                     </motion.div>
-                    <h1 className="text-2xl font-bold text-white">
+                    <h1 className="text-3xl font-orbitron font-bold text-foreground">
                         {step === 'login' ? t('login.title') : t('login.otpTitle')}
                     </h1>
-                    <p className="text-gray-400 mt-1">
+                    <p className="text-muted-foreground mt-1 font-medium tracking-tight">
                         {step === 'login' ? t('login.subtitle') : t('login.otpSubtitle')}
                     </p>
                 </div>
 
                 {/* Login Card */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
-                    <div className="flex items-center gap-2 mb-6">
-                        <LogIn className="w-5 h-5 text-blue-400" />
-                        <h2 className="text-xl font-semibold text-white">Login ke Akun</h2>
+                <div className="bg-card/80 backdrop-blur-xl rounded-3xl p-8 border border-border shadow-2xl">
+                    <div className="flex items-center gap-3 mb-6">
+                        <LogIn className="w-6 h-6 text-primary" />
+                        <h2 className="text-xl font-bold text-foreground tracking-tight">{t('login.loginButton')}</h2>
                     </div>
 
                     {error && (
@@ -175,14 +176,14 @@ const LoginPage = () => {
                         <>
                             <form onSubmit={handleLogin} className="space-y-5">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">{t('login.emailLabel')}</label>
+                            <label className="block text-xs font-bold text-muted-foreground mb-1 uppercase tracking-wider">{t('login.emailLabel')}</label>
                             <div className="relative group">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-blue-400 transition" />
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-white placeholder:text-gray-500 transition"
+                                    className="w-full pl-10 pr-4 py-3 bg-muted/30 border border-border rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-foreground placeholder:text-muted-foreground transition-all font-medium"
                                     placeholder="masukkan@email.com"
                                     required
                                 />
@@ -190,27 +191,27 @@ const LoginPage = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">{t('login.passwordLabel')}</label>
+                            <label className="block text-xs font-bold text-muted-foreground mb-1 uppercase tracking-wider">{t('login.passwordLabel')}</label>
                             <div className="relative group">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-blue-400 transition" />
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-white placeholder:text-gray-500 transition"
+                                    className="w-full pl-10 pr-12 py-3 bg-muted/30 border border-border rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-foreground placeholder:text-muted-foreground transition-all font-medium"
                                     placeholder="••••••••"
                                     required
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
                             </div>
                             <div className="mt-2 text-right">
-                                <Link to="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 hover:underline transition">
+                                <Link to="/forgot-password" className="text-xs font-bold text-primary hover:text-primary/80 uppercase tracking-tighter transition-all">
                                     {t('login.forgotPassword')}
                                 </Link>
                             </div>
@@ -219,10 +220,10 @@ const LoginPage = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 disabled:opacity-50"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 disabled:opacity-50"
                         >
                             {loading ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                             ) : (
                                 <>
                                     {t('login.loginButton')}
@@ -233,46 +234,46 @@ const LoginPage = () => {
                     </form>
 
                     {/* Demo Account */}
-                    <div className="mt-6 pt-6 border-t border-white/10">
+                    <div className="mt-6 pt-6 border-t border-border">
                         <button
                             type="button"
                             onClick={demoLogin}
-                            className="w-full flex items-center justify-center gap-3 py-2 px-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition group"
+                            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 bg-muted/30 hover:bg-muted border border-border rounded-xl transition-all group"
                         >
-                            <Fingerprint className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />
-                            <span className="text-sm text-gray-300">{t('login.demoAccount')}: security@bodyworncam.com</span>
+                            <Fingerprint className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+                            <span className="text-xs font-bold text-muted-foreground">{t('login.demoAccount')}: security@bodyworncam.com</span>
                         </button>
                     </div>
                         </>
                     ) : (
                         <form onSubmit={handleVerifyOTP} className="space-y-4">
                             <div className="text-center mb-6">
-                                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 mb-4 border border-blue-500/30">
-                                    <Shield className="w-6 h-6 text-blue-400" />
+                                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4 border border-primary/20">
+                                    <Shield className="w-7 h-7 text-primary" />
                                 </div>
-                                <p className="text-gray-300 text-sm mb-4">
-                                    Untuk keamanan sistem, silakan verifikasi sesi login Anda dengan 6-digit kode OTP (2FA) yang kami kirim ke Email <strong>{userPhone}</strong>.
+                                <p className="text-muted-foreground text-sm font-medium mb-4">
+                                    {t('login.otpSubtitle')} <strong>{userPhone}</strong>.
                                 </p>
                                 <input
                                     type="text"
                                     maxLength={6}
                                     value={otpCode}
                                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                                    className="w-full text-center text-3xl tracking-[1em] font-mono py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-white transition placeholder:text-gray-600 shadow-inner"
-                                    placeholder="••••••"
+                                    className="w-full text-center text-4xl tracking-[0.8em] font-orbitron font-bold py-5 bg-muted/30 border border-border rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-foreground transition-all placeholder:text-muted/30 shadow-inner"
+                                    placeholder="000000"
                                     required
                                 />
                             </div>
                             <button
                                 type="submit"
                                 disabled={loading || otpCode.length !== 6}
-                                className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white py-2.5 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 mt-4 disabled:opacity-50"
+                                className="w-full bg-primary hover:bg-primary/95 text-primary-foreground py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 mt-4 disabled:opacity-50"
                             >
                                 {loading ? (
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                                 ) : (
                                     <>
-                                        Verifikasi 2FA
+                                        {t('login.verifyButton')}
                                         <CheckCircle className="w-4 h-4" />
                                     </>
                                 )}
@@ -281,28 +282,28 @@ const LoginPage = () => {
                                 type="button"
                                 disabled={isTimerActive || loading}
                                 onClick={() => handleLogin()}
-                                className="w-full text-sm font-medium transition mt-4 py-2.5 border border-white/10 rounded-lg flex justify-center items-center gap-2
-                                         disabled:text-gray-500 disabled:bg-transparent text-blue-400 hover:bg-white/5"
+                                className="w-full text-xs font-bold transition-all mt-4 py-3 border border-border rounded-xl flex justify-center items-center gap-2
+                                         disabled:text-muted-foreground disabled:bg-transparent text-primary hover:bg-muted font-orbitron"
                             >
                                 <RefreshCcw className={`w-4 h-4 ${!isTimerActive && !loading ? 'group-hover:animate-spin' : ''}`} />
                                 {isTimerActive 
-                                    ? (timeLeft > 60 ? `Coba lagi dalam ${formatTime()}` : `Kirim ulang dalam ${formatTime()}`) 
-                                    : "Kirim Ulang OTP"}
+                                    ? (timeLeft > 60 ? `TRY AGAIN IN ${formatTime()}` : `RESEND IN ${formatTime()}`) 
+                                    : t('login.resendButton')}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => { setStep('login'); setError(""); setSuccess(""); }}
-                                className="w-full text-sm text-gray-400 hover:text-white transition mt-2 py-2"
+                                className="w-full text-xs font-bold text-muted-foreground hover:text-foreground transition-colors mt-2 py-2"
                             >
-                                Batal
+                                {t('profile.cancel')}
                             </button>
                         </form>
                     )}
 
                     <div className="mt-6 text-center">
-                        <p className="text-gray-400">
+                        <p className="text-muted-foreground text-sm font-medium">
                             {t('login.noAccount')}{" "}
-                            <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-medium transition">
+                            <Link to="/signup" className="text-primary hover:text-primary/80 font-bold transition-all">
                                 {t('login.signupLink')}
                             </Link>
                         </p>

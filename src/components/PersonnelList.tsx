@@ -73,8 +73,8 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
 
         <div className="flex-1 overflow-y-auto p-2 space-y-2">
           {personnel.length === 0 && (
-            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-              No personnel data
+            <div className="flex items-center justify-center h-full text-muted-foreground text-sm font-medium italic">
+              {t('dashboard.noPersonnel', { defaultValue: 'No personnel data' })}
             </div>
           )}
           {personnel.map((person, i) => (
@@ -122,8 +122,8 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
                     {isAdmin && (
                         <button 
                             onClick={(e) => handleEdit(e, person)}
-                            className="p-1.5 rounded-md hover:bg-white/10 text-gray-400 hover:text-blue-400 transition-opacity opacity-0 group-hover:opacity-100"
-                            title="Edit Personil"
+                            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary transition-all opacity-0 group-hover:opacity-100"
+                            title={t('profile.editProfile')}
                         >
                             <Pencil className="w-3.5 h-3.5" />
                         </button>
@@ -137,7 +137,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
 
                   <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                     <MapPin className="w-3 h-3" />
-                    <span className="truncate">{person.location || 'Tidak diketahui'}</span>
+                    <span className="truncate">{person.location || t('profile.notFilled')}</span>
                   </div>
 
                   {/* Stats */}
@@ -176,44 +176,44 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
                 <motion.div 
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl"
+                    className="bg-card border border-border rounded-2xl p-6 w-full max-w-md shadow-2xl"
                 >
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                            <Pencil className="w-5 h-5 text-blue-400" />
-                            Manajemen Personil #{editingPerson.id}
+                        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                            <Pencil className="w-5 h-5 text-primary" />
+                            {t('profile.editProfile')} #{editingPerson.id}
                         </h3>
-                        <button onClick={() => setEditingPerson(null)} className="text-gray-400 hover:text-white">
+                        <button onClick={() => setEditingPerson(null)} className="text-muted-foreground hover:text-foreground transition-colors">
                             <X className="w-6 h-6" />
                         </button>
                     </div>
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-xs font-medium text-gray-400 mb-1">NAMA SATPAM / PERANGKAT</label>
+                            <label className="block text-[10px] font-bold text-muted-foreground mb-1 uppercase tracking-wider">{t('profile.fullName')}</label>
                             <input 
                                 value={editForm.name}
                                 onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500/50 transition"
-                                placeholder="Masukkan nama..."
+                                className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                placeholder={t('profile.fullName')}
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-gray-400 mb-1">JABATAN / DIVISI</label>
+                            <label className="block text-[10px] font-bold text-muted-foreground mb-1 uppercase tracking-wider">{t('profile.position')}</label>
                             <input 
                                 value={editForm.role}
                                 onChange={(e) => setEditForm({...editForm, role: e.target.value})}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500/50 transition"
-                                placeholder="Contoh: Security Gate 1"
+                                className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                placeholder={t('profile.position')}
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-gray-400 mb-1">LOKASI PENUGASAN (OPSIONAL)</label>
+                            <label className="block text-[10px] font-bold text-muted-foreground mb-1 uppercase tracking-wider">{t('profile.location')}</label>
                             <input 
                                 value={editForm.location}
                                 onChange={(e) => setEditForm({...editForm, location: e.target.value})}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500/50 transition"
-                                placeholder="Contoh: Gedung A"
+                                className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                placeholder={t('profile.location')}
                             />
                         </div>
                     </div>
@@ -222,19 +222,19 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
                         <button 
                             disabled={isSaving}
                             onClick={() => setEditingPerson(null)}
-                            className="flex-1 px-4 py-3 rounded-xl border border-white/10 text-white hover:bg-white/5 transition font-medium"
+                            className="flex-1 px-4 py-2.5 rounded-xl border border-border text-foreground hover:bg-muted transition-colors font-semibold shadow-sm"
                         >
-                            Batal
+                            {t('profile.cancel')}
                         </button>
                         <button 
                             disabled={isSaving}
                             onClick={handleSave}
-                            className="flex-1 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition font-bold flex items-center justify-center gap-2"
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground transition-all font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
                         >
-                            {isSaving ? "Menyimpan..." : (
+                            {isSaving ? t('profile.saving', { defaultValue: 'Saving...' }) : (
                                 <>
                                     <Save className="w-4 h-4" />
-                                    Simpan Perubahan
+                                    {t('profile.saveChanges')}
                                 </>
                             )}
                         </button>
