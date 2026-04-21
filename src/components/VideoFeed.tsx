@@ -20,6 +20,7 @@ const personnelData: Record<string, { name: string; location: string; status: st
 };
 
 const VideoFeed = ({ selectedPersonnelId }: VideoFeedProps) => {
+  const { t } = useTranslation();
   const selectedPerson = selectedPersonnelId ? personnelData[selectedPersonnelId] : null;
   const [streamType, setStreamType] = useState<'raw' | 'ai'>('ai');
 
