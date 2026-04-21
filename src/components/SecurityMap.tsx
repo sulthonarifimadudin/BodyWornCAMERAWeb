@@ -24,6 +24,19 @@ const SecurityMap = ({ personnel, onSelectPersonnel }: SecurityMapProps) => {
       zoomControl: true,
     });
 
+    // Menambahkan CSS untuk pergerakan halus (Strava style)
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .custom-marker-wrapper {
+        transition: transform 1.2s linear !important;
+      }
+      @keyframes slow-ping {
+        0% { transform: scale(1); opacity: 0.8; }
+        100% { transform: scale(2.5); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(mapRef.current);
@@ -34,6 +47,7 @@ const SecurityMap = ({ personnel, onSelectPersonnel }: SecurityMapProps) => {
         mapRef.current = null;
         markersRef.current.clear();
       }
+      document.head.removeChild(style);
     };
   }, []);
 
@@ -65,7 +79,7 @@ const SecurityMap = ({ personnel, onSelectPersonnel }: SecurityMapProps) => {
               : "#6b7280";
 
       const icon = L.divIcon({
-        className: "custom-marker",
+        className: "custom-marker-wrapper",
         html: `
           <div style="
             width: 24px;
@@ -73,16 +87,19 @@ const SecurityMap = ({ personnel, onSelectPersonnel }: SecurityMapProps) => {
             background: ${color};
             border: 3px solid rgba(255,255,255,0.9);
             border-radius: 50%;
-            box-shadow: 0 0 10px ${color}, 0 0 20px ${color}80;
+            box-shadow: 0 0 15px ${color}, 0 0 30px ${color}60;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
           ">
             <div style="
               position: absolute;
-              inset: 0;
+              width: 100%;
+              height: 100%;
               border-radius: 50%;
               background: ${color};
-              animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-              opacity: 0.4;
+              animation: slow-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
             "></div>
           </div>
         `,
@@ -129,6 +146,17 @@ const SecurityMap = ({ personnel, onSelectPersonnel }: SecurityMapProps) => {
         currentMarkers.set(person.id, marker);
       }
     });
+
+    // Auto-follow personil yang dipilih
+    if (selectedPersonnel && mapRef.current) {
+      const selected = personnel.find(p => p.id === selectedPersonnel);
+      if (selected) {
+        mapRef.current.panTo([selected.lat, selected.lng], {
+          animate: true,
+          duration: 1.0
+        });
+      }
+    }
 
     // Auto-fit bounds ke semua marker saat pertama kali data masuk
     if (!hasFitted.current && personnel.length > 0) {

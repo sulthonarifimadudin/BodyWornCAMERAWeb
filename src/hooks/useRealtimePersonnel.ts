@@ -97,8 +97,8 @@ export function useRealtimePersonnel() {
         // Fetch pertama kali
         loadGPS();
 
-        // Polling tiap 5 detik untuk simulasi realtime
-        const interval = setInterval(loadGPS, 5000);
+        // Polling tiap 1 detik untuk simulasi realtime (Strava style)
+        const interval = setInterval(loadGPS, 1000);
 
         return () => {
             clearInterval(interval);
