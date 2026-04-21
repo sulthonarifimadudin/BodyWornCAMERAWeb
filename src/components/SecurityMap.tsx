@@ -5,10 +5,11 @@ import type { Personnel } from "@/hooks/useRealtimePersonnel";
 
 interface SecurityMapProps {
   personnel: Personnel[];
+  selectedId: string | null;
   onSelectPersonnel: (id: string | null) => void;
 }
 
-const SecurityMap = ({ personnel, onSelectPersonnel }: SecurityMapProps) => {
+const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
@@ -148,8 +149,8 @@ const SecurityMap = ({ personnel, onSelectPersonnel }: SecurityMapProps) => {
     });
 
     // Auto-follow personil yang dipilih
-    if (selectedPersonnel && mapRef.current) {
-      const selected = personnel.find(p => p.id === selectedPersonnel);
+    if (selectedId && mapRef.current) {
+      const selected = personnel.find(p => p.id === selectedId);
       if (selected) {
         mapRef.current.panTo([selected.lat, selected.lng], {
           animate: true,
