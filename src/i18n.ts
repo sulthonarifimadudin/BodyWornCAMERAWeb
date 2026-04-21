@@ -85,6 +85,23 @@ const resources = {
         "successUpdate": "Profile updated successfully!",
         "errorUpdate": "Failed to update profile.",
         "successPassword": "Password changed successfully!"
+      },
+      "home": {
+        "heroBadge": "Active Monitoring System",
+        "heroTitle1": "Command Center",
+        "heroTitle2": "Security Personnel",
+        "heroSubtitle": "Integrated monitoring platform to manage and supervise all security personnel in real-time with leading map and video streaming technology.",
+        "heroButton": "Access Command Center",
+        "heroDemo": "Watch Demo",
+        "featuresTitle1": "Key",
+        "featuresTitle2": "Features",
+        "featuresSubtitle": "Equipped with the latest technology to ensure maximum security",
+        "ctaTitle": "Ready to Improve",
+        "ctaTitle2": "Security",
+        "ctaSubtitle": "Start monitoring and managing your security team with the leading command center platform",
+        "ctaButton": "Start Now",
+        "ctaDashboard": "Open Dashboard",
+        "footer": "© 2024 BodyWornCam. Campus Security Personnel Monitoring System."
       }
     }
   },
@@ -170,6 +187,23 @@ const resources = {
         "successUpdate": "Profil berhasil diperbarui!",
         "errorUpdate": "Gagal memperbarui profil.",
         "successPassword": "Password berhasil diubah!"
+      },
+      "home": {
+        "heroBadge": "Sistem Pemantauan Aktif",
+        "heroTitle1": "Pusat Komando",
+        "heroTitle2": "Personil Keamanan",
+        "heroSubtitle": "Platform pemantauan terintegrasi untuk mengelola dan mengawasi seluruh personil keamanan secara real-time dengan teknologi peta dan video streaming terdepan.",
+        "heroButton": "Akses Command Center",
+        "heroDemo": "Lihat Demo",
+        "featuresTitle1": "Fitur",
+        "featuresTitle2": "Unggulan",
+        "featuresSubtitle": "Dilengkapi dengan teknologi terkini untuk memastikan keamanan maksimal",
+        "ctaTitle": "Siap Meningkatkan",
+        "ctaTitle2": "Keamanan",
+        "ctaSubtitle": "Mulai pantau dan kelola tim keamanan Anda dengan platform command center terdepan",
+        "ctaButton": "Mulai Sekarang",
+        "ctaDashboard": "Buka Dashboard",
+        "footer": "© 2024 BodyWornCam. Sistem Pemantauan Personil Keamanan Kampus."
       }
     }
   }

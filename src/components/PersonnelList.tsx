@@ -66,9 +66,9 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
         animate={{ opacity: 1, x: 0 }}
         className="glass-card rounded-xl h-[500px] flex flex-col"
       >
-        <div className="p-4 border-b border-border/50 flex items-center justify-between">
-          <h2 className="font-display font-semibold">{t('dashboard.personnelList')}</h2>
-          <span className="text-xs text-muted-foreground">{onlineCount} {t('dashboard.online')}</span>
+        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          <h2 className="font-display font-semibold text-white">{t('dashboard.personnelList')}</h2>
+          <span className="text-xs text-gray-500">{onlineCount} {t('dashboard.online')}</span>
         </div>
 
         <div className="flex-1 overflow-y-auto p-2 space-y-2">
@@ -87,26 +87,26 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
               className={cn(
                 "p-3 rounded-lg cursor-pointer transition-all duration-200 border group",
                 selectedId === person.id
-                  ? "bg-primary/10 border-primary/50"
-                  : "bg-secondary/50 border-transparent hover:bg-secondary hover:border-border"
+                  ? "bg-blue-500/10 border-blue-500/50"
+                  : "bg-white/5 border-transparent hover:bg-white/10 hover:border-white/10"
               )}
             >
               <div className="flex items-start gap-3">
                 {/* Avatar */}
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                  <div className="w-10 h-10 rounded-full bg-slate-950 flex items-center justify-center overflow-hidden border border-white/10">
                     {person.profile_image ? (
                         <img src={`/uploads/${person.profile_image}`} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
-                        <User className="w-5 h-5 text-muted-foreground" />
+                        <User className="w-5 h-5 text-gray-500" />
                     )}
                   </div>
                   <span className={cn(
-                    "absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-card",
-                    person.status === "online" && "bg-success",
-                    person.status === "alert" && "bg-destructive animate-pulse",
-                    person.status === "idle" && "bg-warning",
-                    person.status === "offline" && "bg-gray-500"
+                    "absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-slate-900",
+                    person.status === "online" && "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]",
+                    person.status === "alert" && "bg-red-500 animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.5)]",
+                    person.status === "idle" && "bg-amber-500",
+                    person.status === "offline" && "bg-gray-600"
                   )} />
                 </div>
 
@@ -114,7 +114,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <span className="font-medium text-sm truncate">{person.name}</span>
+                      <span className="font-medium text-sm truncate text-white">{person.name}</span>
                       <span className="text-[10px] font-mono bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">
                         ID: {person.id}
                       </span>
@@ -122,7 +122,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
                     {isAdmin && (
                         <button 
                             onClick={(e) => handleEdit(e, person)}
-                            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary transition-all opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-md hover:bg-white/10 text-gray-400 hover:text-blue-400 transition-all opacity-0 group-hover:opacity-100"
                             title={t('profile.editProfile')}
                         >
                             <Pencil className="w-3.5 h-3.5" />
@@ -130,12 +130,12 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
                     )}
                   </div>
                   
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                  <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
                     <Shield className="w-3" />
                     <span className="truncate">{person.role}</span>
                   </div>
 
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                  <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
                     <MapPin className="w-3 h-3" />
                     <span className="truncate">{person.location || t('profile.notFilled')}</span>
                   </div>
@@ -145,16 +145,16 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
                     <div className="flex items-center gap-1 text-xs">
                       <Battery className={cn(
                         "w-3 h-3",
-                        person.battery > 50 ? "text-success" : person.battery > 20 ? "text-warning" : "text-destructive"
+                        person.battery > 50 ? "text-green-500" : person.battery > 20 ? "text-amber-500" : "text-red-500"
                       )} />
-                      <span className="text-muted-foreground">{person.battery}%</span>
+                      <span className="text-gray-500">{person.battery}%</span>
                     </div>
                     <div className="flex items-center gap-1 text-xs">
                       <Heart className={cn(
                         "w-3 h-3",
-                        person.heart_rate > 90 ? "text-destructive animate-pulse" : "text-success"
+                        person.heart_rate > 90 ? "text-red-500 animate-pulse" : "text-green-500"
                       )} />
-                      <span className="text-muted-foreground">{person.heart_rate} bpm</span>
+                      <span className="text-gray-500">{person.heart_rate} bpm</span>
                     </div>
                   </div>
                 </div>
