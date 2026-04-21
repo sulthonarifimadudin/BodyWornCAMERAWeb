@@ -133,10 +133,17 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
       const existingMarker = currentMarkers.get(person.id);
 
       if (existingMarker) {
-        // Update posisi marker yang sudah ada (smooth move)
+        // Update posisi marker (smooth slide via CSS)
         existingMarker.setLatLng([person.lat, person.lng]);
-        existingMarker.setIcon(icon);
+        
+        // Update popup content tanpa ganti Icon (biar animasi gak putus)
         existingMarker.getPopup()?.setContent(popupContent);
+
+        // Hanya ganti icon jika status/warna beneran berubah
+        const currentIconHtml = existingMarker.getIcon().options.html;
+        if (currentIconHtml !== icon.options.html) {
+          existingMarker.setIcon(icon);
+        }
       } else {
         // Buat marker baru
         const marker = L.marker([person.lat, person.lng], { icon }).addTo(map);

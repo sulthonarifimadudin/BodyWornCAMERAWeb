@@ -33,7 +33,7 @@ const StatusOverview = ({ personnel, onlineUsersCount = 0 }: StatusOverviewProps
       label: "Bodycam Offline",
       value: String(bodycamOfflineCount),
       subtext: bodycamOfflineCount > 0 ? "Perlu perhatian" : "Semua online",
-      color: "destructive",
+      color: bodycamOfflineCount > 0 ? "destructive" : "success",
     },
     {
       icon: Radio,
