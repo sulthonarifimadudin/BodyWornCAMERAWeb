@@ -14,6 +14,7 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const hasFitted = useRef(false);
+  const renderedIds = useRef<Set<string>>(new Set());
 
   // Inisialisasi map sekali saja
   useEffect(() => {
@@ -30,6 +31,9 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
     style.innerHTML = `
       .custom-marker-wrapper {
         transition: transform 1.2s linear !important;
+      }
+      .custom-marker-wrapper-instant {
+        transition: none !important;
       }
       @keyframes slow-ping {
         0% { transform: scale(1); opacity: 0.8; }
@@ -79,8 +83,10 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
               ? "#eab308"
               : "#6b7280";
 
+      const isFirstRender = !renderedIds.current.has(person.id);
+      
       const icon = L.divIcon({
-        className: "custom-marker-wrapper",
+        className: isFirstRender ? "custom-marker-wrapper-instant" : "custom-marker-wrapper",
         html: `
           <div style="
             width: 24px;
@@ -153,6 +159,9 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
         });
         currentMarkers.set(person.id, marker);
       }
+
+      // Tandai sudah di-render pertama kali
+      renderedIds.current.add(person.id);
     });
 
     // Auto-follow personil yang dipilih
