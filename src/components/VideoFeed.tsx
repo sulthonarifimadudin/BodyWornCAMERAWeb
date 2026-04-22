@@ -22,11 +22,12 @@ const personnelData: Record<string, { name: string; location: string; status: st
 const VideoFeed = ({ selectedPersonnelId }: VideoFeedProps) => {
   const { t } = useTranslation();
   const selectedPerson = selectedPersonnelId ? personnelData[selectedPersonnelId] : null;
-  const [streamType, setStreamType] = useState<'raw' | 'ai'>('ai');
+  const [streamType, setStreamType] = useState<'raw' | 'ai'>('raw');
+  const streamingIP = import.meta.env.VITE_STREAMING_IP || '203.175.10.122';
 
   const streamUrl = streamType === 'ai' 
-    ? 'http://193.183.22.60:8888/live/output/index.m3u8'
-    : 'http://193.183.22.60:8888/live/stream/index.m3u8';
+    ? `http://${streamingIP}:8888/live/output/index.m3u8`
+    : `http://${streamingIP}:8888/live/stream/index.m3u8`;
 
   return (
     <motion.div 
