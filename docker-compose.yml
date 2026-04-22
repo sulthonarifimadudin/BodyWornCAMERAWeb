@@ -57,5 +57,19 @@ services:
     depends_on:
       - api-server
 
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: mediamtx
+    restart: always
+    ports:
+      - "1484:1484" # RTMP Input
+      - "1485:1485" # RTSP
+      - "8888:8888" # HLS Output
+    environment:
+      - MTX_RTMPADDRESS=:1484
+      - MTX_RTSPADDRESS=:1485
+      - MTX_HLSADDRESS=:8888
+      - MTX_WEBRTC=no # Disable WebRTC to save resources
+
 volumes:
   db_data:
