@@ -8,7 +8,7 @@ import time
 # Note: Using 'mediamtx' as hostname because they are in the same docker network
 input_url = "rtsp://mediamtx:1485/live/stream"
 output_url = "rtmp://mediamtx:1484/live/output"
-model_path = "/app/model/best" # Path inside container pointing to the 'best' folder if it is a directory
+model_path = "/app/model.pt" # Path inside container pointing to the single .pt file
 
 # Load Model
 print(f"Loading model from {model_path}...")

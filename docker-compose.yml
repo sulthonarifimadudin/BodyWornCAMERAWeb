@@ -78,7 +78,7 @@ services:
     container_name: ai-processor
     restart: always
     volumes:
-      - ./bestyolo8nano.pt:/app/model:ro
+      - ./yolov8_nano_custom.pt:/app/model.pt:ro
     depends_on:
       - mediamtx
     environment:
