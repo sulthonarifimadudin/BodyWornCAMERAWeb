@@ -71,5 +71,18 @@ services:
       - MTX_HLSADDRESS=:8888
       - MTX_WEBRTC=no # Disable WebRTC to save resources
 
+  ai-processor:
+    build:
+      context: ./ai_processor
+      dockerfile: Dockerfile
+    container_name: ai-processor
+    restart: always
+    volumes:
+      - ./bestyolo8nano.pt:/app/model:ro
+    depends_on:
+      - mediamtx
+    environment:
+      - PYTHONUNBUFFERED=1
+
 volumes:
   db_data:
