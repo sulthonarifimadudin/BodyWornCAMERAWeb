@@ -3,6 +3,8 @@ from ultralytics import YOLO
 import subprocess
 import os
 import time
+import threading
+from queue import Queue
 
 # Configuration
 # Note: Using 'mediamtx' as hostname because they are in the same docker network
@@ -12,16 +14,9 @@ model_path = "/app/model.pt" # Path inside container pointing to the single .pt 
 
 # Load Model
 print(f"Loading model from {model_path}...")
-try:
-    model = YOLO(model_path)
-    print("Model loaded successfully.")
-except Exception as e:
-    print(f"Error loading model: {e}")
-    # Fallback to general yolov8n if custom fails
-    model = YOLO("yolov8n.pt")
+model = YOLO(model_path)
 
-# FFmpeg command for pushing the annotated stream
-# We use a standard preset for speed on CPU
+# FFmpeg command optimized for low latency and speed
 command = [
     'ffmpeg',
     '-y',
@@ -29,58 +24,82 @@ command = [
     '-vcodec', 'rawvideo',
     '-pix_fmt', 'bgr24',
     '-s', '640x480',
-    '-r', '15', # Reduced framerate to save CPU
+    '-r', '20', 
     '-i', '-',
     '-c:v', 'libx264',
     '-pix_fmt', 'yuv420p',
     '-preset', 'ultrafast',
+    '-tune', 'zerolatency',
     '-f', 'flv',
     output_url
 ]
 
-def run_detection():
+frame_queue = Queue(maxsize=2)
+
+def frame_reader():
     cap = cv2.VideoCapture(input_url)
-    
-    # Wait for stream to be available
     while not cap.isOpened():
         print("Waiting for input stream...")
         time.sleep(2)
         cap = cv2.VideoCapture(input_url)
+    
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            cap.release()
+            cap = cv2.VideoCapture(input_url)
+            continue
+        
+        if not frame_queue.full():
+            frame_queue.put(frame)
+        else:
+            # Drop old frame to keep it fresh
+            try:
+                frame_queue.get_nowait()
+                frame_queue.put(frame)
+            except:
+                pass
+
+def run_detection():
+    # Start reader thread
+    reader_thread = threading.Thread(target=frame_reader, daemon=True)
+    reader_thread.start()
 
     # Start ffmpeg process
     proc = subprocess.Popen(command, stdin=subprocess.PIPE)
 
-    print("Starting detection loop...")
+    frame_count = 0
+    last_results = None
+    
+    print("Starting optimized detection loop...")
     while True:
-        ret, frame = cap.read()
-        if not ret:
-            print("Failed to read frame, retrying...")
-            cap.release()
-            time.sleep(1)
-            cap = cv2.VideoCapture(input_url)
+        if frame_queue.empty():
+            time.sleep(0.01)
             continue
-
-        # Resize to 640x480 for consistency and speed
+            
+        frame = frame_queue.get()
         frame = cv2.resize(frame, (640, 480))
-
-        # Perform Detection
-        # classes: 0=person, 2=car, 3=motorcycle (COCO defaults, adjust if custom classes differ)
-        # Assuming user's custom model might have different IDs, but we'll use defaults for now 
-        # or just detect all if it's custom.
-        results = model(frame, stream=True, verbose=False)
-
-        for r in results:
-            annotated_frame = r.plot() # Draws bounding boxes
-
+        
+        # Process only every 5th frame to save CPU
+        if frame_count % 5 == 0:
+            # Reduce inference size to 320 for speed
+            results = model.predict(frame, imgsz=320, verbose=False, conf=0.25)
+            last_results = results
+        
+        # Overlay the last results on every frame (smooth bounding boxes)
+        if last_results:
+            for r in last_results:
+                # Use a custom draw if r.plot() is too slow, but r.plot() is usually okay
+                frame = r.plot() 
+        
         # Write to ffmpeg
         try:
-            proc.stdin.write(annotated_frame.tobytes())
+            proc.stdin.write(frame.tobytes())
         except Exception as e:
             print(f"Error writing to ffmpeg: {e}")
             break
-
-    cap.release()
-    proc.terminate()
+            
+        frame_count += 1
 
 if __name__ == "__main__":
     run_detection()
