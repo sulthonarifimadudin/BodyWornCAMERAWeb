@@ -279,7 +279,10 @@ const Dashboard = () => {
           </div>
 
           {/* Video Feed Section */}
-          <VideoFeed selectedPersonnelId={selectedPersonnel} />
+          <VideoFeed 
+            selectedPersonnelId={selectedPersonnel} 
+            personnel={personnel}
+          />
         </main>
       </div>
     </div>
