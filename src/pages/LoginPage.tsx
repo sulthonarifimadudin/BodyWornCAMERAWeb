@@ -21,7 +21,7 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [step, setStep] = useState<'login' | 'otp'>('login');
     const [otpCode, setOtpCode] = useState("");
-    const [userPhone, setUserPhone] = useState("");
+    const [recipientInfo, setRecipientInfo] = useState("");
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
 
@@ -46,7 +46,7 @@ const LoginPage = () => {
                 }
             } else if (response.ok && data.success) {
                 setSuccess(t('login.otpSent'));
-                setUserPhone(data.userPhone || "nomor terdaftar");
+                setRecipientInfo(data.userEmail || email || t('profile.email'));
                 setStep('otp');
                 // DUAL LAYER: Frontend Cooldown standar (60s) setiap berhasil kirim
                 startTimer(60);
@@ -251,7 +251,7 @@ const LoginPage = () => {
                                     <Shield className="w-7 h-7 text-primary" />
                                 </div>
                                 <p className="text-muted-foreground text-sm font-medium mb-4">
-                                    {t('login.otpSubtitle')} <strong>{userPhone}</strong>.
+                                    {t('login.otpSubtitle')} <strong>{recipientInfo}</strong>.
                                 </p>
                                 <input
                                     type="text"

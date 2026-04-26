@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, ArrowRight, AlertCircle, CheckCircle, RefreshCcw } from "lucide-react";
+import { Shield, ArrowRight, AlertCircle, CheckCircle, RefreshCcw, Mail } from "lucide-react";
 import { useOTPTimer } from "@/hooks/useOTPTimer";
 
 const VerifyResetOTPPage = () => {
@@ -16,7 +16,7 @@ const VerifyResetOTPPage = () => {
 
     useEffect(() => {
         if (!email) {
-            navigate("/forgot-password"); // Kembali jika tak ada state email
+            navigate("/forgot-password");
         }
     }, [email, navigate]);
 
@@ -61,7 +61,6 @@ const VerifyResetOTPPage = () => {
                 if (data.retry_after) startTimer(data.retry_after);
             } else if (response.ok && data.success) {
                 startTimer(60);
-                // Optional: set a subtle success message or just clear error
             } else {
                 setError(data.message || "Gagal memproses permintaan.");
             }
@@ -73,51 +72,67 @@ const VerifyResetOTPPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 py-8">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="min-h-screen bg-[#020617] text-slate-200 flex items-center justify-center px-4 py-12 relative overflow-hidden font-inter">
+            {/* Animated Background - Identical to Dashboard */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse delay-1000" />
+                <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--border)/0.15)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--border)/0.15)_1px,transparent_1px)] bg-[size:50px_50px]" />
             </div>
 
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
                 className="max-w-md w-full relative z-10"
             >
-                <div className="text-center mb-6">
+                <div className="text-center mb-8">
                     <motion.div
-                         initial={{ scale: 0 }}
-                         animate={{ scale: 1 }}
-                         transition={{ type: "spring", duration: 0.6 }}
-                         className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-2xl shadow-green-500/30 mb-3"
-                     >
-                         <Shield className="w-8 h-8 text-white" />
-                     </motion.div>
-                    <h1 className="text-xl font-bold text-white">Verifikasi OTP</h1>
-                    <p className="text-gray-400 text-sm mt-1">Masukkan kode 6 digit dari Email Anda</p>
+                        initial={{ y: -20 }}
+                        animate={{ y: 0 }}
+                        className="inline-flex items-center justify-center w-20 h-20 bg-success/20 border border-success/30 rounded-2xl shadow-2xl shadow-success/20 mb-4"
+                    >
+                        <Shield className="w-10 h-10 text-success" />
+                    </motion.div>
+                    <h1 className="text-3xl font-bold tracking-tight text-white mb-1">
+                        Verifikasi <span className="text-primary font-orbitron">OTP</span>
+                    </h1>
+                    <p className="text-slate-400 text-xs font-medium uppercase tracking-[0.2em]">Security Access Verification</p>
                 </div>
 
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-2xl">
+                <div className="bg-card/40 backdrop-blur-2xl rounded-3xl p-8 border border-border/50 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-success/50 to-transparent" />
+                    
+                    <div className="text-center mb-8">
+                        <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                            <Mail className="w-7 h-7 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-bold text-white mb-2">Cek Email Anda</h3>
+                        <p className="text-slate-400 text-sm leading-relaxed">
+                            Masukkan kode 6 digit yang baru saja dikirimkan ke:<br/>
+                            <strong className="text-primary font-bold">{email}</strong>
+                        </p>
+                    </div>
+
                     {error && (
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm flex items-center gap-2"
+                            className="mb-6 p-3.5 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-sm flex items-center gap-3"
                         >
-                            <AlertCircle className="w-4 h-4" />
-                            {error}
+                            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                            <span className="font-medium">{error}</span>
                         </motion.div>
                     )}
 
-                    <form onSubmit={handleVerify} className="space-y-4">
-                        <div className="text-center mb-4">
+                    <form onSubmit={handleVerify} className="space-y-6">
+                        <div className="text-center">
                             <input
                                 type="text"
                                 maxLength={6}
                                 value={otpCode}
                                 onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                                className="w-full text-center text-3xl tracking-[1em] font-mono py-4 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-white transition placeholder:text-gray-600 shadow-inner"
-                                placeholder="••••••"
+                                className="w-full text-center text-4xl tracking-[0.8em] font-mono py-5 bg-slate-900 border border-border rounded-2xl focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none text-white transition placeholder:text-slate-800 shadow-inner"
+                                placeholder="000000"
                                 required
                             />
                         </div>
@@ -125,30 +140,32 @@ const VerifyResetOTPPage = () => {
                         <button
                             type="submit"
                             disabled={loading || otpCode.length !== 6}
-                            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white py-2.5 rounded-lg font-medium shadow-lg shadow-blue-500/25 mt-2 flex items-center justify-center gap-2 disabled:opacity-50"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 shadow-xl shadow-primary/25 disabled:opacity-50 active:scale-95"
                         >
                             {loading ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                             ) : (
-                                <>Verifikasi <CheckCircle className="w-4 h-4" /></>
+                                <>Verifikasi Akun <CheckCircle className="w-5 h-5" /></>
                             )}
                         </button>
+
                         <button
                             type="button"
                             disabled={isTimerActive || loading}
                             onClick={handleResend}
-                            className="w-full text-sm font-medium transition mt-4 py-2.5 border border-white/10 rounded-lg flex justify-center items-center gap-2
-                                     disabled:text-gray-500 disabled:bg-transparent text-blue-400 hover:bg-white/5"
+                            className="w-full text-xs font-bold transition-all py-3 border border-border rounded-xl flex justify-center items-center gap-2
+                                     disabled:text-slate-500 disabled:bg-transparent text-primary hover:bg-primary/5 uppercase tracking-widest"
                         >
-                            <RefreshCcw className={`w-4 h-4 ${!isTimerActive && !loading ? 'group-hover:animate-spin' : ''}`} />
+                            <RefreshCcw className={`w-4 h-4 ${!isTimerActive && !loading ? 'animate-spin' : ''}`} />
                             {isTimerActive 
-                                ? (timeLeft > 60 ? `Coba lagi dalam ${formatTime()}` : `Kirim ulang dalam ${formatTime()}`) 
+                                ? (timeLeft > 60 ? `COBA LAGI DALAM ${formatTime()}` : `KIRIM ULANG DALAM ${formatTime()}`) 
                                 : "Kirim Ulang OTP"}
                         </button>
                     </form>
 
-                    <div className="mt-5 text-center">
-                        <Link to="/login" className="text-sm text-gray-400 hover:text-white transition">
+                    <div className="mt-8 text-center pt-6 border-t border-border/30">
+                        <Link to="/login" className="text-xs font-bold text-slate-500 hover:text-white uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                            <ArrowRight className="w-3 h-3 rotate-180" />
                             Batal & Kembali
                         </Link>
                     </div>
