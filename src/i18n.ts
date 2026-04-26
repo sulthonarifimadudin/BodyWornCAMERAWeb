@@ -33,7 +33,9 @@ const resources = {
         "settings": "Settings",
         "home": "Home",
         "logout": "Logout",
-        "profile": "Profile"
+        "profile": "Profile",
+        "videoFeed": "Live Video Feed",
+        "selectPersonnelFeed": "Select personnel to view live feed"
       },
       "login": {
         "title": "Login to Account",
@@ -135,7 +137,9 @@ const resources = {
         "settings": "Pengaturan",
         "home": "Beranda",
         "logout": "Keluar",
-        "profile": "Profil"
+        "profile": "Profil",
+        "videoFeed": "Aliran Video Langsung",
+        "selectPersonnelFeed": "Silakan pilih personil untuk melihat video langsung"
       },
       "login": {
         "title": "Login ke Akun",
