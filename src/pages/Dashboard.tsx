@@ -66,7 +66,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 flex overflow-hidden relative">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 flex overflow-x-hidden relative">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none transition-opacity duration-1000 dark:opacity-100 opacity-60">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
@@ -82,10 +82,10 @@ const Dashboard = () => {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - FIXED AT ALL TIMES */}
       <aside
         className={cn(
-          "fixed top-0 left-0 lg:sticky lg:flex-shrink-0 z-50 w-[260px] h-screen bg-card/80 backdrop-blur-xl border-r border-border/50 flex flex-col shadow-2xl transition-all duration-300",
+          "fixed top-0 left-0 z-50 w-[260px] h-screen bg-card/95 backdrop-blur-xl border-r border-border/50 flex flex-col shadow-2xl transition-all duration-300",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -155,30 +155,30 @@ const Dashboard = () => {
           </div>
         </nav>
 
-        {/* Status Card (Absolute Bottom Fix) */}
-        <div className="absolute bottom-0 left-0 w-full p-0 bg-background border-t border-border/50 z-20">
-          <div className="bg-primary/5 p-4 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
+        {/* Status Card (GUARANTEED AT ABSOLUTE BOTTOM OF VIEWPORT) */}
+        <div className="absolute bottom-0 left-0 w-full p-0 bg-card border-t border-border/50 z-20">
+          <div className="bg-primary/10 p-4 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-40 transition-opacity">
               <Wifi className="w-12 h-12 -rotate-12" />
             </div>
             <div className="flex items-center gap-3 mb-1.5 relative z-10">
               <span className={cn(
-                "w-2.5 h-2.5 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]",
-                systemHealthy ? "bg-success" : "bg-destructive"
+                "w-2.5 h-2.5 rounded-full animate-pulse shadow-[0_0_12px_rgba(34,197,94,0.6)]",
+                systemHealthy ? "bg-success" : "bg-destructive shadow-[0_0_12px_rgba(239,68,68,0.6)]"
               )} />
               <span className="text-sm font-bold text-foreground tracking-tight">
                 {systemHealthy ? t('dashboard.systemActive') : t('dashboard.serverDisconnected')}
               </span>
             </div>
-            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider relative z-10">
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest relative z-10">
               {systemHealthy ? `${onlineUsersCount} ${t('dashboard.personnelConnected')}` : t('dashboard.checkConnection')}
             </p>
           </div>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10 overflow-auto custom-scrollbar">
+      {/* Main Content - Pushed by Sidebar on Desktop */}
+      <div className="flex-1 flex flex-col min-h-screen lg:pl-[260px] relative z-10 overflow-x-hidden">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
           <div className="flex items-center justify-between px-6 py-4">
@@ -312,7 +312,7 @@ const Dashboard = () => {
           ) : (
             <div className="space-y-6">
               {/* TACTICAL LAYOUT: Full Video & Map Side-by-Side */}
-              <div className={cn("grid lg:grid-cols-2 gap-6 min-h-[500px]", isSwapped ? "direction-rtl" : "")}>
+              <div className={cn("grid lg:grid-cols-2 gap-6 min-h-[500px]")}>
                 <div className={isSwapped ? "order-2" : "order-1"}>
                   <VideoFeed 
                     selectedPersonnelId={selectedPersonnel} 
