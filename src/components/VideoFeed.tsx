@@ -10,9 +10,10 @@ import { Personnel } from "@/hooks/useRealtimePersonnel";
 interface VideoFeedProps {
   selectedPersonnelId: string | null;
   personnel: Personnel[];
+  hideThumbnails?: boolean;
 }
 
-const VideoFeed = ({ selectedPersonnelId, personnel }: VideoFeedProps) => {
+const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: VideoFeedProps) => {
   const { t } = useTranslation();
   const [streamType, setStreamType] = useState<'raw' | 'ai'>('raw');
 
@@ -93,7 +94,8 @@ const VideoFeed = ({ selectedPersonnelId, personnel }: VideoFeedProps) => {
         {/* Main Video Feed */}
         <div className={cn(
           "relative aspect-video rounded-lg overflow-hidden bg-black border border-border shadow-inner",
-          "lg:col-span-3 group"
+          hideThumbnails ? "lg:col-span-4" : "lg:col-span-3",
+          "group"
         )}>
           {selectedPerson ? (
             <HLSPlayer 
@@ -113,83 +115,84 @@ const VideoFeed = ({ selectedPersonnelId, personnel }: VideoFeedProps) => {
         </div>
 
         {/* Thumbnail Grid */}
-        <div className="space-y-3 lg:col-span-1">
-          <div className="flex items-center justify-between">
-            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Feed Lainnya</p>
-            <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">
-              {personnel.filter(p => p.status !== 'offline').length} LIVE
-            </span>
-          </div>
-          
-          <div className="grid grid-cols-1 gap-3 overflow-y-auto max-h-[350px] pr-1 custom-scrollbar">
-            {personnel.length > 0 ? (
-              personnel.map((person) => (
-                <div 
-                  key={person.id}
-                  className={cn(
-                    "relative aspect-video rounded-xl overflow-hidden bg-muted/30 border border-border/50 cursor-pointer transition-all hover:scale-[1.02] active:scale-95 group",
-                    selectedPersonnelId === person.id ? "ring-2 ring-primary border-primary/50 shadow-lg shadow-primary/10" : "hover:border-primary/30"
-                  )}
-                  onClick={() => {
-                    // Logic to select this personnel would be handled by parent
-                    // but we can add a visual hint here
-                  }}
-                >
-                  {/* Live Mini Player */}
-                  {person.status !== 'offline' ? (
-                    <div className="absolute inset-0 z-0">
-                      <HLSPlayer 
-                        url={getRawStreamUrl(person.id)} 
-                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                        showControls={false}
-                        autoPlay={true}
-                        muted={true}
-                      />
-                    </div>
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
-                      <VideoOff className="w-5 h-5 text-muted-foreground/30" />
-                    </div>
-                  )}
+        {!hideThumbnails && (
+          <div className="space-y-3 lg:col-span-1">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Feed Lainnya</p>
+              <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">
+                {personnel.filter(p => p.status !== 'offline').length} LIVE
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-3 overflow-y-auto max-h-[350px] pr-1 custom-scrollbar">
+              {personnel.length > 0 ? (
+                personnel.map((person) => (
+                  <div 
+                    key={person.id}
+                    className={cn(
+                      "relative aspect-video rounded-xl overflow-hidden bg-muted/30 border border-border/50 cursor-pointer transition-all hover:scale-[1.02] active:scale-95 group",
+                      selectedPersonnelId === person.id ? "ring-2 ring-primary border-primary/50 shadow-lg shadow-primary/10" : "hover:border-primary/30"
+                    )}
+                    onClick={() => {
+                      // Logic to select this personnel would be handled by parent
+                    }}
+                  >
+                    {/* Live Mini Player */}
+                    {person.status !== 'offline' ? (
+                      <div className="absolute inset-0 z-0">
+                        <HLSPlayer 
+                          url={getRawStreamUrl(person.id)} 
+                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                          showControls={false}
+                          autoPlay={true}
+                          muted={true}
+                        />
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+                        <VideoOff className="w-5 h-5 text-muted-foreground/30" />
+                      </div>
+                    )}
 
-                  {/* Overlay Info */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 z-10">
-                    <div className="absolute top-2 left-2 flex items-center gap-1.5">
-                      <span className={cn(
-                        "w-2 h-2 rounded-full",
-                        person.status === "online" && "bg-success glow-success",
-                        person.status === "alert" && "bg-destructive animate-pulse glow-destructive",
-                        person.status === "idle" && "bg-warning glow-warning",
-                        person.status === "offline" && "bg-muted-foreground/50"
-                      )} />
-                      <span className="text-[9px] font-bold text-white uppercase tracking-tighter drop-shadow-md">
-                        {person.status}
-                      </span>
-                    </div>
+                    {/* Overlay Info */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 z-10">
+                      <div className="absolute top-2 left-2 flex items-center gap-1.5">
+                        <span className={cn(
+                          "w-2 h-2 rounded-full",
+                          person.status === "online" && "bg-success glow-success",
+                          person.status === "alert" && "bg-destructive animate-pulse glow-destructive",
+                          person.status === "idle" && "bg-warning glow-warning",
+                          person.status === "offline" && "bg-muted-foreground/50"
+                        )} />
+                        <span className="text-[9px] font-bold text-white uppercase tracking-tighter drop-shadow-md">
+                          {person.status}
+                        </span>
+                      </div>
 
-                    <div className="absolute bottom-2 left-2 right-2">
-                      <p className="text-[11px] font-bold text-white truncate drop-shadow-md">
-                        {person.name}
-                      </p>
-                      <p className="text-[9px] text-white/70 truncate tracking-tight font-medium">
-                        {person.role}
-                      </p>
-                    </div>
-                    
-                    {/* Hover Effect */}
-                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Activity className="w-6 h-6 text-white animate-pulse" />
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <p className="text-[11px] font-bold text-white truncate drop-shadow-md">
+                          {person.name}
+                        </p>
+                        <p className="text-[9px] text-white/70 truncate tracking-tight font-medium">
+                          {person.role}
+                        </p>
+                      </div>
+                      
+                      {/* Hover Effect */}
+                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Activity className="w-6 h-6 text-white animate-pulse" />
+                      </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="py-8 text-center border border-dashed border-border rounded-xl">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">No Active Feeds</p>
                 </div>
-              ))
-            ) : (
-              <div className="py-8 text-center border border-dashed border-border rounded-xl">
-                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">No Active Feeds</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </motion.div>
   );

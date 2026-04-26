@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useRealtimePersonnel } from "@/hooks/useRealtimePersonnel";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Shield, Home, Bell, Settings, Search, Menu, X, User, LogOut, Activity, Wifi, WifiOff, Camera, Languages, Moon, Sun, Globe, LayoutGrid, Columns } from "lucide-react";
+import { Shield, Home, Bell, Settings, Search, Menu, X, User, LogOut, Activity, Wifi, WifiOff, Camera, Languages, Moon, Sun, Globe, LayoutGrid, Columns, ArrowUpDown } from "lucide-react";
 import SecurityMap from "@/components/SecurityMap";
 import PersonnelList from "@/components/PersonnelList";
 import VideoFeed from "@/components/VideoFeed";
@@ -24,6 +24,7 @@ const Dashboard = () => {
   const [onlineUsersCount, setOnlineUsersCount] = useState<number>(0);
   const [systemHealthy, setSystemHealthy] = useState<boolean>(true);
   const [layoutMode, setLayoutMode] = useState<'classic' | 'tactical'>('classic');
+  const [isSwapped, setIsSwapped] = useState(false);
 
   // Poll System Health
   useEffect(() => {
@@ -65,7 +66,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 flex overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 flex overflow-hidden relative">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none transition-opacity duration-1000 dark:opacity-100 opacity-60">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
@@ -88,98 +89,96 @@ const Dashboard = () => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="flex flex-col h-full">
-          {/* Logo (Fixed) */}
-          <div className="p-6 border-b border-border/50 flex items-center justify-between flex-shrink-0">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-                <Shield className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-lg tracking-wider text-foreground">
-                BODY<span className="text-primary font-orbitron">WORNCAM</span>
-              </span>
+        {/* Logo (Fixed) */}
+        <div className="p-6 border-b border-border/50 flex items-center justify-between flex-shrink-0">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
+              <Shield className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="font-bold text-lg tracking-wider text-foreground">
+              BODY<span className="text-primary font-orbitron">WORNCAM</span>
+            </span>
+          </Link>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Nav (Scrollable) */}
+        <nav className="flex-1 p-4 pt-8 space-y-2 overflow-y-auto custom-scrollbar pb-32">
+          <Link to="/">
+            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium text-left">
+              <Home className="w-4 h-4" />
+              {t('dashboard.home')}
+            </button>
+          </Link>
+          <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-primary/10 text-primary border border-primary/20 rounded-xl text-sm font-medium text-left">
+            <Shield className="w-4 h-4" />
+            {t('dashboard.title')}
+          </button>
+          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium text-left">
+            <Bell className="w-4 h-4" />
+            {t('dashboard.notifications')}
+            <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-bold">3</span>
+          </button>
+          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium text-left">
+            <Settings className="w-4 h-4" />
+            {t('dashboard.settings')}
+          </button>
+
+          <div className="pt-4 mt-4 border-t border-border/50 space-y-1">
+            <Link to="/profile" className="block">
+              <button className="w-full flex items-center gap-3 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-left">
+                {user?.profile_image ? (
+                  <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full border border-border/50 object-cover" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary" />
+                  </div>
+                )}
+                <div className="flex flex-col items-start text-left ml-2 overflow-hidden">
+                  <span className="text-foreground text-sm font-semibold truncate w-full">{user?.full_name?.split(' ')[0] || t('dashboard.profile')}</span>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-tight truncate w-full">{user?.position || 'Personnel'}</span>
+                </div>
+              </button>
             </Link>
             <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden text-muted-foreground hover:text-foreground transition-colors"
+              onClick={logout}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all duration-200 text-sm font-medium text-left"
             >
-              <X className="w-5 h-5" />
+              <LogOut className="w-4 h-4" />
+              {t('dashboard.logout')}
             </button>
           </div>
+        </nav>
 
-          {/* Nav (Scrollable) */}
-          <nav className="flex-1 p-4 pt-8 space-y-2 overflow-y-auto custom-scrollbar">
-            <Link to="/">
-              <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium text-left">
-                <Home className="w-4 h-4" />
-                {t('dashboard.home')}
-              </button>
-            </Link>
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-primary/10 text-primary border border-primary/20 rounded-xl text-sm font-medium text-left">
-              <Shield className="w-4 h-4" />
-              {t('dashboard.title')}
-            </button>
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium text-left">
-              <Bell className="w-4 h-4" />
-              {t('dashboard.notifications')}
-              <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-bold">3</span>
-            </button>
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium text-left">
-              <Settings className="w-4 h-4" />
-              {t('dashboard.settings')}
-            </button>
-
-            <div className="pt-4 mt-4 border-t border-border/50 space-y-1">
-              <Link to="/profile" className="block">
-                <button className="w-full flex items-center gap-3 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-left">
-                  {user?.profile_image ? (
-                    <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full border border-border/50 object-cover" />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                      <User className="w-4 h-4 text-primary" />
-                    </div>
-                  )}
-                  <div className="flex flex-col items-start text-left ml-2 overflow-hidden">
-                    <span className="text-foreground text-sm font-semibold truncate w-full">{user?.full_name?.split(' ')[0] || t('dashboard.profile')}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-tight truncate w-full">{user?.position || 'Personnel'}</span>
-                  </div>
-                </button>
-              </Link>
-              <button
-                onClick={logout}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all duration-200 text-sm font-medium text-left"
-              >
-                <LogOut className="w-4 h-4" />
-                {t('dashboard.logout')}
-              </button>
+        {/* Status Card (Absolute Bottom Fix) */}
+        <div className="absolute bottom-0 left-0 w-full p-0 bg-background border-t border-border/50 z-20">
+          <div className="bg-primary/5 p-4 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
+              <Wifi className="w-12 h-12 -rotate-12" />
             </div>
-          </nav>
-
-          {/* Status Card (Sticking to Absolute Bottom) */}
-          <div className="p-4 border-t border-border/50 bg-card/50 flex-shrink-0 mt-auto">
-            <div className="bg-primary/5 rounded-xl p-3 border border-primary/20 shadow-sm relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-1 opacity-20 group-hover:opacity-40 transition-opacity">
-                <Wifi className="w-8 h-8 -rotate-12" />
-              </div>
-              <div className="flex items-center gap-2 mb-1 relative z-10">
-                <span className={cn(
-                  "w-2 h-2 rounded-full animate-pulse",
-                  systemHealthy ? "bg-success glow-success" : "bg-destructive glow-destructive"
-                )} />
-                <span className="text-sm font-bold text-foreground">
-                  {systemHealthy ? t('dashboard.systemActive') : t('dashboard.serverDisconnected')}
-                </span>
-              </div>
-              <p className="text-[10px] text-muted-foreground font-medium relative z-10">
-                {systemHealthy ? `${onlineUsersCount} ${t('dashboard.personnelConnected')}` : t('dashboard.checkConnection')}
-              </p>
+            <div className="flex items-center gap-3 mb-1.5 relative z-10">
+              <span className={cn(
+                "w-2.5 h-2.5 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]",
+                systemHealthy ? "bg-success" : "bg-destructive"
+              )} />
+              <span className="text-sm font-bold text-foreground tracking-tight">
+                {systemHealthy ? t('dashboard.systemActive') : t('dashboard.serverDisconnected')}
+              </span>
             </div>
+            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider relative z-10">
+              {systemHealthy ? `${onlineUsersCount} ${t('dashboard.personnelConnected')}` : t('dashboard.checkConnection')}
+            </p>
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10 overflow-auto">
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-0 relative z-10 overflow-auto custom-scrollbar">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
           <div className="flex items-center justify-between px-6 py-4">
@@ -199,13 +198,13 @@ const Dashboard = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Layout Toggle */}
-              <div className="flex bg-muted/30 border border-border/50 p-1 rounded-xl mr-2">
+              {/* Layout Control Group */}
+              <div className="flex bg-muted/30 border border-border/50 p-1 rounded-xl mr-2 gap-1">
                 <button 
                   onClick={() => setLayoutMode('classic')}
                   className={cn(
                     "p-1.5 rounded-lg transition-all",
-                    layoutMode === 'classic' ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                    layoutMode === 'classic' ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   )}
                   title="Classic Layout"
                 >
@@ -215,11 +214,22 @@ const Dashboard = () => {
                   onClick={() => setLayoutMode('tactical')}
                   className={cn(
                     "p-1.5 rounded-lg transition-all",
-                    layoutMode === 'tactical' ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                    layoutMode === 'tactical' ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   )}
-                  title="Tactical Layout"
+                  title="Tactical Side-by-Side"
                 >
                   <Columns className="w-4 h-4" />
+                </button>
+                <div className="w-[1px] h-4 bg-border mx-1 self-center" />
+                <button 
+                  onClick={() => setIsSwapped(!isSwapped)}
+                  className={cn(
+                    "p-1.5 rounded-lg transition-all",
+                    isSwapped ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
+                  title="Swap Top/Bottom Positions"
+                >
+                  <ArrowUpDown className="w-4 h-4" />
                 </button>
               </div>
 
@@ -236,16 +246,6 @@ const Dashboard = () => {
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full glow-destructive" />
               </button>
 
-              {/* Language Toggle */}
-              <button
-                onClick={() => i18n.changeLanguage(i18n.language === 'id' ? 'en' : 'id')}
-                className="p-2 bg-muted/30 border border-border/50 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all flex items-center gap-2"
-              >
-                <Globe className="w-4 h-4" />
-                <span className="text-[10px] font-bold uppercase tracking-tight">{i18n.language}</span>
-              </button>
-
-              {/* Theme Toggle */}
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 className="p-2 bg-muted/30 border border-border/50 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
@@ -258,17 +258,17 @@ const Dashboard = () => {
 
         {/* Dashboard Content */}
         <main className="flex-1 p-4 lg:p-6 space-y-6">
-          {/* Status Overview */}
           <StatusOverview personnel={personnel} onlineUsersCount={onlineUsersCount} />
 
           {layoutMode === 'classic' ? (
-            <div className="space-y-6">
-              {/* Classic Video & AI Report Grid */}
+            <div className={cn("flex flex-col gap-6", isSwapped ? "flex-col-reverse" : "flex-col")}>
+              {/* Row 1: Video & AI */}
               <div className="grid lg:grid-cols-4 gap-6">
                 <div className="lg:col-span-3">
                   <VideoFeed 
                     selectedPersonnelId={selectedPersonnel} 
                     personnel={personnel}
+                    hideThumbnails={false}
                   />
                 </div>
                 <div className="lg:col-span-1">
@@ -276,26 +276,28 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Classic Map & List Grid */}
+              {/* Row 2: Map & List */}
               <div className="grid lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden h-[500px] shadow-sm"
+                    className="bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden h-[500px] shadow-sm flex flex-col"
                   >
-                    <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+                    <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-green-500 glow-success" />
                         <h2 className="font-bold text-foreground tracking-tight">{t('dashboard.personnelMap')}</h2>
                       </div>
-                      <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full uppercase tracking-wider">{t('dashboard.liveUpdate')}</span>
+                      <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE</span>
                     </div>
-                    <SecurityMap 
-                      personnel={personnel} 
-                      selectedId={selectedPersonnel}
-                      onSelectPersonnel={setSelectedPersonnel} 
-                    />
+                    <div className="flex-1">
+                      <SecurityMap 
+                        personnel={personnel} 
+                        selectedId={selectedPersonnel}
+                        onSelectPersonnel={setSelectedPersonnel} 
+                      />
+                    </div>
                   </motion.div>
                 </div>
                 <div className="lg:col-span-1">
@@ -309,16 +311,22 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* TACTICAL LAYOUT: Video & Map Side-by-Side */}
-              <div className="grid lg:grid-cols-2 gap-6 min-h-[500px]">
-                <VideoFeed 
-                  selectedPersonnelId={selectedPersonnel} 
-                  personnel={personnel}
-                />
+              {/* TACTICAL LAYOUT: Full Video & Map Side-by-Side */}
+              <div className={cn("grid lg:grid-cols-2 gap-6 min-h-[500px]", isSwapped ? "direction-rtl" : "")}>
+                <div className={isSwapped ? "order-2" : "order-1"}>
+                  <VideoFeed 
+                    selectedPersonnelId={selectedPersonnel} 
+                    personnel={personnel}
+                    hideThumbnails={true}
+                  />
+                </div>
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: isSwapped ? -20 : 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden shadow-sm h-full flex flex-col"
+                  className={cn(
+                    "bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden shadow-sm h-full flex flex-col",
+                    isSwapped ? "order-1" : "order-2"
+                  )}
                 >
                   <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
                     <div className="flex items-center gap-2">
@@ -337,7 +345,7 @@ const Dashboard = () => {
                 </motion.div>
               </div>
 
-              {/* Tactical Bottom Row: AI Report & Personnel List */}
+              {/* Tactical Bottom Row */}
               <div className="grid lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-1">
                   <AIDetectionReport />
