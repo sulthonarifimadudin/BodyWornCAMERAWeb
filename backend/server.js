@@ -635,6 +635,45 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
+// Global state for latest AI detection (Keep in memory for real-time)
+let latestAIDetection = {
+    person_count: 0,
+    car_count: 0,
+    motorcycle_count: 0,
+    status: "SITUASI KONDUSIF",
+    timestamp: new Date()
+};
+
+// 1. Endpoint untuk AI Processor mengirim data deteksi
+app.post('/api/ai/detections', async (req, res) => {
+    try {
+        const { person_count, car_count, motorcycle_count } = req.body;
+        
+        let status = "SITUASI KONDUSIF";
+        if (person_count > 10) status = "KERUMUNAN TERDETEKSI 👥⚠️";
+        else if (car_count > 5) status = "KEMACETAN TERDETEKSI 🚗⚠️";
+        else if (person_count > 0 || car_count > 0 || motorcycle_count > 0) status = "AKTIVITAS TERDETEKSI ✅";
+
+        latestAIDetection = {
+            person_count: person_count || 0,
+            car_count: car_count || 0,
+            motorcycle_count: motorcycle_count || 0,
+            status,
+            timestamp: new Date()
+        };
+
+        res.status(200).json({ success: true, message: 'Data deteksi AI berhasil diperbarui.' });
+    } catch (error) {
+        console.error('[AI UPDATE ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal menyimpan data deteksi AI.' });
+    }
+});
+
+// 2. Endpoint untuk Dashboard mengambil data deteksi AI terbaru
+app.get('/api/ai/latest', (req, res) => {
+    res.status(200).json({ success: true, data: latestAIDetection });
+});
+
 // Periodic Heartbeat (Pings DB every 30 minutes to prevent idle timeout)
 setInterval(async () => {
     try {

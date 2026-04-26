@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import { useRealtimePersonnel } from "@/hooks/useRealtimePersonnel";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Shield, Home, Bell, Settings, Search, Menu, X, User, LogOut, Activity, Wifi, WifiOff, Camera } from "lucide-react";
+import { Shield, Home, Bell, Settings, Search, Menu, X, User, LogOut, Activity, Wifi, WifiOff, Camera, Languages, Moon, Sun, Globe } from "lucide-react";
 import SecurityMap from "@/components/SecurityMap";
 import PersonnelList from "@/components/PersonnelList";
 import VideoFeed from "@/components/VideoFeed";
 import StatusOverview from "@/components/StatusOverview";
+import AIDetectionReport from "@/components/AIDetectionReport";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "next-themes";
-import { Languages, Moon, Sun, Globe } from "lucide-react";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -87,8 +87,8 @@ const Dashboard = () => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        {/* Logo */}
-        <div className="p-6 border-b border-border/50 flex items-center justify-between">
+        {/* Logo (Fixed) */}
+        <div className="p-6 border-b border-border/50 flex items-center justify-between flex-shrink-0">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
               <Shield className="w-5 h-5 text-primary-foreground" />
@@ -105,8 +105,8 @@ const Dashboard = () => {
           </button>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 p-4 pt-12 space-y-2">
+        {/* Nav (Scrollable) */}
+        <nav className="flex-1 p-4 pt-12 space-y-2 overflow-y-auto custom-scrollbar">
           <Link to="/">
             <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium">
               <Home className="w-4 h-4" />
@@ -153,9 +153,9 @@ const Dashboard = () => {
           </div>
         </nav>
 
-        {/* Status Card */}
-        <div className="p-4 border-t border-border/50">
-          <div className="bg-card rounded-xl p-3 border border-border">
+        {/* Status Card (Fixed at Bottom) */}
+        <div className="p-4 border-t border-border/50 flex-shrink-0">
+          <div className="bg-card rounded-xl p-3 border border-border shadow-inner">
             <div className="flex items-center gap-2 mb-1">
               <span className={cn(
                 "w-2 h-2 rounded-full animate-pulse",
@@ -244,7 +244,20 @@ const Dashboard = () => {
           {/* Status Overview */}
           <StatusOverview personnel={personnel} onlineUsersCount={onlineUsersCount} />
 
-          {/* Main Grid */}
+          {/* Video & AI Report Grid */}
+          <div className="grid lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-3">
+              <VideoFeed 
+                selectedPersonnelId={selectedPersonnel} 
+                personnel={personnel}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <AIDetectionReport />
+            </div>
+          </div>
+
+          {/* Map & List Grid */}
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Map Section */}
             <div className="lg:col-span-2">
@@ -277,12 +290,6 @@ const Dashboard = () => {
               />
             </div>
           </div>
-
-          {/* Video Feed Section */}
-          <VideoFeed 
-            selectedPersonnelId={selectedPersonnel} 
-            personnel={personnel}
-          />
         </main>
       </div>
     </div>
