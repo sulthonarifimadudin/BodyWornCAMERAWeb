@@ -187,8 +187,7 @@ app.post('/api/register', async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Registrasi berhasil. OTP telah dikirimkan ke Email Anda untuk verifikasi.',
-            test_otp: otpCode // untuk debug
+            message: 'Registrasi berhasil. OTP telah dikirimkan ke Email Anda untuk verifikasi.'
         });
     } catch (error) {
         console.error('Error di /api/register:', error);
@@ -269,8 +268,7 @@ app.post('/api/login', otpLimiter, async (req, res) => {
             success: true,
             message: 'Otentikasi berhasil. OTP telah dikirimkan ke Email Anda.',
             userEmail: user.email,
-            userPhone: user.email, // Override as email for frontend logging
-            test_otp: otpCode // [WARNING] Hapus di tahap Production! 
+            userPhone: user.email // Override as email for frontend logging
         });
 
     } catch (error) {
@@ -662,7 +660,6 @@ app.post('/api/ai/detections', async (req, res) => {
             timestamp: new Date()
         };
 
-        console.log(`[AI UPDATE] Detected: ${person_count} Persons, ${car_count} Cars, ${motorcycle_count} Motors. Status: ${status}`);
         res.status(200).json({ success: true, message: 'Data deteksi AI berhasil diperbarui.' });
     } catch (error) {
         console.error('[AI UPDATE ERROR]', error);
@@ -700,7 +697,6 @@ app.post('/api/gps/update', async (req, res) => {
             [user_id, latitude, longitude, speed || 0, battery || 100, heart_rate || 75]
         );
 
-        console.log(`[GPS UPDATE] Received from User ID: ${user_id} - Lat: ${latitude}, Lng: ${longitude}, Speed: ${speed}km/h`);
         res.status(200).json({ success: true, message: 'Data GPS berhasil disimpan.' });
     } catch (error) {
         console.error('[GPS UPDATE ERROR]', error);
