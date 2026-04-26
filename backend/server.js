@@ -662,6 +662,7 @@ app.post('/api/ai/detections', async (req, res) => {
             timestamp: new Date()
         };
 
+        console.log(`[AI UPDATE] Detected: ${person_count} Persons, ${car_count} Cars, ${motorcycle_count} Motors. Status: ${status}`);
         res.status(200).json({ success: true, message: 'Data deteksi AI berhasil diperbarui.' });
     } catch (error) {
         console.error('[AI UPDATE ERROR]', error);
@@ -699,6 +700,7 @@ app.post('/api/gps/update', async (req, res) => {
             [user_id, latitude, longitude, speed || 0, battery || 100, heart_rate || 75]
         );
 
+        console.log(`[GPS UPDATE] Received from User ID: ${user_id} - Lat: ${latitude}, Lng: ${longitude}, Speed: ${speed}km/h`);
         res.status(200).json({ success: true, message: 'Data GPS berhasil disimpan.' });
     } catch (error) {
         console.error('[GPS UPDATE ERROR]', error);
