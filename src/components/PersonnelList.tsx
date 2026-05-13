@@ -120,7 +120,6 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                         ID: {person.id}
                       </span>
                     </div>
-                    {isAdmin && (
                       <div className="flex items-center gap-1">
                         <button 
                             onClick={(e) => handleEdit(e, person)}
@@ -140,7 +139,6 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                             <Bell className="w-3.5 h-3.5" />
                         </button>
                       </div>
-                    )}
                   </div>
                   
                   <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
