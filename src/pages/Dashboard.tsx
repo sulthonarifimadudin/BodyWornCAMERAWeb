@@ -21,9 +21,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
-  const handleSendAlert = (userId: string) => {
-    console.log("Mengirim perintah bunyi ke user:", userId);
-    socket.emit('kirim_perintah_bunyi', { userId: parseInt(userId) });
+  const handleSendAlert = (userId: string, action: 'start' | 'stop') => {
+    console.log(`Mengirim perintah buzzer ${action} ke user:`, userId);
+    socket.emit('perintah_buzzer', { userId: parseInt(userId), action });
   };
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);

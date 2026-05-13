@@ -65,9 +65,9 @@ io.on('connection', (socket) => {
         console.log(`User ${userId} masuk room.`);
     });
 
-    socket.on('kirim_perintah_bunyi', (data) => {
-        console.log(`Kirim perintah bunyi ke user ${data.userId} (BROADCAST)`);
-        io.emit('perintah_bunyi');
+    socket.on('perintah_buzzer', (data) => {
+        console.log(`Perintah buzzer ${data.action} ke user ${data.userId}`);
+        io.emit('perintah_buzzer', data);
     });
 
     socket.on('disconnect', () => {
