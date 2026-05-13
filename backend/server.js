@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import { Server } from 'socket.io';
+import { createServer } from 'http';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import bcrypt from 'bcrypt';
@@ -46,6 +48,32 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on('connection', (socket) => {
+    console.log('🔌 Ada perangkat terhubung via WebSocket!');
+
+    socket.on('join_room', (userId) => {
+        socket.join(`user_${userId}`);
+        console.log(`User ${userId} masuk room.`);
+    });
+
+    socket.on('kirim_perintah_bunyi', (data) => {
+        console.log(`Kirim perintah bunyi ke user ${data.userId}`);
+        io.to(`user_${data.userId}`).emit('perintah_bunyi');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('❌ Perangkat terputus.');
+    });
+});
 
 // Middleware
 app.use(cors());
@@ -752,8 +780,8 @@ app.put('/api/admin/users/:id', verifyToken, verifyAdmin, async (req, res) => {
 const startServer = async () => {
     try {
         await initDB();
-        app.listen(port, () => {
-            console.log(`GuardWatch Backend server berjalan di http://localhost:${port}`);
+        httpServer.listen(port, () => {
+            console.log(`GuardWatch Backend server berjalan di http://localhost:${port} with WebSocket!`);
         });
     } catch (err) {
         console.error("[CRITICAL] Gagal inisialisasi database. Server tidak dijalankan.", err);
