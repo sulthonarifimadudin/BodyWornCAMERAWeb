@@ -22,6 +22,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
   const [editingPerson, setEditingPerson] = useState<Personnel | null>(null);
   const [editForm, setEditForm] = useState({ name: "", role: "", location: "" });
   const [isSaving, setIsSaving] = useState(false);
+  const [activeBuzzers, setActiveBuzzers] = useState<Record<string, boolean>>({});
 
   const handleEdit = (e: React.MouseEvent, person: Personnel) => {
     e.stopPropagation();
@@ -131,10 +132,23 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                         <button 
                             onClick={(e) => {
                               e.stopPropagation();
-                              onSendAlert && onSendAlert(person.id, 'start');
+                              const isActive = activeBuzzers[person.id] || false;
+                              const newAction = isActive ? 'stop' : 'start';
+                              
+                              onSendAlert && onSendAlert(person.id, newAction);
+                              
+                              setActiveBuzzers({
+                                ...activeBuzzers,
+                                [person.id]: !isActive
+                              });
                             }}
-                            className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
-                            title="Beri Peringatan"
+                            className={cn(
+                              "p-1.5 rounded-md transition-all",
+                              activeBuzzers[person.id] 
+                                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" 
+                                : "hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                            )}
+                            title={activeBuzzers[person.id] ? "Matikan Peringatan" : "Beri Peringatan"}
                         >
                             <Bell className="w-3.5 h-3.5" />
                         </button>
