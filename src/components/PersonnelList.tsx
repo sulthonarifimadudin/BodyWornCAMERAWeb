@@ -129,25 +129,9 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                             <Pencil className="w-3.5 h-3.5" />
                         </button>
                         <button 
-                            onMouseDown={(e) => {
+                            onClick={(e) => {
                               e.stopPropagation();
                               onSendAlert && onSendAlert(person.id, 'start');
-                            }}
-                            onMouseUp={(e) => {
-                              e.stopPropagation();
-                              onSendAlert && onSendAlert(person.id, 'stop');
-                            }}
-                            onMouseLeave={(e) => {
-                              e.stopPropagation();
-                              onSendAlert && onSendAlert(person.id, 'stop');
-                            }}
-                            onTouchStart={(e) => {
-                              e.stopPropagation();
-                              onSendAlert && onSendAlert(person.id, 'start');
-                            }}
-                            onTouchEnd={(e) => {
-                              e.stopPropagation();
-                              onSendAlert && onSendAlert(person.id, 'stop');
                             }}
                             className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all"
                             title="Beri Peringatan"
