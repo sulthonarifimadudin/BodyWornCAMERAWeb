@@ -66,8 +66,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('kirim_perintah_bunyi', (data) => {
-        console.log(`Kirim perintah bunyi ke user ${data.userId}`);
-        io.to(`user_${data.userId}`).emit('perintah_bunyi');
+        console.log(`Kirim perintah bunyi ke user ${data.userId} (BROADCAST)`);
+        io.emit('perintah_bunyi');
     });
 
     socket.on('disconnect', () => {
