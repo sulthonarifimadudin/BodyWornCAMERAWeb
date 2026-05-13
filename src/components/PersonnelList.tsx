@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, MapPin, Battery, Heart, Radio, Pencil, X, Save, Shield } from "lucide-react";
+import { User, MapPin, Battery, Heart, Radio, Pencil, X, Save, Shield, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
@@ -9,9 +9,10 @@ interface PersonnelListProps {
   personnel: Personnel[];
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  onSendAlert?: (userId: string) => void;
 }
 
-const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) => {
+const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: PersonnelListProps) => {
   const { t } = useTranslation();
   const { user: currentUser } = useAuth();
   const isAdmin = currentUser?.role === 'admin';
@@ -120,6 +121,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
                       </span>
                     </div>
                     {isAdmin && (
+                      <div className="flex items-center gap-1">
                         <button 
                             onClick={(e) => handleEdit(e, person)}
                             className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary transition-all opacity-0 group-hover:opacity-100"
@@ -127,6 +129,17 @@ const PersonnelList = ({ personnel, selectedId, onSelect }: PersonnelListProps) 
                         >
                             <Pencil className="w-3.5 h-3.5" />
                         </button>
+                        <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSendAlert && onSendAlert(person.id);
+                            }}
+                            className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all opacity-0 group-hover:opacity-100"
+                            title="Beri Peringatan"
+                        >
+                            <Bell className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     )}
                   </div>
                   

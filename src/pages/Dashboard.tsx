@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRealtimePersonnel } from "@/hooks/useRealtimePersonnel";
 import { motion, AnimatePresence } from "framer-motion";
+import { io } from 'socket.io-client';
 import { Link, useNavigate } from "react-router-dom";
 import { Shield, Home, Bell, Settings, Search, Menu, X, User, LogOut, Activity, Wifi, WifiOff, Camera, Languages, Moon, Sun, Globe, LayoutGrid, Columns, ArrowUpDown } from "lucide-react";
 import SecurityMap from "@/components/SecurityMap";
@@ -13,10 +14,17 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "next-themes";
 
+const socket = io('https://bodyworncamera.sbs');
+
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+
+  const handleSendAlert = (userId: string) => {
+    console.log("Mengirim perintah bunyi ke user:", userId);
+    socket.emit('kirim_perintah_bunyi', { userId: parseInt(userId) });
+  };
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedPersonnel, setSelectedPersonnel] = useState<string | null>(null);
@@ -305,6 +313,7 @@ const Dashboard = () => {
                     personnel={personnel}
                     selectedId={selectedPersonnel}
                     onSelect={setSelectedPersonnel}
+                    onSendAlert={handleSendAlert}
                   />
                 </div>
               </div>
@@ -355,6 +364,7 @@ const Dashboard = () => {
                     personnel={personnel}
                     selectedId={selectedPersonnel}
                     onSelect={setSelectedPersonnel}
+                    onSendAlert={handleSendAlert}
                   />
                 </div>
               </div>
