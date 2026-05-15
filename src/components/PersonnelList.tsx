@@ -161,12 +161,12 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                       </div>
                   </div>
                   
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Shield className="w-3" />
                     <span className="truncate">{person.role}</span>
                   </div>
 
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <MapPin className="w-3 h-3" />
                     <span className="truncate">{person.location || t('profile.notFilled')}</span>
                   </div>
