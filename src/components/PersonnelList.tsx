@@ -53,11 +53,12 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
         body: formData,
       });
 
+      const data = await res.json();
       if (res.ok) {
         setEditingPerson(null);
         window.location.reload(); // Refresh to get updated data
       } else {
-        alert("Gagal memperbarui data personil");
+        alert(data.message || "Gagal memperbarui data personil");
       }
     } catch (err) {
       console.error("Error updating personnel:", err);
