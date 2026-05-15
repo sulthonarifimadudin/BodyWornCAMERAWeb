@@ -127,13 +127,13 @@ const Dashboard = () => {
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
                 location.pathname === item.href
-                  ? "bg-white text-primary shadow-lg shadow-black/10"
+                  ? "bg-white text-slate-900 shadow-lg shadow-black/10"
                   : "text-white/70 hover:bg-white/10 hover:text-white"
               )}
             >
               <item.icon className={cn(
                 "w-5 h-5",
-                location.pathname === item.href ? "text-primary" : "text-white/70 group-hover:text-white"
+                location.pathname === item.href ? "text-slate-900" : "text-white/70 group-hover:text-white"
               )} />
               {item.title}
             </Link>

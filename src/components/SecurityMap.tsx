@@ -42,8 +42,8 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
     `;
     document.head.appendChild(style);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
+      attribution: '&copy; <a href="https://maps.google.com">Google Maps</a>',
     }).addTo(mapRef.current);
 
     return () => {
