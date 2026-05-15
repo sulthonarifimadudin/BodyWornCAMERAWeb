@@ -50,6 +50,10 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
       attribution: '&copy; <a href="https://maps.google.com">Google Maps</a>',
     });
 
+    const satellite = L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
+      attribution: '&copy; <a href="https://maps.google.com">Google Maps</a>',
+    });
+
     const hybrid = L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
       attribution: '&copy; <a href="https://maps.google.com">Google Maps</a>',
     });
@@ -57,7 +61,8 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
     const baseMaps = {
       "Google Maps": gmaps,
       "OpenStreetMap": osm,
-      "Satelit (Hybrid)": hybrid
+      "Satelit Murni": satellite,
+      "Satelit + Jalan": hybrid
     };
 
     // Default menggunakan Google Maps Light
