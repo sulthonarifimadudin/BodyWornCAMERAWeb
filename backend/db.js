@@ -138,6 +138,11 @@ export const initDB = async () => {
             try { await bootstrapConn.query(q); } catch (e) { /* sudah ada, abaikan */ }
         }
 
+        // Migrasi untuk mengubah role user lama dari 'personnel' ke 'operator' agar tidak bentrok dengan ENUM baru
+        try {
+            await bootstrapConn.query("UPDATE users SET role = 'operator' WHERE role = 'personnel'");
+        } catch (e) { /* abaikan */ }
+
         // Migrasi khusus untuk mengubah ENUM role jika masih pakai yang lama
         try {
             await bootstrapConn.query("ALTER TABLE users MODIFY COLUMN role ENUM('admin', 'supervisor', 'operator') DEFAULT 'operator'");
