@@ -201,10 +201,6 @@
   font-family: 'Inter', sans-serif;
 }
 
-.leaflet-tile-pane {
-  filter: brightness(0.6) contrast(1.2) saturate(0.8) hue-rotate(180deg) invert(1);
-}
-
 .leaflet-control-zoom {
   border: none !important;
 }
