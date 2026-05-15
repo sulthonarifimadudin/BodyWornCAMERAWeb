@@ -143,7 +143,7 @@ const Dashboard = () => {
             <Link to="/profile" className="block">
               <button className="w-full flex items-center gap-3 px-3 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-left">
                 {user?.profile_image ? (
-                  <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full border border-white/20 object-cover" />
+                  <img src={`/api/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full border border-white/20 object-cover" />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />

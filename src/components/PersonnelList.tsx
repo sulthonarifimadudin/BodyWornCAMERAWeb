@@ -104,7 +104,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                 <div className="relative">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden border border-border/50">
                     {person.profile_image ? (
-                        <img src={`/uploads/${person.profile_image}`} alt="Avatar" className="w-full h-full object-cover" />
+                        <img src={`/api/uploads/${person.profile_image}`} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
                         <User className="w-5 h-5 text-muted-foreground" />
                     )}

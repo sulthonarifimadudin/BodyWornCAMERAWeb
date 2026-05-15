@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use("/uploads", express.static("uploads")); // Expose folder uploads
+app.use("/api/uploads", express.static("uploads")); // Expose folder uploads
 
 // Inisialisasi Database (menambahkan kolom jika diperlukan)
 initDB();
@@ -759,6 +759,10 @@ app.put('/api/admin/users/:id', verifyToken, upload.single('image'), async (req,
     try {
         const targetId = req.params.id;
         const { full_name, position } = req.body;
+
+        console.log(`[ADMIN UPDATE] Mengupdate user ID: ${targetId}`);
+        console.log(`[ADMIN UPDATE] Body:`, req.body);
+        console.log(`[ADMIN UPDATE] File:`, req.file ? req.file.filename : 'Tidak ada file');
 
         if (!full_name) {
             return res.status(400).json({ success: false, message: 'Nama lengkap wajib diisi.' });
