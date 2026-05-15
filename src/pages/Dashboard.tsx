@@ -120,7 +120,8 @@ const Dashboard = () => {
             { title: t('dashboard.title'), href: "/dashboard", icon: Shield },
             { title: t('dashboard.notifications'), href: "/notifications", icon: Bell },
             { title: t('dashboard.settings'), href: "/settings", icon: Settings },
-            ...(user?.role === 'admin' ? [{ title: "Verifikasi Akun", href: "/verify-accounts", icon: UserCheck }] : [])
+            ...(user?.role === 'admin' ? [{ title: "Verifikasi Akun", href: "/verify-accounts", icon: UserCheck }] : []),
+            ...(user?.role === 'admin' || user?.role === 'supervisor' ? [{ title: "Manajemen Alat", href: "/manage-devices", icon: Camera }] : [])
           ].map((item) => (
             <Link
               key={item.href}

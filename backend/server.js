@@ -916,6 +916,68 @@ app.put('/api/admin/users/:id', verifyToken, upload.single('image'), async (req,
     }
 });
 
+/**
+ * Endpoint Manajemen Alat (Devices)
+ * Digunakan oleh Admin dan Supervisor untuk menambah/menghapus Raspi
+ */
+app.get('/api/admin/devices', verifyToken, async (req, res) => {
+    try {
+        // Hanya Admin & Supervisor yang bisa akses
+        if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak.' });
+        }
+
+        const [rows] = await pool.query('SELECT * FROM devices ORDER BY id ASC');
+        res.status(200).json({ success: true, devices: rows });
+    } catch (error) {
+        console.error('[FETCH DEVICES ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal mengambil data alat.' });
+    }
+});
+
+app.post('/api/admin/devices', verifyToken, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak.' });
+        }
+
+        const { device_name, personnel_name } = req.body;
+        if (!device_name || !personnel_name) {
+            return res.status(400).json({ success: false, message: 'Nama alat dan personil wajib diisi.' });
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO devices (device_name, personnel_name) VALUES (?, ?)',
+            [device_name, personnel_name]
+        );
+
+        res.status(201).json({ 
+            success: true, 
+            message: 'Alat berhasil ditambahkan.',
+            deviceId: result.insertId 
+        });
+    } catch (error) {
+        console.error('[ADD DEVICE ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal menambahkan alat.' });
+    }
+});
+
+app.delete('/api/admin/devices/:id', verifyToken, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak.' });
+        }
+
+        const deviceId = req.params.id;
+        await pool.query('DELETE FROM devices WHERE id = ?', [deviceId]);
+
+        res.status(200).json({ success: true, message: 'Alat berhasil dihapus.' });
+    } catch (error) {
+        console.error('[DELETE DEVICE ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal menghapus alat.' });
+    }
+});
+
 // Inisialisasi Database & Start Server
 const startServer = async () => {
     try {
