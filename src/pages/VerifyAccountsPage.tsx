@@ -19,7 +19,8 @@ const VerifyAccountsPage = () => {
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const { token, user } = useAuth();
+  const { user } = useAuth();
+  const token = localStorage.getItem("jwtToken");
   const navigate = useNavigate();
 
   useEffect(() => {

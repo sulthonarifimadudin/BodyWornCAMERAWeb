@@ -104,6 +104,29 @@ const SignupPage = () => {
         }
     };
 
+    const handleResendOTP = async () => {
+        setLoading(true);
+        setError("");
+        setSuccess("");
+        try {
+            const response = await fetch('/api/resend-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                setSuccess(data.message || "Kode OTP baru telah dikirim.");
+            } else {
+                setError(data.message || "Gagal mengirim ulang OTP.");
+            }
+        } catch (err) {
+            setError("Terjadi kesalahan koneksi.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleVerifyOTP = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -423,12 +446,23 @@ const SignupPage = () => {
                                     placeholder="000000"
                                     required
                                 />
+                                
+                                <div className="mt-4 text-center">
+                                    <button
+                                        type="button"
+                                        onClick={handleResendOTP}
+                                        disabled={loading}
+                                        className="text-sm font-medium text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+                                    >
+                                        Belum menerima kode? Kirim ulang
+                                    </button>
+                                </div>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={loading || otpCode.length !== 6}
-                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 shadow-xl shadow-primary/25 disabled:opacity-50 active:scale-95"
+                                className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-primary-foreground py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 shadow-xl shadow-primary/25 disabled:opacity-50 active:scale-95"
                             >
                                 {loading ? (
                                     <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />

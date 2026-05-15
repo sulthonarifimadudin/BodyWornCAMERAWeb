@@ -227,6 +227,62 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
+// Endpoint POST /api/resend-otp
+app.post('/api/resend-otp', async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ success: false, message: 'Email wajib diisi' });
+        }
+
+        const [users] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+        if (users.length === 0) {
+            return res.status(404).json({ success: false, message: 'Email tidak ditemukan.' });
+        }
+
+        const userId = users[0].id;
+        const otpCode = generateOTP();
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 menit
+
+        // Insert OTP baru ke DB
+        await pool.query(
+            `INSERT INTO otp_codes (user_id, otp, expired_at, created_at) VALUES (?, ?, ?, NOW())`,
+            [userId, otpCode, expiresAt]
+        );
+
+        console.log(`[OTP Generate - Resend] Dibuat OTP: ${otpCode} untuk user ID: ${userId}`);
+
+        // Kirim OTP via Email
+        const mailOptions = {
+            from: `"GuardWatch Center" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Kode Verifikasi Baru - GuardWatch',
+            text: `Kode verifikasi keamanan (OTP) baru Anda adalah: ${otpCode}\n\nKode ini berlaku selama 5 menit.`,
+            html: `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                     <h2>GuardWatch Command Center</h2>
+                     <p>Kode verifikasi keamanan (OTP) baru Anda adalah:</p>
+                     <h1 style="color: #4F46E5; letter-spacing: 2px;">${otpCode}</h1>
+                     <p>Kode ini berlaku selama 5 menit.</p>
+                   </div>`
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+        } catch (mailErr) {
+            console.error('[Nodemailer Error - Resend]', mailErr.message);
+            return res.status(500).json({ success: false, message: 'Gagal mengirim email OTP.' });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Kode OTP baru telah dikirim ke Email Anda.'
+        });
+    } catch (error) {
+        console.error('Error di /api/resend-otp:', error);
+        return res.status(500).json({ success: false, message: 'Terjadi kesalahan sistem internal.' });
+    }
+});
+
 /**
  * 2. Endpoint POST /api/login
  * Body: { email, password }
