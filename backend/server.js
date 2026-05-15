@@ -777,7 +777,7 @@ app.put('/api/admin/users/:id', verifyToken, verifyAdmin, upload.single('image')
         res.status(200).json({ success: true, message: 'Data personil berhasil diperbarui.' });
     } catch (error) {
         console.error('[ADMIN UPDATE ERROR]', error);
-        res.status(500).json({ success: false, message: 'Gagal memperbarui data personil.' });
+        res.status(500).json({ success: false, message: `Gagal memperbarui data personil: ${error.message}` });
     }
 });
 
