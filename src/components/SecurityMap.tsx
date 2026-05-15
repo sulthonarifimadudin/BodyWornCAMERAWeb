@@ -42,9 +42,29 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
     `;
     document.head.appendChild(style);
 
-    L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
+    const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    });
+
+    const gmaps = L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
       attribution: '&copy; <a href="https://maps.google.com">Google Maps</a>',
-    }).addTo(mapRef.current);
+    });
+
+    const hybrid = L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
+      attribution: '&copy; <a href="https://maps.google.com">Google Maps</a>',
+    });
+
+    const baseMaps = {
+      "Google Maps": gmaps,
+      "OpenStreetMap": osm,
+      "Satelit (Hybrid)": hybrid
+    };
+
+    // Default menggunakan Google Maps Light
+    gmaps.addTo(mapRef.current);
+
+    // Tambahkan kontrol untuk ganti-ganti layer
+    L.control.layers(baseMaps).addTo(mapRef.current);
 
     return () => {
       if (mapRef.current) {
