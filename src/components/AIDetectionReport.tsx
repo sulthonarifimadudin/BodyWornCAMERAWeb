@@ -75,20 +75,20 @@ const AIDetectionReport = () => {
 
         {/* Counters */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-cyan-200 border-cyan-300 dark:bg-cyan-900/40 dark:border-cyan-800/50 p-3 rounded-xl border text-center shadow-sm hover:shadow-md transition-shadow">
-            <Users className="w-4 h-4 mx-auto mb-1 text-cyan-700" />
-            <div className="text-xl font-bold text-foreground">{data.person_count}</div>
-            <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-tight">Orang</div>
+          <div className="bg-cyan-500 border-cyan-600 p-3 rounded-xl border text-center shadow-sm hover:shadow-md transition-shadow text-white">
+            <Users className="w-4 h-4 mx-auto mb-1 text-white" />
+            <div className="text-xl font-bold text-white">{data.person_count}</div>
+            <div className="text-[8px] font-bold text-cyan-50 uppercase tracking-tight">Orang</div>
           </div>
-          <div className="bg-cyan-200 border-cyan-300 dark:bg-cyan-900/40 dark:border-cyan-800/50 p-3 rounded-xl border text-center shadow-sm hover:shadow-md transition-shadow">
-            <Car className="w-4 h-4 mx-auto mb-1 text-cyan-700" />
-            <div className="text-xl font-bold text-foreground">{data.car_count}</div>
-            <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-tight">Mobil</div>
+          <div className="bg-cyan-500 border-cyan-600 p-3 rounded-xl border text-center shadow-sm hover:shadow-md transition-shadow text-white">
+            <Car className="w-4 h-4 mx-auto mb-1 text-white" />
+            <div className="text-xl font-bold text-white">{data.car_count}</div>
+            <div className="text-[8px] font-bold text-cyan-50 uppercase tracking-tight">Mobil</div>
           </div>
-          <div className="bg-cyan-200 border-cyan-300 dark:bg-cyan-900/40 dark:border-cyan-800/50 p-3 rounded-xl border text-center shadow-sm hover:shadow-md transition-shadow">
-            <Bike className="w-4 h-4 mx-auto mb-1 text-cyan-700" />
-            <div className="text-xl font-bold text-foreground">{data.motorcycle_count}</div>
-            <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-tight">Motor</div>
+          <div className="bg-cyan-500 border-cyan-600 p-3 rounded-xl border text-center shadow-sm hover:shadow-md transition-shadow text-white">
+            <Bike className="w-4 h-4 mx-auto mb-1 text-white" />
+            <div className="text-xl font-bold text-white">{data.motorcycle_count}</div>
+            <div className="text-[8px] font-bold text-cyan-50 uppercase tracking-tight">Motor</div>
           </div>
         </div>
 

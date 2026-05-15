@@ -93,7 +93,7 @@ const Dashboard = () => {
       {/* Sidebar - FIXED AT ALL TIMES */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 w-[260px] h-screen bg-card/95 backdrop-blur-xl border-r border-border/50 flex flex-col shadow-2xl transition-all duration-300",
+          "fixed top-0 left-0 z-50 w-[260px] h-screen bg-[hsl(var(--sidebar-background))] text-white border-r border-[hsl(var(--sidebar-border))] flex flex-col shadow-2xl transition-all duration-300",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
