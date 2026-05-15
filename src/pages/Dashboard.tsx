@@ -103,7 +103,7 @@ const Dashboard = () => {
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
               <Shield className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-white">BODY<span className="text-cyan-100">WORNCAM</span></h1>
+            <h1 className="text-lg font-bold tracking-tighter text-white">BODY<span className="text-cyan-100 font-orbitron">WORNCAM</span></h1>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
