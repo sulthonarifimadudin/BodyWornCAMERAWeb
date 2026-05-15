@@ -39,24 +39,26 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="glass-card rounded-xl overflow-hidden shadow-2xl border-border/50"
+      className="glass-card rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.1)] border-border/50 h-full flex flex-col"
     >
-      <div className="p-4 border-b border-border/50 flex items-center justify-between bg-card/50 backdrop-blur-md">
+      <div className="p-4 border-b border-border/50 flex items-center justify-between bg-card/50 backdrop-blur-md flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
             <Video className="w-4 h-4 text-primary" />
           </div>
-          <h2 className="font-display font-semibold text-foreground">{t('dashboard.videoFeed')}</h2>
-          {selectedPerson && (
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 font-bold uppercase tracking-wider">
-                {selectedPerson.name}
-              </span>
-              <span className="text-[10px] text-muted-foreground font-mono">
-                {selectedPerson.role}
-              </span>
-            </div>
-          )}
+          <div className="flex flex-col">
+            <h2 className="font-display font-semibold text-foreground">{t('dashboard.videoFeed')}</h2>
+            {selectedPerson && (
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 font-bold uppercase tracking-wider">
+                  {selectedPerson.name}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {selectedPerson.role}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {/* Stream Type Switcher */}
@@ -90,10 +92,10 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-4 gap-4 p-4">
+      <div className="grid lg:grid-cols-4 gap-4 p-4 flex-1">
         {/* Main Video Feed */}
         <div className={cn(
-          "relative aspect-video rounded-lg overflow-hidden bg-black border border-border shadow-inner",
+          "relative h-full rounded-lg overflow-hidden bg-black border border-border shadow-inner",
           hideThumbnails ? "lg:col-span-4" : "lg:col-span-3",
           "group"
         )}>

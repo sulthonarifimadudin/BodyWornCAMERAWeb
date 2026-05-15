@@ -43,7 +43,7 @@ const AIDetectionReport = () => {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="glass-card rounded-xl overflow-hidden border-border/50 shadow-xl"
+      className="glass-card rounded-xl overflow-hidden border-border/50 shadow-[0_2px_10px_rgba(0,0,0,0.1)]"
     >
       <div className={cn(
         "px-4 py-2 flex items-center justify-between border-b border-border/30",

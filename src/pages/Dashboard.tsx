@@ -292,7 +292,7 @@ const Dashboard = () => {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden h-[500px] shadow-sm flex flex-col"
+                    className="bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden h-[500px] shadow-[0_2px_10px_rgba(0,0,0,0.1)] flex flex-col"
                   >
                     <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
                       <div className="flex items-center gap-2">
@@ -324,7 +324,7 @@ const Dashboard = () => {
             <div className="space-y-6">
               {/* TACTICAL LAYOUT: Full Video & Map Side-by-Side */}
               <div className={cn("grid lg:grid-cols-2 gap-6 min-h-[500px]")}>
-                <div className={isSwapped ? "order-2" : "order-1"}>
+                <div className={cn("h-full", isSwapped ? "order-2" : "order-1")}>
                   <VideoFeed 
                     selectedPersonnelId={selectedPersonnel} 
                     personnel={personnel}

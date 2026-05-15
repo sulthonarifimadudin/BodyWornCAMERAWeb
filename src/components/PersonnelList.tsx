@@ -72,7 +72,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="glass-card rounded-xl h-[500px] flex flex-col"
+        className="glass-card rounded-xl h-[500px] flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.1)]"
       >
         <div className="p-4 border-b border-border/50 flex items-center justify-between">
           <h2 className="font-display font-semibold text-foreground">{t('dashboard.personnelList')}</h2>
