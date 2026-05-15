@@ -121,6 +121,35 @@ export const initDB = async () => {
         `);
         console.log('[DB] Tabel gps_tracking siap.');
 
+        // Buat tabel devices (Khusus untuk Alat Raspi)
+        await bootstrapConn.query(`
+            CREATE TABLE IF NOT EXISTS devices (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                device_name VARCHAR(100) NOT NULL,
+                personnel_name VARCHAR(100) NOT NULL,
+                status ENUM('active', 'inactive') DEFAULT 'active',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        console.log('[DB] Tabel devices siap.');
+
+        // Buat tabel device_tracking (Khusus lokasi Alat Raspi)
+        await bootstrapConn.query(`
+            CREATE TABLE IF NOT EXISTS device_tracking (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                device_id INT,
+                latitude DOUBLE NOT NULL,
+                longitude DOUBLE NOT NULL,
+                speed DOUBLE DEFAULT 0,
+                battery INT DEFAULT 100,
+                heart_rate INT DEFAULT 75,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                KEY device_id_idx (device_id),
+                FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE CASCADE
+            )
+        `);
+        console.log('[DB] Tabel device_tracking siap.');
+
         // Migrasi kolom lama (abaikan jika sudah ada)
         const migrations = [
             "ALTER TABLE users ADD COLUMN full_name VARCHAR(255)",
@@ -161,6 +190,11 @@ export const initDB = async () => {
         // Auto-Promote akun Sulthon menjadi Admin dan langsung Approved
         try {
             await bootstrapConn.query("UPDATE users SET role = 'admin', status_acc = 'approved' WHERE email = 'sulthonarifimadudin@gmail.com'");
+        } catch (e) { /* abaikan */ }
+
+        // Masukkan alat default untuk Raspi ID 1 agar langsung nyambung
+        try {
+            await bootstrapConn.query("INSERT IGNORE INTO devices (id, device_name, personnel_name) VALUES (1, 'Kamera Raspi 1', 'Petugas 1')");
         } catch (e) { /* abaikan */ }
 
         console.log('[DB] Semua struktur database diverifikasi normal.');

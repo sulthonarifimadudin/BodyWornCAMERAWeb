@@ -841,6 +841,8 @@ setInterval(async () => {
 // 1. Endpoint untuk Raspberry Pi mengirim data GPS
 app.post('/api/gps/update', async (req, res) => {
     try {
+        // Kita tetap menerima 'user_id' dari Raspi lama agar tidak merusak kodenya,
+        // Tapi kita memperlakukannya sebagai 'device_id'.
         const { user_id, latitude, longitude, speed, battery, heart_rate } = req.body;
 
         if (!user_id || latitude === undefined || longitude === undefined) {
@@ -848,31 +850,32 @@ app.post('/api/gps/update', async (req, res) => {
         }
 
         await pool.query(
-            `INSERT INTO gps_tracking (user_id, latitude, longitude, speed, battery, heart_rate, created_at) 
+            `INSERT INTO device_tracking (device_id, latitude, longitude, speed, battery, heart_rate, created_at) 
              VALUES (?, ?, ?, ?, ?, ?, NOW())`,
             [user_id, latitude, longitude, speed || 0, battery || 100, heart_rate || 75]
         );
 
-        res.status(200).json({ success: true, message: 'Data GPS berhasil disimpan.' });
+        res.status(200).json({ success: true, message: 'Data GPS Alat berhasil disimpan.' });
     } catch (error) {
         console.error('[GPS UPDATE ERROR]', error);
         res.status(500).json({ success: false, message: 'Gagal menyimpan data GPS.' });
     }
 });
 
-// 2. Endpoint untuk Dashboard mengambil data posisi terbaru semua personil (Joined with Users)
+// 2. Endpoint untuk Dashboard mengambil data posisi terbaru semua alat (Joined with Devices)
 app.get('/api/gps/latest', async (req, res) => {
     try {
-        // Ambil koordinat terbaru untuk setiap user_id unik dan join dengan data user
+        // Ambil koordinat terbaru untuk setiap device_id unik dan join dengan data alat
         const query = `
-            SELECT t1.*, u.full_name as name, u.position as job, u.role as system_role, u.profile_image
-            FROM gps_tracking t1
+            SELECT t1.device_id as user_id, t1.latitude, t1.longitude, t1.speed, t1.battery, t1.heart_rate, t1.created_at, 
+                   d.device_name, d.personnel_name as name, 'Petugas Lapangan' as job, 'operator' as system_role, null as profile_image
+            FROM device_tracking t1
             INNER JOIN (
-                SELECT user_id, MAX(created_at) as max_created_at
-                FROM gps_tracking
-                GROUP BY user_id
-            ) t2 ON t1.user_id = t2.user_id AND t1.created_at = t2.max_created_at
-            LEFT JOIN users u ON t1.user_id = u.id
+                SELECT device_id, MAX(created_at) as max_created_at
+                FROM device_tracking
+                GROUP BY device_id
+            ) t2 ON t1.device_id = t2.device_id AND t1.created_at = t2.max_created_at
+            INNER JOIN devices d ON t1.device_id = d.id
         `;
         const [rows] = await pool.query(query);
         res.status(200).json({ success: true, data: rows });
