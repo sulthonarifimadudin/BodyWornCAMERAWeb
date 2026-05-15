@@ -39,7 +39,7 @@ const ProfilePage = () => {
     };
 
     const avatarSrc = displayUser.profile_image 
-        ? `/uploads/${displayUser.profile_image}` 
+        ? `/api/uploads/${displayUser.profile_image}` 
         : displayUser.avatar;
 
     // Form edit initial configuration
