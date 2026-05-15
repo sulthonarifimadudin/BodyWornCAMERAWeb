@@ -138,12 +138,17 @@ export const initDB = async () => {
             try { await bootstrapConn.query(q); } catch (e) { /* sudah ada, abaikan */ }
         }
 
-        // Migrasi untuk mengubah role user lama dari 'personnel' ke 'operator' agar tidak bentrok dengan ENUM baru
+        // Langkah 1: Tambahkan nilai baru ke ENUM tanpa menghapus yang lama ('personnel') agar tidak error saat alter
+        try {
+            await bootstrapConn.query("ALTER TABLE users MODIFY COLUMN role ENUM('admin', 'personnel', 'supervisor', 'operator') DEFAULT 'operator'");
+        } catch (e) { /* abaikan */ }
+
+        // Langkah 2: Update data lama dari 'personnel' ke 'operator'
         try {
             await bootstrapConn.query("UPDATE users SET role = 'operator' WHERE role = 'personnel'");
         } catch (e) { /* abaikan */ }
 
-        // Migrasi khusus untuk mengubah ENUM role jika masih pakai yang lama
+        // Langkah 3: Hapus 'personnel' dari ENUM (Opsional)
         try {
             await bootstrapConn.query("ALTER TABLE users MODIFY COLUMN role ENUM('admin', 'supervisor', 'operator') DEFAULT 'operator'");
         } catch (e) { /* abaikan */ }
