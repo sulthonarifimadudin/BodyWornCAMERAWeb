@@ -35,6 +35,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=guardwatch_db
       - PORT=3000
+    volumes:
+      - ./backend/uploads:/app/uploads
 
     env_file:
       - ./backend/.env
