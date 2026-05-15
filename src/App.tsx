@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ProfilePage from "./pages/ProfileEdit";
+import VerifyAccountsPage from "./pages/VerifyAccountsPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import VerifyResetOTPPage from "./pages/VerifyResetOTPPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
@@ -40,6 +41,7 @@ const App = () => (
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/verify-accounts" element={<VerifyAccountsPage />} />
             </Route>
           </Routes>
         </AuthProvider>

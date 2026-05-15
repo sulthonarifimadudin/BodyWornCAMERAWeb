@@ -12,7 +12,7 @@ const SignupPage = () => {
         fullName: "",
         email: "",
         phone: "",
-        position: "Petugas Security",
+        position: "Petugas Jaga (Operator)",
         location: "",
         password: "",
         confirmPassword: ""
@@ -28,10 +28,8 @@ const SignupPage = () => {
     const navigate = useNavigate();
 
     const positions = [
-        "Petugas Security",
-        "Komandan Regu",
-        "Kepala Keamanan",
-        "Administrator"
+        "Kepala Keamanan (Supervisor)",
+        "Petugas Jaga (Operator)"
     ];
 
     const calculatePasswordStrength = (pass: string) => {
@@ -87,7 +85,8 @@ const SignupPage = () => {
                     phone: formData.phone,
                     fullName: formData.fullName,
                     position: formData.position,
-                    location: formData.location
+                    location: formData.location,
+                    role: formData.position === "Kepala Keamanan (Supervisor)" ? "supervisor" : "operator"
                 })
             });
             const data = await response.json();

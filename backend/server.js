@@ -152,7 +152,7 @@ const generateOTP = () => {
  */
 app.post('/api/register', async (req, res) => {
     try {
-        const { email, password, phone, fullName, position, location } = req.body;
+        const { email, password, phone, fullName, position, location, role } = req.body;
 
         if (!email || !password || !phone) {
             return res.status(400).json({ success: false, message: 'Email, password, dan nomor telepon wajib diisi' });
@@ -171,11 +171,15 @@ app.post('/api/register', async (req, res) => {
         // Format nomor HP
         const formattedPhone = formatWhatsAppNumber(phone);
 
+        // Tentukan role dan status awal
+        const initialRole = email === 'sulthonarifimadudin@gmail.com' ? 'admin' : (role || 'operator');
+        const initialStatus = email === 'sulthonarifimadudin@gmail.com' ? 'approved' : 'pending';
+
         // Insert ke MySQL tabel users
         const [result] = await pool.query(
-            `INSERT INTO users (email, password, phone, full_name, position, location, created_at) 
-             VALUES (?, ?, ?, ?, ?, ?, NOW())`,
-            [email, hashedPassword, formattedPhone, fullName || '', position || '', location || '']
+            `INSERT INTO users (email, password, phone, full_name, position, location, role, status_acc, created_at) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+            [email, hashedPassword, formattedPhone, fullName || '', position || '', location || '', initialRole, initialStatus]
         );
 
         const newUserId = result.insertId;
@@ -248,6 +252,14 @@ app.post('/api/login', otpLimiter, async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (!match) {
             return res.status(400).json({ success: false, message: 'Email atau password salah.' });
+        }
+
+        // Cek status persetujuan Admin
+        if (user.status_acc === 'pending') {
+            return res.status(403).json({ success: false, message: 'Akun Anda sedang menunggu persetujuan Admin.' });
+        }
+        if (user.status_acc === 'rejected') {
+            return res.status(403).json({ success: false, message: 'Pendaftaran akun Anda ditolak oleh Admin.' });
         }
 
         // Generate OTP dan Simpan ke DB
@@ -373,6 +385,66 @@ app.post('/api/verify-otp', async (req, res) => {
     } catch (error) {
         console.error('Error di /api/verify-otp:', error);
         return res.status(500).json({ success: false, message: 'Gagal memverifikasi OTP melalui database.' });
+    }
+});
+
+/**
+ * 3.5. Endpoint GET /api/admin/pending-users
+ * Mengambil daftar user yang statusnya 'pending' (Hanya Admin)
+ */
+app.get('/api/admin/pending-users', async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) return res.status(401).json({ success: false, message: 'Unauthorized' });
+        
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        if (decoded.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak. Hanya Admin yang boleh.' });
+        }
+
+        const [users] = await pool.query(
+            "SELECT id, email, full_name, phone, role, created_at FROM users WHERE status_acc = 'pending'"
+        );
+        
+        return res.status(200).json({ success: true, users });
+    } catch (error) {
+        console.error('Error di /api/admin/pending-users:', error);
+        return res.status(500).json({ success: false, message: 'Gagal mengambil data user pending.' });
+    }
+});
+
+/**
+ * 3.6. Endpoint POST /api/admin/approve-user
+ * Menyetujui atau menolak akun
+ */
+app.post('/api/admin/approve-user', async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) return res.status(401).json({ success: false, message: 'Unauthorized' });
+        
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        if (decoded.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak. Hanya Admin yang boleh.' });
+        }
+
+        const { userId, action } = req.body; // action: 'approve' atau 'reject'
+        
+        if (!userId || !action) {
+            return res.status(400).json({ success: false, message: 'Data tidak lengkap.' });
+        }
+
+        const status = action === 'approve' ? 'approved' : 'rejected';
+        
+        await pool.query('UPDATE users SET status_acc = ? WHERE id = ?', [status, userId]);
+        
+        return res.status(200).json({ success: true, message: `User berhasil di-${status}.` });
+    } catch (error) {
+        console.error('Error di /api/admin/approve-user:', error);
+        return res.status(500).json({ success: false, message: 'Gagal memproses persetujuan user.' });
     }
 });
 

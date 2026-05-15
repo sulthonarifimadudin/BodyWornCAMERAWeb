@@ -129,15 +129,28 @@ export const initDB = async () => {
             "ALTER TABLE users ADD COLUMN profile_image VARCHAR(255)",
             "ALTER TABLE users ADD COLUMN is_online BOOLEAN DEFAULT FALSE",
             "ALTER TABLE users ADD COLUMN last_seen DATETIME NULL",
-            "ALTER TABLE users ADD COLUMN role ENUM('admin', 'personnel') DEFAULT 'personnel'"
+            "ALTER TABLE users ADD COLUMN role ENUM('admin', 'supervisor', 'operator') DEFAULT 'operator'",
+            "ALTER TABLE users ADD COLUMN status_acc ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'"
         ];
+        
+        // Jalankan migrasi dasar
         for (const q of migrations) {
             try { await bootstrapConn.query(q); } catch (e) { /* sudah ada, abaikan */ }
         }
 
-        // Auto-Promote ID 1 to Admin (Untuk Sulthon)
+        // Migrasi khusus untuk mengubah ENUM role jika masih pakai yang lama
         try {
-            await bootstrapConn.query("UPDATE users SET role = 'admin' WHERE id = 1");
+            await bootstrapConn.query("ALTER TABLE users MODIFY COLUMN role ENUM('admin', 'supervisor', 'operator') DEFAULT 'operator'");
+        } catch (e) { /* abaikan */ }
+
+        // Migrasi untuk mengisi status_acc yang kosong bagi user lama
+        try {
+            await bootstrapConn.query("UPDATE users SET status_acc = 'approved' WHERE status_acc IS NULL OR status_acc = ''");
+        } catch (e) { /* abaikan */ }
+
+        // Auto-Promote akun Sulthon menjadi Admin dan langsung Approved
+        try {
+            await bootstrapConn.query("UPDATE users SET role = 'admin', status_acc = 'approved' WHERE email = 'sulthonarifimadudin@gmail.com'");
         } catch (e) { /* abaikan */ }
 
         console.log('[DB] Semua struktur database diverifikasi normal.');

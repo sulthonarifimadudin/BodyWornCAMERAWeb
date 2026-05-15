@@ -3,7 +3,7 @@ import { useRealtimePersonnel } from "@/hooks/useRealtimePersonnel";
 import { motion, AnimatePresence } from "framer-motion";
 import { io } from 'socket.io-client';
 import { Link, useNavigate } from "react-router-dom";
-import { Shield, Home, Bell, Settings, Search, Menu, X, User, LogOut, Activity, Wifi, WifiOff, Camera, Languages, Moon, Sun, Globe, LayoutGrid, Columns, ArrowUpDown } from "lucide-react";
+import { Shield, Home, Bell, Settings, Search, Menu, X, User, LogOut, Activity, Wifi, WifiOff, Camera, Languages, Moon, Sun, Globe, LayoutGrid, Columns, ArrowUpDown, UserCheck } from "lucide-react";
 import SecurityMap from "@/components/SecurityMap";
 import PersonnelList from "@/components/PersonnelList";
 import VideoFeed from "@/components/VideoFeed";
@@ -120,6 +120,7 @@ const Dashboard = () => {
             { title: t('dashboard.title'), href: "/dashboard", icon: Shield },
             { title: t('dashboard.notifications'), href: "/notifications", icon: Bell },
             { title: t('dashboard.settings'), href: "/settings", icon: Settings },
+            ...(user?.role === 'admin' ? [{ title: "Verifikasi Akun", href: "/verify-accounts", icon: UserCheck }] : [])
           ].map((item) => (
             <Link
               key={item.href}
