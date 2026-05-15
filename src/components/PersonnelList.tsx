@@ -127,13 +127,13 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                         ID: {person.id}
                       </span>
                     </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <button 
                             onClick={(e) => handleEdit(e, person)}
-                            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary transition-all"
+                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-all border border-transparent hover:border-border"
                             title={t('profile.editProfile')}
                         >
-                            <Pencil className="w-3.5 h-3.5" />
+                            <Pencil className="w-4 h-4" />
                         </button>
                         <button 
                             onClick={(e) => {
@@ -149,14 +149,14 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                               });
                             }}
                             className={cn(
-                              "p-1.5 rounded-md transition-all",
+                              "p-2.5 rounded-xl transition-all shadow-md flex items-center justify-center",
                               activeBuzzers[person.id] 
-                                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" 
-                                : "hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                                ? "bg-red-500 text-white hover:bg-red-600 shadow-red-500/30" 
+                                : "bg-white border border-border text-muted-foreground hover:text-primary hover:bg-muted/50 hover:border-primary/20 shadow-black/5"
                             )}
                             title={activeBuzzers[person.id] ? "Matikan Peringatan" : "Beri Peringatan"}
                         >
-                            <Bell className="w-3.5 h-3.5" />
+                            <Bell className="w-5 h-5" />
                         </button>
                       </div>
                   </div>
@@ -169,24 +169,6 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                   <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                     <MapPin className="w-3 h-3" />
                     <span className="truncate">{person.location || t('profile.notFilled')}</span>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="flex items-center gap-3 mt-2">
-                    <div className="flex items-center gap-1 text-xs">
-                      <Battery className={cn(
-                        "w-3 h-3",
-                        person.battery > 50 ? "text-success" : person.battery > 20 ? "text-warning" : "text-destructive"
-                      )} />
-                      <span className="text-muted-foreground">{person.battery}%</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs">
-                      <Heart className={cn(
-                        "w-3 h-3",
-                        person.heart_rate > 90 ? "text-destructive animate-pulse" : "text-success"
-                      )} />
-                      <span className="text-muted-foreground">{person.heart_rate} bpm</span>
-                    </div>
                   </div>
                 </div>
               </div>
