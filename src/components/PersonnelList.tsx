@@ -99,7 +99,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                   : "bg-secondary/50 border-transparent hover:bg-secondary hover:border-border"
               )}
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-center gap-3">
                 {/* Avatar */}
                 <div className="relative">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden border border-border/50">
@@ -127,13 +127,13 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                         ID: {person.id}
                       </span>
                     </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         <button 
                             onClick={(e) => handleEdit(e, person)}
-                            className="w-10 h-10 rounded-xl bg-white border border-border text-muted-foreground hover:text-primary hover:bg-muted/50 hover:border-primary/20 shadow-sm shadow-black/5 flex items-center justify-center transition-all"
+                            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary transition-all"
                             title={t('profile.editProfile')}
                         >
-                            <Pencil className="w-4.5 h-4.5" />
+                            <Pencil className="w-3.5 h-3.5" />
                         </button>
                         <button 
                             onClick={(e) => {
@@ -149,7 +149,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                               });
                             }}
                             className={cn(
-                              "w-10 h-10 rounded-xl transition-all shadow-md flex items-center justify-center",
+                              "p-2.5 rounded-xl transition-all shadow-md flex items-center justify-center",
                               activeBuzzers[person.id] 
                                 ? "bg-red-500 text-white hover:bg-red-600 shadow-red-500/30" 
                                 : "bg-white border border-border text-muted-foreground hover:text-primary hover:bg-muted/50 hover:border-primary/20 shadow-black/5"
