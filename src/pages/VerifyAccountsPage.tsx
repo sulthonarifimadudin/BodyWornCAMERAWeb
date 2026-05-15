@@ -10,7 +10,7 @@ interface UserData {
   full_name: string;
   phone: string;
   role: string;
-  is_verified: number;
+  status_acc: string;
   position: string;
   created_at: string;
 }
@@ -236,9 +236,9 @@ const VerifyAccountsPage = () => {
                         </td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border ${
-                            u.is_verified ? 'bg-success/10 text-success border-success/20' : 'bg-warning/10 text-warning border-warning/20'
+                            u.status_acc === 'approved' ? 'bg-success/10 text-success border-success/20' : 'bg-warning/10 text-warning border-warning/20'
                           }`}>
-                            {u.is_verified ? "AKTIF" : "PENDING"}
+                            {u.status_acc === 'approved' ? "AKTIF" : u.status_acc === 'pending' ? "PENDING" : "DITOLAK"}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">

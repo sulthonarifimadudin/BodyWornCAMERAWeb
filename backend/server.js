@@ -984,7 +984,7 @@ app.get('/api/admin/users', verifyToken, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Akses ditolak.' });
         }
 
-        const [rows] = await pool.query('SELECT id, full_name, email, phone, position, role, is_verified, created_at FROM users ORDER BY created_at DESC');
+        const [rows] = await pool.query('SELECT id, full_name, email, phone, position, role, status_acc, created_at FROM users ORDER BY created_at DESC');
         res.status(200).json({ success: true, users: rows });
     } catch (error) {
         console.error('[FETCH ALL USERS ERROR]', error);
