@@ -755,19 +755,24 @@ app.get('/api/gps/latest', async (req, res) => {
 });
 
 // 3. Endpoint Admin: Update data Satpam/Perangkat (Hanya oleh Admin)
-app.put('/api/admin/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+app.put('/api/admin/users/:id', verifyToken, verifyAdmin, upload.single('image'), async (req, res) => {
     try {
         const targetId = req.params.id;
-        const { full_name, position, location } = req.body;
+        const { full_name, position } = req.body;
 
         if (!full_name) {
             return res.status(400).json({ success: false, message: 'Nama lengkap wajib diisi.' });
         }
 
-        await pool.query(
-            `UPDATE users SET full_name = ?, position = ?, location = ? WHERE id = ?`,
-            [full_name, position || '', location || '', targetId]
-        );
+        let query = `UPDATE users SET full_name = ?, position = ? WHERE id = ?`;
+        let params = [full_name, position || '', targetId];
+
+        if (req.file) {
+            query = `UPDATE users SET full_name = ?, position = ?, profile_image = ? WHERE id = ?`;
+            params = [full_name, position || '', req.file.filename, targetId];
+        }
+
+        await pool.query(query, params);
 
         res.status(200).json({ success: true, message: 'Data personil berhasil diperbarui.' });
     } catch (error) {

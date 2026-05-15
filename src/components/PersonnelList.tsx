@@ -21,6 +21,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
   // State for Editing
   const [editingPerson, setEditingPerson] = useState<Personnel | null>(null);
   const [editForm, setEditForm] = useState({ name: "", role: "", location: "" });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [activeBuzzers, setActiveBuzzers] = useState<Record<string, boolean>>({});
 
@@ -28,6 +29,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
     e.stopPropagation();
     setEditingPerson(person);
     setEditForm({ name: person.name, role: person.role, location: person.location });
+    setSelectedFile(null);
   };
 
   const handleSave = async () => {
@@ -35,16 +37,20 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
     setIsSaving(true);
     try {
       const token = localStorage.getItem("jwtToken");
+      
+      const formData = new FormData();
+      formData.append('full_name', editForm.name);
+      formData.append('position', editForm.role);
+      if (selectedFile) {
+        formData.append('image', selectedFile);
+      }
+
       const res = await fetch(`/api/admin/users/${editingPerson.id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          full_name: editForm.name,
-          position: editForm.role,
-        }),
+        body: formData,
       });
 
       if (res.ok) {
@@ -229,6 +235,15 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                                 onChange={(e) => setEditForm({...editForm, role: e.target.value})}
                                 className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                                 placeholder={t('profile.position')}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-[10px] font-bold text-muted-foreground mb-1 uppercase tracking-wider">Foto Profil (Opsional)</label>
+                            <input 
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                                className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                             />
                         </div>
                     </div>
