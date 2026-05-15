@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, User, Check, X, Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { Shield, User, Check, X, Loader2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
@@ -85,14 +85,23 @@ const VerifyAccountsPage = () => {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-            <Shield className="w-6 h-6 text-primary" />
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+              <Shield className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Verifikasi Akun</h1>
+              <p className="text-sm text-muted-foreground">Setujui atau tolak pendaftaran akun baru</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Verifikasi Akun</h1>
-            <p className="text-sm text-muted-foreground">Setujui atau tolak pendaftaran akun baru</p>
-          </div>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-xl text-sm font-medium transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Kembali ke Dashboard
+          </button>
         </div>
 
         {/* Alerts */}
