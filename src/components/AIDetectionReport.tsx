@@ -75,17 +75,17 @@ const AIDetectionReport = () => {
 
         {/* Counters */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-muted/30 p-3 rounded-xl border border-border/50 text-center">
+          <div className="bg-white dark:bg-muted/30 p-3 rounded-xl border border-border/50 text-center shadow-sm hover:shadow-md transition-shadow">
             <Users className="w-4 h-4 mx-auto mb-1 text-primary" />
             <div className="text-xl font-bold text-foreground">{data.person_count}</div>
             <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-tight">Orang</div>
           </div>
-          <div className="bg-muted/30 p-3 rounded-xl border border-border/50 text-center">
+          <div className="bg-white dark:bg-muted/30 p-3 rounded-xl border border-border/50 text-center shadow-sm hover:shadow-md transition-shadow">
             <Car className="w-4 h-4 mx-auto mb-1 text-primary" />
             <div className="text-xl font-bold text-foreground">{data.car_count}</div>
             <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-tight">Mobil</div>
           </div>
-          <div className="bg-muted/30 p-3 rounded-xl border border-border/50 text-center">
+          <div className="bg-white dark:bg-muted/30 p-3 rounded-xl border border-border/50 text-center shadow-sm hover:shadow-md transition-shadow">
             <Bike className="w-4 h-4 mx-auto mb-1 text-primary" />
             <div className="text-xl font-bold text-foreground">{data.motorcycle_count}</div>
             <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-tight">Motor</div>

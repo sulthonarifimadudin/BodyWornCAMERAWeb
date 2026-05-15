@@ -53,7 +53,7 @@ const StatusOverview = ({ personnel, onlineUsersCount = 0 }: StatusOverviewProps
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.1 }}
-          className="glass-card rounded-xl p-4"
+          className="bg-white dark:bg-card rounded-xl p-4 shadow-md border border-border/50 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-start justify-between">
             <div>
