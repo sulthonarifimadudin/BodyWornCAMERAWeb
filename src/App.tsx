@@ -14,6 +14,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import VerifyResetOTPPage from "./pages/VerifyResetOTPPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ManageDevicesPage from "./pages/ManageDevicesPage";
+import SettingsPage from "./pages/SettingsPage";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ThemeProvider } from "next-themes";
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/verify-accounts" element={<VerifyAccountsPage />} />
               <Route path="/manage-devices" element={<ManageDevicesPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Route>
           </Routes>
         </AuthProvider>

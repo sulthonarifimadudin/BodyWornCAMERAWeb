@@ -83,27 +83,8 @@ const VerifyAccountsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-              <Shield className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Verifikasi Akun</h1>
-              <p className="text-sm text-muted-foreground">Setujui atau tolak pendaftaran akun baru</p>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-xl text-sm font-medium transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Dashboard
-          </button>
-        </div>
+    <div className="space-y-6">
+      {/* Alerts */}
 
         {/* Alerts */}
         <AnimatePresence>
@@ -209,7 +190,6 @@ const VerifyAccountsPage = () => {
             </div>
           )}
         </div>
-      </div>
     </div>
   );
 };

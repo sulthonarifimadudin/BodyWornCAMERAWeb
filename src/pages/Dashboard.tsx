@@ -1,381 +1,134 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRealtimePersonnel } from "@/hooks/useRealtimePersonnel";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { io } from 'socket.io-client';
-import { Link, useNavigate } from "react-router-dom";
-import { Shield, Home, Bell, Settings, Search, Menu, X, User, LogOut, Activity, Wifi, WifiOff, Camera, Languages, Moon, Sun, Globe, LayoutGrid, Columns, ArrowUpDown, UserCheck } from "lucide-react";
 import SecurityMap from "@/components/SecurityMap";
 import PersonnelList from "@/components/PersonnelList";
 import VideoFeed from "@/components/VideoFeed";
 import StatusOverview from "@/components/StatusOverview";
 import AIDetectionReport from "@/components/AIDetectionReport";
-import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "next-themes";
 
 const socket = io('https://bodyworncamera.sbs');
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const [selectedPersonnel, setSelectedPersonnel] = useState<string | null>(null);
+  const { personnel } = useRealtimePersonnel();
+  const [layoutMode, setLayoutMode] = useState<'classic' | 'tactical'>('classic');
+  const [isSwapped, setIsSwapped] = useState(false);
 
   const handleSendAlert = (userId: string, action: 'start' | 'stop') => {
     console.log(`Mengirim perintah buzzer ${action} ke user:`, userId);
     socket.emit('perintah_buzzer', { userId: parseInt(userId), action });
   };
-  const { theme, setTheme } = useTheme();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedPersonnel, setSelectedPersonnel] = useState<string | null>(null);
-  const { personnel, loading, error } = useRealtimePersonnel();
-  const [onlineUsersCount, setOnlineUsersCount] = useState<number>(0);
-  const [systemHealthy, setSystemHealthy] = useState<boolean>(true);
-  const [layoutMode, setLayoutMode] = useState<'classic' | 'tactical'>('classic');
-  const [isSwapped, setIsSwapped] = useState(false);
-
-  // Poll System Health
-  useEffect(() => {
-    const checkHealth = async () => {
-      try {
-        const res = await fetch("/api/health");
-        const data = await res.json();
-        setSystemHealthy(data.success);
-      } catch (err) {
-        setSystemHealthy(false);
-      }
-    };
-    
-    checkHealth();
-    const interval = setInterval(checkHealth, 30000); // Check every 30s
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const fetchOnlineUsers = async () => {
-      try {
-        const token = localStorage.getItem("jwtToken");
-        if (!token) return;
-        const res = await fetch("/api/online-users", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await res.json();
-        if (data.success) {
-          setOnlineUsersCount(data.count);
-        }
-      } catch (err) {
-        console.error("Gagal menarik data user online:", err);
-      }
-    };
-
-    fetchOnlineUsers();
-    const interval = setInterval(fetchOnlineUsers, 10000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 flex overflow-x-hidden relative">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none transition-opacity duration-1000 dark:opacity-100 opacity-60">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--border)/0.15)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--border)/0.15)_1px,transparent_1px)] bg-[size:50px_50px]" />
-      </div>
+    <div className="space-y-6">
+      <StatusOverview personnel={personnel} onlineUsersCount={0} />
 
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - FIXED AT ALL TIMES */}
-      <aside
-        className={cn(
-          "fixed top-0 left-0 z-50 w-[260px] h-screen bg-[hsl(var(--sidebar-background))] text-white border-r border-[hsl(var(--sidebar-border))] flex flex-col shadow-2xl transition-all duration-300",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        )}
-      >
-        {/* Logo */}
-        <div className="p-6 flex items-center justify-between border-b border-white/20">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-              <Shield className="w-6 h-6 text-white" />
+      {layoutMode === 'classic' ? (
+        <div className={cn("flex flex-col gap-6", isSwapped ? "flex-col-reverse" : "flex-col")}>
+          {/* Row 1: Video & AI */}
+          <div className="grid lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-3">
+              <VideoFeed 
+                selectedPersonnelId={selectedPersonnel} 
+                personnel={personnel}
+                hideThumbnails={false}
+              />
             </div>
-            <h1 className="text-lg font-bold tracking-tighter text-white">BODY<span className="text-cyan-100 font-orbitron">WORNCAM</span></h1>
+            <div className="lg:col-span-1">
+              <AIDetectionReport />
+            </div>
           </div>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-white/70 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
 
-        {/* Nav (Scrollable) */}
-        <nav className="flex-1 p-4 pt-8 space-y-2 overflow-y-auto custom-scrollbar pb-32">
-          {[
-            { title: t('dashboard.home'), href: "/", icon: Home },
-            { title: t('dashboard.title'), href: "/dashboard", icon: Shield },
-            { title: t('dashboard.notifications'), href: "/notifications", icon: Bell },
-            { title: t('dashboard.settings'), href: "/settings", icon: Settings },
-            ...(user?.role === 'admin' ? [{ title: "Verifikasi Akun", href: "/verify-accounts", icon: UserCheck }] : []),
-            ...(user?.role === 'admin' || user?.role === 'supervisor' ? [{ title: "Manajemen Alat", href: "/manage-devices", icon: Camera }] : [])
-          ].map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
+          {/* Row 2: Map & List */}
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden h-[500px] shadow-[0_2px_10px_rgba(0,0,0,0.1)] flex flex-col"
+              >
+                <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500 glow-success" />
+                    <h2 className="font-bold text-foreground tracking-tight">{t('dashboard.personnelMap')}</h2>
+                  </div>
+                  <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE</span>
+                </div>
+                <div className="flex-1">
+                  <SecurityMap 
+                    personnel={personnel} 
+                    selectedId={selectedPersonnel}
+                    onSelectPersonnel={setSelectedPersonnel} 
+                  />
+                </div>
+              </motion.div>
+            </div>
+            <div className="lg:col-span-1">
+              <PersonnelList
+                personnel={personnel}
+                selectedId={selectedPersonnel}
+                onSelect={setSelectedPersonnel}
+                onSendAlert={handleSendAlert}
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {/* TACTICAL LAYOUT */}
+          <div className={cn("grid lg:grid-cols-2 gap-6 min-h-[500px]")}>
+            <div className={cn("h-full", isSwapped ? "order-2" : "order-1")}>
+              <VideoFeed 
+                selectedPersonnelId={selectedPersonnel} 
+                personnel={personnel}
+                hideThumbnails={true}
+              />
+            </div>
+            <motion.div
+              initial={{ opacity: 0, x: isSwapped ? -20 : 20 }}
+              animate={{ opacity: 1, x: 0 }}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
-                location.pathname === item.href
-                  ? "bg-white text-slate-900 shadow-lg shadow-black/10"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
+                "bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden shadow-sm h-full flex flex-col",
+                isSwapped ? "order-1" : "order-2"
               )}
             >
-              <item.icon className={cn(
-                "w-5 h-5",
-                location.pathname === item.href ? "text-slate-900" : "text-white/70 group-hover:text-white"
-              )} />
-              {item.title}
-            </Link>
-          ))}
-
-          <div className="pt-4 mt-4 border-t border-white/20 space-y-1">
-            <Link to="/profile" className="block">
-              <button className="w-full flex items-center gap-3 px-3 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-left">
-                {user?.profile_image ? (
-                  <img src={`/api/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full border border-white/20 object-cover" />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                )}
-                <div className="flex flex-col items-start text-left ml-2 overflow-hidden">
-                  <span className="text-white text-sm font-semibold truncate w-full">{user?.full_name?.split(' ')[0] || t('dashboard.profile')}</span>
-                  <span className="text-[10px] text-white/50 uppercase tracking-tight truncate w-full">{user?.position || 'Personnel'}</span>
+              <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500 glow-success" />
+                  <h2 className="font-bold text-foreground tracking-tight">Tactical Map</h2>
                 </div>
-              </button>
-            </Link>
-            <button
-              onClick={logout}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-red-200 hover:text-white hover:bg-red-500/20 rounded-xl transition-all duration-200 text-sm font-medium text-left"
-            >
-              <LogOut className="w-4 h-4" />
-              {t('dashboard.logout')}
-            </button>
-          </div>
-        </nav>
-
-        {/* Status Card */}
-        <div className="absolute bottom-0 left-0 w-full p-0 bg-black/20 border-t border-white/10 z-20">
-          <div className="p-4 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-40 transition-opacity">
-              <Wifi className="w-12 h-12 -rotate-12 text-white" />
-            </div>
-            <div className="flex items-center gap-3 mb-1.5 relative z-10">
-              <span className={cn(
-                "w-2.5 h-2.5 rounded-full animate-pulse shadow-[0_0_12px_rgba(255,255,255,0.6)]",
-                systemHealthy ? "bg-green-400" : "bg-red-400"
-              )} />
-              <span className="text-sm font-bold text-white tracking-tight">
-                {systemHealthy ? t('dashboard.systemActive') : t('dashboard.serverDisconnected')}
-              </span>
-            </div>
-            <p className="text-[10px] text-white/60 font-bold uppercase tracking-widest relative z-10">
-              {systemHealthy ? `${onlineUsersCount} ${t('dashboard.personnelConnected')}` : t('dashboard.checkConnection')}
-            </p>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Content - Pushed by Sidebar on Desktop */}
-      <div className="flex-1 flex flex-col h-screen lg:pl-[260px] relative z-10 overflow-y-auto overflow-x-hidden">
-        {/* Header */}
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden text-muted-foreground hover:text-foreground transition-colors p-2 hover:bg-muted rounded-lg"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">
-                  Command <span className="text-primary font-orbitron">Center</span>
-                </h1>
-                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider hidden sm:block">{t('dashboard.subtitle')}</p>
+                <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE</span>
               </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Layout Control Group */}
-              <div className="flex bg-muted/30 border border-border/50 p-1 rounded-xl mr-2 gap-1">
-                <button 
-                  onClick={() => setLayoutMode('classic')}
-                  className={cn(
-                    "p-1.5 rounded-lg transition-all",
-                    layoutMode === 'classic' ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  )}
-                  title="Classic Layout"
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => setLayoutMode('tactical')}
-                  className={cn(
-                    "p-1.5 rounded-lg transition-all",
-                    layoutMode === 'tactical' ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  )}
-                  title="Tactical Side-by-Side"
-                >
-                  <Columns className="w-4 h-4" />
-                </button>
-                <div className="w-[1px] h-4 bg-border mx-1 self-center" />
-                <button 
-                  onClick={() => setIsSwapped(!isSwapped)}
-                  className={cn(
-                    "p-1.5 rounded-lg transition-all",
-                    isSwapped ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  )}
-                  title="Swap Top/Bottom Positions"
-                >
-                  <ArrowUpDown className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="hidden md:flex items-center gap-2 bg-muted/30 border border-border/50 rounded-xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                <Search className="w-4 h-4 text-muted-foreground" />
-                <input
-                  placeholder={t('dashboard.searchPlaceholder')}
-                  className="bg-transparent outline-none text-foreground text-sm placeholder:text-muted-foreground w-40"
+              <div className="flex-1">
+                <SecurityMap 
+                  personnel={personnel} 
+                  selectedId={selectedPersonnel}
+                  onSelectPersonnel={setSelectedPersonnel} 
                 />
               </div>
-              
-              <button className="relative p-2 bg-muted/30 border border-border/50 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full glow-destructive" />
-              </button>
-
-              <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-2 bg-muted/30 border border-border/50 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-              >
-                {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4 text-primary" />}
-              </button>
+            </motion.div>
+          </div>
+          
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+              <AIDetectionReport />
+            </div>
+            <div className="lg:col-span-2">
+              <PersonnelList
+                personnel={personnel}
+                selectedId={selectedPersonnel}
+                onSelect={setSelectedPersonnel}
+                onSendAlert={handleSendAlert}
+              />
             </div>
           </div>
-        </header>
-
-        {/* Dashboard Content */}
-        <main className="flex-1 p-4 lg:p-6 space-y-6">
-          <StatusOverview personnel={personnel} onlineUsersCount={onlineUsersCount} />
-
-          {layoutMode === 'classic' ? (
-            <div className={cn("flex flex-col gap-6", isSwapped ? "flex-col-reverse" : "flex-col")}>
-              {/* Row 1: Video & AI */}
-              <div className="grid lg:grid-cols-4 gap-6">
-                <div className="lg:col-span-3">
-                  <VideoFeed 
-                    selectedPersonnelId={selectedPersonnel} 
-                    personnel={personnel}
-                    hideThumbnails={false}
-                  />
-                </div>
-                <div className="lg:col-span-1">
-                  <AIDetectionReport />
-                </div>
-              </div>
-
-              {/* Row 2: Map & List */}
-              <div className="grid lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden h-[500px] shadow-[0_2px_10px_rgba(0,0,0,0.1)] flex flex-col"
-                  >
-                    <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 glow-success" />
-                        <h2 className="font-bold text-foreground tracking-tight">{t('dashboard.personnelMap')}</h2>
-                      </div>
-                      <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE</span>
-                    </div>
-                    <div className="flex-1">
-                      <SecurityMap 
-                        personnel={personnel} 
-                        selectedId={selectedPersonnel}
-                        onSelectPersonnel={setSelectedPersonnel} 
-                      />
-                    </div>
-                  </motion.div>
-                </div>
-                <div className="lg:col-span-1">
-                  <PersonnelList
-                    personnel={personnel}
-                    selectedId={selectedPersonnel}
-                    onSelect={setSelectedPersonnel}
-                    onSendAlert={handleSendAlert}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* TACTICAL LAYOUT: Full Video & Map Side-by-Side */}
-              <div className={cn("grid lg:grid-cols-2 gap-6 min-h-[500px]")}>
-                <div className={cn("h-full", isSwapped ? "order-2" : "order-1")}>
-                  <VideoFeed 
-                    selectedPersonnelId={selectedPersonnel} 
-                    personnel={personnel}
-                    hideThumbnails={true}
-                  />
-                </div>
-                <motion.div
-                  initial={{ opacity: 0, x: isSwapped ? -20 : 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className={cn(
-                    "bg-card backdrop-blur-xl border border-border rounded-2xl overflow-hidden shadow-sm h-full flex flex-col",
-                    isSwapped ? "order-1" : "order-2"
-                  )}
-                >
-                  <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500 glow-success" />
-                      <h2 className="font-bold text-foreground tracking-tight">Tactical Map</h2>
-                    </div>
-                    <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE</span>
-                  </div>
-                  <div className="flex-1 min-h-[400px]">
-                    <SecurityMap 
-                      personnel={personnel} 
-                      selectedId={selectedPersonnel}
-                      onSelectPersonnel={setSelectedPersonnel} 
-                    />
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Tactical Bottom Row */}
-              <div className="grid lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-1">
-                  <AIDetectionReport />
-                </div>
-                <div className="lg:col-span-2">
-                  <PersonnelList
-                    personnel={personnel}
-                    selectedId={selectedPersonnel}
-                    onSelect={setSelectedPersonnel}
-                    onSendAlert={handleSendAlert}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </main>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

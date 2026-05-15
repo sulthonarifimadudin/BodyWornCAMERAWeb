@@ -113,36 +113,22 @@ const ManageDevicesPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-              <Camera className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Manajemen Alat (Raspi)</h1>
-              <p className="text-sm text-muted-foreground">Kelola perangkat bodycam petugas lapangan</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setIsAdding(!isAdding)}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/20"
-            >
-              <Plus className="w-4 h-4" />
-              {isAdding ? "Batal" : "Tambah Alat Baru"}
-            </button>
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-xl text-sm font-medium transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Kembali
-            </button>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-foreground">Manajemen Perangkat</h2>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mt-1">Konfigurasi & Monitoring Alat Raspi</p>
         </div>
+        <button
+          onClick={() => setIsAdding(!isAdding)}
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/20"
+        >
+          <Plus className="w-4 h-4" />
+          {isAdding ? "Batal" : "Tambah Alat Baru"}
+        </button>
+      </div>
+
+      {/* Alerts */}
 
         {/* Alerts */}
         <AnimatePresence>
@@ -310,7 +296,6 @@ const ManageDevicesPage = () => {
             </p>
           </div>
         </div>
-      </div>
     </div>
   );
 };

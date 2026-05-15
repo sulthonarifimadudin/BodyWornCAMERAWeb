@@ -200,59 +200,12 @@ const ProfilePage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background text-foreground transition-colors duration-300 overflow-hidden">
-            {/* Background */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-30 dark:opacity-100 transition-opacity duration-1000">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-                <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--border)/0.2)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--border)/0.2)_1px,transparent_1px)] bg-[size:50px_50px]" />
+        <div className="space-y-6">
+            {/* Header Profil */}
+            <div className="flex flex-col">
+                <h2 className="text-xl font-bold text-foreground">Profil Saya</h2>
+                <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mt-1">Kelola informasi diri & keamanan akun</p>
             </div>
-
-            {/* Navbar */}
-            <nav className="relative z-10 border-b border-border bg-background/80 backdrop-blur-md">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center gap-2">
-                            <Shield className="w-8 h-8 text-primary" />
-                            <span className="text-lg font-bold text-foreground">BODY<span className="text-primary font-orbitron">WORNCAM</span></span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            {/* Language Toggle */}
-                            <button
-                                onClick={() => i18n.changeLanguage(i18n.language === 'id' ? 'en' : 'id')}
-                                className="p-2 bg-muted/50 border border-border rounded-xl text-muted-foreground hover:text-foreground transition-all flex items-center gap-2"
-                                title="Switch Language"
-                            >
-                                <Globe className="w-5 h-5" />
-                                <span className="text-[10px] font-bold uppercase tracking-tight">{i18n.language}</span>
-                            </button>
-
-                            {/* Theme Toggle */}
-                            <button
-                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="p-2 bg-muted/50 border border-border rounded-xl text-muted-foreground hover:text-foreground transition-all"
-                                title="Toggle Theme"
-                            >
-                                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5 text-primary" />}
-                            </button>
-
-                            <button
-                                onClick={() => navigate("/dashboard")}
-                                className="text-muted-foreground hover:text-foreground text-sm font-semibold transition"
-                            >
-                                {t('dashboard.home')}
-                            </button>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition text-sm font-bold shadow-sm"
-                            >
-                                <LogOut className="w-4 h-4" />
-                                {t('dashboard.logout')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
 
             {/* Main Content */}
             <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
