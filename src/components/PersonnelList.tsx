@@ -130,10 +130,10 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                       <div className="flex items-center gap-2">
                         <button 
                             onClick={(e) => handleEdit(e, person)}
-                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-all border border-transparent hover:border-border"
+                            className="w-10 h-10 rounded-xl bg-white border border-border text-muted-foreground hover:text-primary hover:bg-muted/50 hover:border-primary/20 shadow-sm shadow-black/5 flex items-center justify-center transition-all"
                             title={t('profile.editProfile')}
                         >
-                            <Pencil className="w-4 h-4" />
+                            <Pencil className="w-4.5 h-4.5" />
                         </button>
                         <button 
                             onClick={(e) => {
@@ -149,7 +149,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                               });
                             }}
                             className={cn(
-                              "p-2.5 rounded-xl transition-all shadow-md flex items-center justify-center",
+                              "w-10 h-10 rounded-xl transition-all shadow-md flex items-center justify-center",
                               activeBuzzers[person.id] 
                                 ? "bg-red-500 text-white hover:bg-red-600 shadow-red-500/30" 
                                 : "bg-white border border-border text-muted-foreground hover:text-primary hover:bg-muted/50 hover:border-primary/20 shadow-black/5"
