@@ -54,12 +54,7 @@ const StatusOverview = ({ personnel, onlineUsersCount = 0 }: StatusOverviewProps
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.1 }}
-          className={cn(
-            "rounded-xl p-4 shadow-sm border transition-all hover:shadow-md",
-            stat.color === "primary" ? "bg-blue-200 border-blue-300 dark:bg-blue-900/40 dark:border-blue-800/50" :
-            stat.color === "success" ? "bg-green-200 border-green-300 dark:bg-green-950/40 dark:border-green-900/50" :
-            "bg-red-200 border-red-300 dark:bg-red-950/40 dark:border-red-900/50"
-          )}
+          className="bg-cyan-200 border-cyan-300 dark:bg-cyan-900/40 dark:border-cyan-800/50 rounded-xl p-4 shadow-sm border transition-all hover:shadow-md"
         >
           <div className="flex items-start justify-between">
             <div>
