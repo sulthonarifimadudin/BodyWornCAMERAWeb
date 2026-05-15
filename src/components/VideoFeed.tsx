@@ -95,8 +95,8 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
       <div className="grid lg:grid-cols-4 gap-4 p-4 flex-1">
         {/* Main Video Feed */}
         <div className={cn(
-          "relative h-full rounded-lg overflow-hidden bg-black border border-border shadow-inner",
-          hideThumbnails ? "lg:col-span-4" : "lg:col-span-3",
+          "relative rounded-lg overflow-hidden bg-black border border-border shadow-inner",
+          hideThumbnails ? "lg:col-span-4 h-full" : "lg:col-span-3 aspect-video",
           "group"
         )}>
           {selectedPerson ? (

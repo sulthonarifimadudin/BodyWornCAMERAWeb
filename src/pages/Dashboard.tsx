@@ -188,7 +188,7 @@ const Dashboard = () => {
       </aside>
 
       {/* Main Content - Pushed by Sidebar on Desktop */}
-      <div className="flex-1 flex flex-col min-h-screen lg:pl-[260px] relative z-10 overflow-x-hidden">
+      <div className="flex-1 flex flex-col h-screen lg:pl-[260px] relative z-10 overflow-y-auto overflow-x-hidden">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
           <div className="flex items-center justify-between px-6 py-4">
