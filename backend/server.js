@@ -755,7 +755,7 @@ app.get('/api/gps/latest', async (req, res) => {
 });
 
 // 3. Endpoint Admin: Update data Satpam/Perangkat (Hanya oleh Admin)
-app.put('/api/admin/users/:id', verifyToken, verifyAdmin, upload.single('image'), async (req, res) => {
+app.put('/api/admin/users/:id', verifyToken, upload.single('image'), async (req, res) => {
     try {
         const targetId = req.params.id;
         const { full_name, position } = req.body;
