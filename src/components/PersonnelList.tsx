@@ -93,7 +93,7 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
               transition={{ delay: i * 0.05 }}
               onClick={() => onSelect(selectedId === person.id ? null : person.id)}
               className={cn(
-                "p-3 rounded-lg cursor-pointer transition-all duration-200 border group",
+                "p-3 rounded-lg cursor-pointer transition-all duration-200 border group relative",
                 selectedId === person.id
                   ? "bg-primary/10 border-primary/50"
                   : "bg-secondary/50 border-transparent hover:bg-secondary hover:border-border"
@@ -137,41 +137,40 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                     <span className="truncate">{person.location || t('profile.notFilled')}</span>
                   </div>
                 </div>
+              </div>
 
-                {/* Action Buttons (Absolute) */}
-                <div className="flex items-center gap-1 absolute top-2.5 right-2.5">
-                  <button 
-                      onClick={(e) => handleEdit(e, person)}
-                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary transition-all"
-                      title={t('profile.editProfile')}
-                  >
-                      <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                  <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const isActive = activeBuzzers[person.id] || false;
-                        const newAction = isActive ? 'stop' : 'start';
-                        
-                        onSendAlert && onSendAlert(person.id, newAction);
-                        
-                        setActiveBuzzers({
-                          ...activeBuzzers,
-                          [person.id]: !isActive
-                        });
-                      }}
-                      className={cn(
-                        "p-2.5 rounded-xl transition-all shadow-md flex items-center justify-center",
-                        activeBuzzers[person.id] 
-                          ? "bg-red-500 text-white hover:bg-red-600 shadow-red-500/30" 
-                          : "bg-white border border-border text-muted-foreground hover:text-primary hover:bg-muted/50 hover:border-primary/20 shadow-black/5"
-                      )}
-                      title={activeBuzzers[person.id] ? "Matikan Peringatan" : "Beri Peringatan"}
-                  >
-                      <Bell className="w-5 h-5" />
-                  </button>
-                </div>
-                </div>
+              {/* Action Buttons (Absolute) */}
+              <div className="flex items-center gap-1 absolute top-2.5 right-2.5">
+                <button 
+                    onClick={(e) => handleEdit(e, person)}
+                    className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-primary transition-all"
+                    title={t('profile.editProfile')}
+                >
+                    <Pencil className="w-3.5 h-3.5" />
+                </button>
+                <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const isActive = activeBuzzers[person.id] || false;
+                      const newAction = isActive ? 'stop' : 'start';
+                      
+                      onSendAlert && onSendAlert(person.id, newAction);
+                      
+                      setActiveBuzzers({
+                        ...activeBuzzers,
+                        [person.id]: !isActive
+                      });
+                    }}
+                    className={cn(
+                      "p-2.5 rounded-xl transition-all shadow-md flex items-center justify-center",
+                      activeBuzzers[person.id] 
+                        ? "bg-red-500 text-white hover:bg-red-600 shadow-red-500/30" 
+                        : "bg-white border border-border text-muted-foreground hover:text-primary hover:bg-muted/50 hover:border-primary/20 shadow-black/5"
+                    )}
+                    title={activeBuzzers[person.id] ? "Matikan Peringatan" : "Beri Peringatan"}
+                >
+                    <Bell className="w-5 h-5" />
+                </button>
               </div>
             </motion.div>
           ))}
