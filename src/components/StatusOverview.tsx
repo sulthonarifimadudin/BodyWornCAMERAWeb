@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Users, AlertTriangle, Shield, Radio } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 interface StatusOverviewProps {
   personnel: Personnel[];
@@ -53,7 +54,12 @@ const StatusOverview = ({ personnel, onlineUsersCount = 0 }: StatusOverviewProps
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.1 }}
-          className="bg-white dark:bg-card rounded-xl p-4 shadow-md border border-border/50 hover:shadow-lg transition-shadow"
+          className={cn(
+            "rounded-xl p-4 shadow-sm border transition-all hover:shadow-md",
+            stat.color === "primary" ? "bg-blue-50/70 border-blue-100 dark:bg-blue-950/20 dark:border-blue-900/30" :
+            stat.color === "success" ? "bg-green-50/70 border-green-100 dark:bg-green-950/20 dark:border-green-900/30" :
+            "bg-red-50/70 border-red-100 dark:bg-red-950/20 dark:border-red-900/30"
+          )}
         >
           <div className="flex items-start justify-between">
             <div>

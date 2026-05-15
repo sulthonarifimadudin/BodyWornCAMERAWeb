@@ -75,18 +75,18 @@ const AIDetectionReport = () => {
 
         {/* Counters */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white dark:bg-muted/30 p-3 rounded-xl border border-border/50 text-center shadow-sm hover:shadow-md transition-shadow">
-            <Users className="w-4 h-4 mx-auto mb-1 text-primary" />
+          <div className="bg-blue-50/70 border-blue-100 dark:bg-blue-950/20 dark:border-blue-900/30 p-3 rounded-xl border text-center shadow-sm hover:shadow-md transition-shadow">
+            <Users className="w-4 h-4 mx-auto mb-1 text-blue-500" />
             <div className="text-xl font-bold text-foreground">{data.person_count}</div>
             <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-tight">Orang</div>
           </div>
-          <div className="bg-white dark:bg-muted/30 p-3 rounded-xl border border-border/50 text-center shadow-sm hover:shadow-md transition-shadow">
-            <Car className="w-4 h-4 mx-auto mb-1 text-primary" />
+          <div className="bg-green-50/70 border-green-100 dark:bg-green-950/20 dark:border-green-900/30 p-3 rounded-xl border text-center shadow-sm hover:shadow-md transition-shadow">
+            <Car className="w-4 h-4 mx-auto mb-1 text-green-500" />
             <div className="text-xl font-bold text-foreground">{data.car_count}</div>
             <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-tight">Mobil</div>
           </div>
-          <div className="bg-white dark:bg-muted/30 p-3 rounded-xl border border-border/50 text-center shadow-sm hover:shadow-md transition-shadow">
-            <Bike className="w-4 h-4 mx-auto mb-1 text-primary" />
+          <div className="bg-purple-50/70 border-purple-100 dark:bg-purple-950/20 dark:border-purple-900/30 p-3 rounded-xl border text-center shadow-sm hover:shadow-md transition-shadow">
+            <Bike className="w-4 h-4 mx-auto mb-1 text-purple-500" />
             <div className="text-xl font-bold text-foreground">{data.motorcycle_count}</div>
             <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-tight">Motor</div>
           </div>
