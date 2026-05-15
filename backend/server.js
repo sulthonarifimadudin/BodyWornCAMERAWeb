@@ -978,6 +978,20 @@ app.delete('/api/admin/devices/:id', verifyToken, async (req, res) => {
     }
 });
 
+app.get('/api/admin/users', verifyToken, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak.' });
+        }
+
+        const [rows] = await pool.query('SELECT id, full_name, email, phone, position, role, is_verified, created_at FROM users ORDER BY created_at DESC');
+        res.status(200).json({ success: true, users: rows });
+    } catch (error) {
+        console.error('[FETCH ALL USERS ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal mengambil daftar user.' });
+    }
+});
+
 // Inisialisasi Database & Start Server
 const startServer = async () => {
     try {
