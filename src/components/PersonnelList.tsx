@@ -44,7 +44,6 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
         body: JSON.stringify({
           full_name: editForm.name,
           position: editForm.role,
-          location: editForm.location,
         }),
       });
 
@@ -230,15 +229,6 @@ const PersonnelList = ({ personnel, selectedId, onSelect, onSendAlert }: Personn
                                 onChange={(e) => setEditForm({...editForm, role: e.target.value})}
                                 className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                                 placeholder={t('profile.position')}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-[10px] font-bold text-muted-foreground mb-1 uppercase tracking-wider">{t('profile.location')}</label>
-                            <input 
-                                value={editForm.location}
-                                onChange={(e) => setEditForm({...editForm, location: e.target.value})}
-                                className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                                placeholder={t('profile.location')}
                             />
                         </div>
                     </div>
