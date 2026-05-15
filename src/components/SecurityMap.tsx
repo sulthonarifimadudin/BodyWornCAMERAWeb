@@ -204,7 +204,7 @@ const SecurityMap = ({ personnel, selectedId, onSelectPersonnel }: SecurityMapPr
   }, [personnel, onSelectPersonnel]);
 
   return (
-    <div className="relative w-full h-[calc(100%-57px)]">
+    <div className="relative w-full h-[calc(100%-57px)] rounded-b-2xl overflow-hidden">
       <div ref={mapContainer} className="absolute inset-0" />
       {/* Overlay gradient */}
       <div className="absolute inset-0 pointer-events-none border-t border-border/30">
