@@ -97,19 +97,17 @@ const Dashboard = () => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        {/* Logo (Fixed) */}
-        <div className="p-6 border-b border-border/50 flex items-center justify-between flex-shrink-0">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-              <Shield className="w-5 h-5 text-primary-foreground" />
+        {/* Logo */}
+        <div className="p-6 flex items-center justify-between border-b border-white/20">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+              <Shield className="w-6 h-6 text-white" />
             </div>
-            <span className="font-bold text-lg tracking-wider text-foreground">
-              BODY<span className="text-primary font-orbitron">WORNCAM</span>
-            </span>
-          </Link>
+            <h1 className="text-xl font-bold tracking-tight text-white">BODY<span className="text-cyan-100">WORNCAM</span></h1>
+          </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-muted-foreground hover:text-foreground transition-colors"
+            className="lg:hidden text-white/70 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -117,45 +115,49 @@ const Dashboard = () => {
 
         {/* Nav (Scrollable) */}
         <nav className="flex-1 p-4 pt-8 space-y-2 overflow-y-auto custom-scrollbar pb-32">
-          <Link to="/">
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium text-left">
-              <Home className="w-4 h-4" />
-              {t('dashboard.home')}
-            </button>
-          </Link>
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-primary/10 text-primary border border-primary/20 rounded-xl text-sm font-medium text-left">
-            <Shield className="w-4 h-4" />
-            {t('dashboard.title')}
-          </button>
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium text-left">
-            <Bell className="w-4 h-4" />
-            {t('dashboard.notifications')}
-            <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-bold">3</span>
-          </button>
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-sm font-medium text-left">
-            <Settings className="w-4 h-4" />
-            {t('dashboard.settings')}
-          </button>
+          {[
+            { title: t('dashboard.home'), href: "/", icon: Home },
+            { title: t('dashboard.title'), href: "/dashboard", icon: Shield },
+            { title: t('dashboard.notifications'), href: "/notifications", icon: Bell },
+            { title: t('dashboard.settings'), href: "/settings", icon: Settings },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              to={item.href}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
+                location.pathname === item.href
+                  ? "bg-white text-primary shadow-lg shadow-black/10"
+                  : "text-white/70 hover:bg-white/10 hover:text-white"
+              )}
+            >
+              <item.icon className={cn(
+                "w-5 h-5",
+                location.pathname === item.href ? "text-primary" : "text-white/70 group-hover:text-white"
+              )} />
+              {item.title}
+            </Link>
+          ))}
 
-          <div className="pt-4 mt-4 border-t border-border/50 space-y-1">
+          <div className="pt-4 mt-4 border-t border-white/20 space-y-1">
             <Link to="/profile" className="block">
-              <button className="w-full flex items-center gap-3 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all duration-200 text-left">
+              <button className="w-full flex items-center gap-3 px-3 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-left">
                 {user?.profile_image ? (
-                  <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full border border-border/50 object-cover" />
+                  <img src={`/uploads/${user.profile_image}`} alt="Avatar" className="w-8 h-8 rounded-full border border-white/20 object-cover" />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <User className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
                   </div>
                 )}
                 <div className="flex flex-col items-start text-left ml-2 overflow-hidden">
-                  <span className="text-foreground text-sm font-semibold truncate w-full">{user?.full_name?.split(' ')[0] || t('dashboard.profile')}</span>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-tight truncate w-full">{user?.position || 'Personnel'}</span>
+                  <span className="text-white text-sm font-semibold truncate w-full">{user?.full_name?.split(' ')[0] || t('dashboard.profile')}</span>
+                  <span className="text-[10px] text-white/50 uppercase tracking-tight truncate w-full">{user?.position || 'Personnel'}</span>
                 </div>
               </button>
             </Link>
             <button
               onClick={logout}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all duration-200 text-sm font-medium text-left"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-red-200 hover:text-white hover:bg-red-500/20 rounded-xl transition-all duration-200 text-sm font-medium text-left"
             >
               <LogOut className="w-4 h-4" />
               {t('dashboard.logout')}
@@ -163,22 +165,22 @@ const Dashboard = () => {
           </div>
         </nav>
 
-        {/* Status Card (GUARANTEED AT ABSOLUTE BOTTOM OF VIEWPORT) */}
-        <div className="absolute bottom-0 left-0 w-full p-0 bg-card border-t border-border/50 z-20">
-          <div className="bg-primary/10 p-4 relative overflow-hidden group">
+        {/* Status Card */}
+        <div className="absolute bottom-0 left-0 w-full p-0 bg-black/20 border-t border-white/10 z-20">
+          <div className="p-4 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-40 transition-opacity">
-              <Wifi className="w-12 h-12 -rotate-12" />
+              <Wifi className="w-12 h-12 -rotate-12 text-white" />
             </div>
             <div className="flex items-center gap-3 mb-1.5 relative z-10">
               <span className={cn(
-                "w-2.5 h-2.5 rounded-full animate-pulse shadow-[0_0_12px_rgba(34,197,94,0.6)]",
-                systemHealthy ? "bg-success" : "bg-destructive shadow-[0_0_12px_rgba(239,68,68,0.6)]"
+                "w-2.5 h-2.5 rounded-full animate-pulse shadow-[0_0_12px_rgba(255,255,255,0.6)]",
+                systemHealthy ? "bg-green-400" : "bg-red-400"
               )} />
-              <span className="text-sm font-bold text-foreground tracking-tight">
+              <span className="text-sm font-bold text-white tracking-tight">
                 {systemHealthy ? t('dashboard.systemActive') : t('dashboard.serverDisconnected')}
               </span>
             </div>
-            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest relative z-10">
+            <p className="text-[10px] text-white/60 font-bold uppercase tracking-widest relative z-10">
               {systemHealthy ? `${onlineUsersCount} ${t('dashboard.personnelConnected')}` : t('dashboard.checkConnection')}
             </p>
           </div>
