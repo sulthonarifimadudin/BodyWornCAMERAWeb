@@ -1035,21 +1035,25 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
 
         // Gunakan FFmpeg untuk merekam HLS stream ke MP4 dengan durabilitas tinggi
         const ffmpegPath = '/usr/bin/ffmpeg';
+        const logStream = fs.createWriteStream(path.join(recordingsDir, 'debug_ffmpeg.log'), { flags: 'a' });
+        logStream.write(`\n\n[${new Date().toISOString()}] STARTING RECORD: ${streamId} -> ${fileName}\n`);
+        logStream.write(`URL: ${streamUrl}\n`);
+
         const ffmpegProcess = spawn(ffmpegPath, [
             '-hide_banner',
-            '-loglevel', 'error',
+            '-loglevel', 'debug', // Pakai debug agar ketahuan semua errornya
             '-reconnect', '1',
             '-reconnect_at_eof', '1',
             '-reconnect_streamed', '1',
             '-reconnect_delay_max', '5',
-            '-rw_timeout', '10000000', // 10 seconds timeout
+            '-rw_timeout', '10000000', 
             '-probesize', '10M',
             '-analyzeduration', '10M',
             '-i', streamUrl,
-            '-c', 'copy', // Copy stream tanpa re-encoding untuk hemat CPU
+            '-c', 'copy', 
             '-bsf:a', 'aac_adtstoasc',
-            '-movflags', '+faststart', // Optimal untuk web playback
-            '-y', // Overwrite if exists
+            '-movflags', '+faststart', 
+            '-y', 
             filePath
         ]);
 
@@ -1061,17 +1065,19 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
         });
 
         ffmpegProcess.on('error', (err) => {
+            logStream.write(`[ERROR SPAWN] ${err.message}\n`);
             console.error(`[FFMPEG SPAWN ERROR] ${streamId}:`, err);
         });
 
         ffmpegProcess.on('close', (code) => {
+            logStream.write(`[FINISHED] FFmpeg closed with code ${code}\n`);
+            logStream.end();
             console.log(`[REC STOP] FFmpeg untuk ${streamId} ditutup dengan kode ${code}`);
             activeRecordings.delete(streamId);
         });
 
         ffmpegProcess.stderr.on('data', (data) => {
-            const msg = data.toString();
-            console.error(`[FFMPEG STDERR] ${streamId}: ${msg}`);
+            logStream.write(data.toString());
         });
 
         res.status(200).json({ success: true, message: 'Perekaman dimulai.', fileName });
