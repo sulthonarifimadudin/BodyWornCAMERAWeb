@@ -130,9 +130,9 @@ const LoginPage = () => {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", duration: 0.6 }}
-                        className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-2xl shadow-xl shadow-primary/20 mb-4"
+                        className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-2xl shadow-xl shadow-primary/20 mb-4 overflow-hidden p-2"
                     >
-                        <Shield className="w-10 h-10 text-primary-foreground" />
+                        <img src="/logo.png" alt="Logo" className="w-14 h-14 object-contain" />
                     </motion.div>
                     <h1 className="text-3xl font-orbitron font-bold text-foreground">
                         {step === 'login' ? t('login.title') : t('login.otpTitle')}
