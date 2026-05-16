@@ -9,6 +9,7 @@ import StatusOverview from "@/components/StatusOverview";
 import AIDetectionReport from "@/components/AIDetectionReport";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { Layout, Maximize2, Repeat } from "lucide-react";
 
 const socket = io('https://bodyworncamera.sbs');
 
@@ -26,7 +27,41 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <StatusOverview personnel={personnel} onlineUsersCount={0} />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <StatusOverview personnel={personnel} onlineUsersCount={0} />
+        
+        {/* Layout Controls */}
+        <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm border border-border p-1.5 rounded-2xl shadow-sm self-end sm:self-center">
+          <button
+            onClick={() => setLayoutMode('classic')}
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
+              layoutMode === 'classic' ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:bg-muted"
+            )}
+          >
+            <Layout className="w-3.5 h-3.5" />
+            Classic
+          </button>
+          <button
+            onClick={() => setLayoutMode('tactical')}
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
+              layoutMode === 'tactical' ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:bg-muted"
+            )}
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+            Tactical
+          </button>
+          <div className="w-px h-4 bg-border mx-1" />
+          <button
+            onClick={() => setIsSwapped(!isSwapped)}
+            className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+            title="Swap View"
+          >
+            <Repeat className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
 
       {layoutMode === 'classic' ? (
         <div className={cn("flex flex-col gap-6", isSwapped ? "flex-col-reverse" : "flex-col")}>
