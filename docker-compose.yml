@@ -37,6 +37,7 @@ services:
       - PORT=3000
     volumes:
       - ./backend/uploads:/app/uploads
+      - ./backend/recordings:/app/recordings
 
     env_file:
       - ./backend/.env

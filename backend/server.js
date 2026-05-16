@@ -1025,17 +1025,23 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Recording sudah berjalan untuk stream ini.' });
         }
 
-        const fileName = `rec_${streamId}_${Date.now()}.mp4`;
+        const safeStreamId = streamId.replace(/\//g, '_');
+        const fileName = `rec_${safeStreamId}_${Date.now()}.mp4`;
         const filePath = path.join(recordingsDir, fileName);
         const streamUrl = `http://mediamtx:8888/${streamId}/index.m3u8`;
 
-        console.log(`[REC START] Memulai rekaman untuk ${streamId} ke ${fileName}`);
+        console.log(`[REC START] Memulai rekaman untuk ${streamId} ke ${fileName} via ${streamUrl}`);
 
-        // Gunakan FFmpeg untuk merekam HLS stream ke MP4
+        // Gunakan FFmpeg untuk merekam HLS stream ke MP4 dengan durabilitas tinggi
         const ffmpegProcess = spawn('ffmpeg', [
+            '-reconnect', '1',
+            '-reconnect_at_eof', '1',
+            '-reconnect_streamed', '1',
+            '-reconnect_delay_max', '5',
             '-i', streamUrl,
             '-c', 'copy', // Copy stream tanpa re-encoding untuk hemat CPU
             '-bsf:a', 'aac_adtstoasc',
+            '-y', // Overwrite if exists
             filePath
         ]);
 
@@ -1052,8 +1058,10 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
         });
 
         ffmpegProcess.stderr.on('data', (data) => {
-            // FFmpeg logs to stderr by default
-            // console.log(`[FFMPEG DEBUG] ${data}`);
+            const msg = data.toString();
+            if (msg.includes('Error') || msg.includes('failed')) {
+                console.error(`[FFMPEG ERROR] ${streamId}: ${msg}`);
+            }
         });
 
         res.status(200).json({ success: true, message: 'Perekaman dimulai.', fileName });

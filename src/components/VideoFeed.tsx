@@ -35,7 +35,7 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
     ? '/mediamtx/live/output/index.m3u8'
     : '/mediamtx/live/stream/index.m3u8';
 
-  const streamId = streamType === 'ai' ? 'output' : 'stream';
+  const streamId = streamType === 'ai' ? 'live/output' : 'live/stream';
 
   useEffect(() => {
     checkRecordStatus();
