@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRealtimePersonnel } from "@/hooks/useRealtimePersonnel";
 import { motion } from "framer-motion";
 import { io } from 'socket.io-client';
@@ -9,7 +9,6 @@ import StatusOverview from "@/components/StatusOverview";
 import AIDetectionReport from "@/components/AIDetectionReport";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { Layout, Maximize2, Repeat } from "lucide-react";
 
 const socket = io('https://bodyworncamera.sbs');
 
@@ -20,6 +19,19 @@ const Dashboard = () => {
   const [layoutMode, setLayoutMode] = useState<'classic' | 'tactical'>('classic');
   const [isSwapped, setIsSwapped] = useState(false);
 
+  useEffect(() => {
+    const handleChangeLayout = (e: any) => setLayoutMode(e.detail);
+    const handleSwapLayout = () => setIsSwapped(prev => !prev);
+
+    window.addEventListener('changeLayout', handleChangeLayout);
+    window.addEventListener('swapLayout', handleSwapLayout);
+
+    return () => {
+      window.removeEventListener('changeLayout', handleChangeLayout);
+      window.removeEventListener('swapLayout', handleSwapLayout);
+    };
+  }, []);
+
   const handleSendAlert = (userId: string, action: 'start' | 'stop') => {
     console.log(`Mengirim perintah buzzer ${action} ke user:`, userId);
     socket.emit('perintah_buzzer', { userId: parseInt(userId), action });
@@ -27,45 +39,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <StatusOverview personnel={personnel} onlineUsersCount={0} />
-        
-        {/* Layout Controls */}
-        <div className="flex items-center gap-1.5 bg-muted/50 p-1 rounded-xl border border-border/50 shadow-inner self-end sm:self-center">
-          <button
-            onClick={() => setLayoutMode('classic')}
-            className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
-              layoutMode === 'classic' 
-                ? "bg-card text-primary shadow-sm ring-1 ring-border/50" 
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
-            )}
-          >
-            <Layout className="w-3.5 h-3.5" />
-            {t('dashboard.classic')}
-          </button>
-          <button
-            onClick={() => setLayoutMode('tactical')}
-            className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
-              layoutMode === 'tactical' 
-                ? "bg-card text-primary shadow-sm ring-1 ring-border/50" 
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
-            )}
-          >
-            <Maximize2 className="w-3.5 h-3.5" />
-            {t('dashboard.tactical')}
-          </button>
-          <div className="w-px h-4 bg-border/50 mx-1" />
-          <button
-            onClick={() => setIsSwapped(!isSwapped)}
-            className="p-1.5 text-muted-foreground hover:text-primary transition-colors"
-            title="Swap View"
-          >
-            <Repeat className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+      <StatusOverview personnel={personnel} onlineUsersCount={0} />
 
       {layoutMode === 'classic' ? (
         <div className={cn("flex flex-col gap-6", isSwapped ? "flex-col-reverse" : "flex-col")}>

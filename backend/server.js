@@ -10,8 +10,23 @@ import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import nodemailer from 'nodemailer';
 import pool, { initDB } from './db.js';
+import { spawn } from 'child_process';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+const recordingsDir = path.join(__dirname, 'recordings');
+if (!fs.existsSync(recordingsDir)) {
+    fs.mkdirSync(recordingsDir);
+}
+
+// In-memory storage for active recording processes
+const activeRecordings = new Map();
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -990,6 +1005,142 @@ app.get('/api/admin/users', verifyToken, async (req, res) => {
         console.error('[FETCH ALL USERS ERROR]', error);
         res.status(500).json({ success: false, message: 'Gagal mengambil daftar user.' });
     }
+});
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/recordings', express.static(recordingsDir));
+
+// --- API ROUTES --- RECORDING & GALLERY ENDPOINTS ---
+
+app.post('/api/admin/record/start', verifyToken, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak.' });
+        }
+
+        const { streamId, personnelName } = req.body;
+        if (!streamId) return res.status(400).json({ success: false, message: 'ID Stream wajib diisi.' });
+
+        if (activeRecordings.has(streamId)) {
+            return res.status(400).json({ success: false, message: 'Recording sudah berjalan untuk stream ini.' });
+        }
+
+        const fileName = `rec_${streamId}_${Date.now()}.mp4`;
+        const filePath = path.join(recordingsDir, fileName);
+        const streamUrl = `http://mediamtx:8888/${streamId}/index.m3u8`;
+
+        console.log(`[REC START] Memulai rekaman untuk ${streamId} ke ${fileName}`);
+
+        // Gunakan FFmpeg untuk merekam HLS stream ke MP4
+        const ffmpegProcess = spawn('ffmpeg', [
+            '-i', streamUrl,
+            '-c', 'copy', // Copy stream tanpa re-encoding untuk hemat CPU
+            '-bsf:a', 'aac_adtstoasc',
+            filePath
+        ]);
+
+        activeRecordings.set(streamId, {
+            process: ffmpegProcess,
+            fileName,
+            startTime: new Date(),
+            personnelName: personnelName || streamId
+        });
+
+        ffmpegProcess.on('close', (code) => {
+            console.log(`[REC STOP] FFmpeg untuk ${streamId} ditutup dengan kode ${code}`);
+            activeRecordings.delete(streamId);
+        });
+
+        ffmpegProcess.stderr.on('data', (data) => {
+            // FFmpeg logs to stderr by default
+            // console.log(`[FFMPEG DEBUG] ${data}`);
+        });
+
+        res.status(200).json({ success: true, message: 'Perekaman dimulai.', fileName });
+    } catch (error) {
+        console.error('[RECORD START ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal memulai rekaman.' });
+    }
+});
+
+app.post('/api/admin/record/stop', verifyToken, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak.' });
+        }
+
+        const { streamId } = req.body;
+        const recording = activeRecordings.get(streamId);
+
+        if (!recording) {
+            return res.status(400).json({ success: false, message: 'Tidak ada rekaman aktif untuk stream ini.' });
+        }
+
+        recording.process.kill('SIGINT'); // Kirim signal interrupt agar FFmpeg menutup file dengan benar
+        res.status(200).json({ success: true, message: 'Perekaman dihentikan.' });
+    } catch (error) {
+        console.error('[RECORD STOP ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal menghentikan rekaman.' });
+    }
+});
+
+app.get('/api/admin/recordings', verifyToken, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak.' });
+        }
+
+        const files = fs.readdirSync(recordingsDir)
+            .filter(file => file.endsWith('.mp4'))
+            .map(file => {
+                const stats = fs.statSync(path.join(recordingsDir, file));
+                return {
+                    name: file,
+                    size: stats.size,
+                    createdAt: stats.birthtime,
+                    url: `/recordings/${file}`
+                };
+            })
+            .sort((a, b) => b.createdAt - a.createdAt);
+
+        res.status(200).json({ success: true, recordings: files });
+    } catch (error) {
+        console.error('[FETCH RECORDINGS ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal mengambil daftar rekaman.' });
+    }
+});
+
+app.delete('/api/admin/recordings/:filename', verifyToken, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak.' });
+        }
+
+        const fileName = req.params.filename;
+        const filePath = path.join(recordingsDir, fileName);
+
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            res.status(200).json({ success: true, message: 'Rekaman berhasil dihapus.' });
+        } else {
+            res.status(404).json({ success: false, message: 'File tidak ditemukan.' });
+        }
+    } catch (error) {
+        console.error('[DELETE RECORDING ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal menghapus rekaman.' });
+    }
+});
+
+app.get('/api/admin/record/status', verifyToken, async (req, res) => {
+    const status = {};
+    activeRecordings.forEach((val, key) => {
+        status[key] = {
+            isRecording: true,
+            startTime: val.startTime,
+            fileName: val.fileName
+        };
+    });
+    res.json({ success: true, activeRecordings: status });
 });
 
 // Inisialisasi Database & Start Server

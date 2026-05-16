@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Shield, Home, Bell, Settings, User, LogOut, Wifi, UserCheck, Camera, X } from "lucide-react";
+import { Shield, Home, Bell, Settings, User, LogOut, Wifi, UserCheck, Camera, X, Video } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -80,7 +80,9 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center border border-white/10 overflow-hidden">
               <img src="/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
             </div>
-            <h1 className="text-lg font-bold tracking-tighter text-white">BODY<span className="text-white/80 font-orbitron">WORNCAM</span></h1>
+            <h1 className="text-xl font-black tracking-tighter text-white font-orbitron">
+              BODY<span className="text-white/70">WORNCAM</span>
+            </h1>
           </div>
           <button
             onClick={() => setOpen(false)}
@@ -97,8 +99,11 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
             { title: t('dashboard.title'), href: "/dashboard", icon: Shield },
             { title: t('dashboard.notifications'), href: "/notifications", icon: Bell },
             { title: t('dashboard.settings'), href: "/settings", icon: Settings },
-            ...(user?.role === 'admin' ? [{ title: "Verifikasi Akun", href: "/verify-accounts", icon: UserCheck }] : []),
-            ...(user?.role === 'admin' || user?.role === 'supervisor' ? [{ title: "Manajemen Alat", href: "/manage-devices", icon: Camera }] : [])
+            ...(user?.role === 'admin' || user?.role === 'supervisor' ? [
+              { title: "Verifikasi Akun", href: "/verify-accounts", icon: UserCheck },
+              { title: "Manajemen Alat", href: "/manage-devices", icon: Camera },
+              { title: "Galeri Rekaman", href: "/gallery", icon: Video }
+            ] : [])
           ].map((item) => (
             <Link
               key={item.href}

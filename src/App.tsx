@@ -15,6 +15,7 @@ import VerifyResetOTPPage from "./pages/VerifyResetOTPPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ManageDevicesPage from "./pages/ManageDevicesPage";
 import SettingsPage from "./pages/SettingsPage";
+import GalleryPage from "./pages/GalleryPage";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ThemeProvider } from "next-themes";
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/verify-accounts" element={<VerifyAccountsPage />} />
               <Route path="/manage-devices" element={<ManageDevicesPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/gallery" element={<GalleryPage />} />
             </Route>
           </Routes>
         </AuthProvider>

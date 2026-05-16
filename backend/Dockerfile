@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install dependencies first (untuk memanfaat cache layer docker)
 COPY package*.json ./
-RUN npm install --production
+RUN apk add --no-cache ffmpeg && npm install --production
 
 # Salin sisa kode backend
 COPY . .

@@ -1,11 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Video, VideoOff, Maximize2, Volume2, Activity } from "lucide-react";
+import { Video, VideoOff, Maximize2, Volume2, Activity, Disc, Square, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import HLSPlayer from "./HLSPlayer";
 import { Personnel } from "@/hooks/useRealtimePersonnel";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 interface VideoFeedProps {
   selectedPersonnelId: string | null;
@@ -15,7 +17,13 @@ interface VideoFeedProps {
 
 const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: VideoFeedProps) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [streamType, setStreamType] = useState<'raw' | 'ai'>('raw');
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordLoading, setRecordLoading] = useState(false);
+  const token = localStorage.getItem("jwtToken");
+
+  const isAdminOrSupervisor = user?.role === 'admin' || user?.role === 'supervisor';
 
   // Find the selected person from the real personnel list
   const selectedPerson = useMemo(() => 
@@ -27,10 +35,63 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
     ? '/mediamtx/live/output/index.m3u8'
     : '/mediamtx/live/stream/index.m3u8';
 
+  const streamId = streamType === 'ai' ? 'output' : 'stream';
+
+  useEffect(() => {
+    checkRecordStatus();
+    const interval = setInterval(checkRecordStatus, 5000);
+    return () => clearInterval(interval);
+  }, [streamId]);
+
+  const checkRecordStatus = async () => {
+    try {
+      const res = await fetch("/api/admin/record/status", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success && data.activeRecordings) {
+        setIsRecording(!!data.activeRecordings[streamId]);
+      }
+    } catch (err) {
+      console.error("Gagal cek status rekaman");
+    }
+  };
+
+  const handleToggleRecord = async () => {
+    if (!isAdminOrSupervisor) return;
+    
+    setRecordLoading(true);
+    const endpoint = isRecording ? "/api/admin/record/stop" : "/api/admin/record/start";
+    
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          streamId,
+          personnelName: selectedPerson?.name || "Global Stream"
+        })
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        setIsRecording(!isRecording);
+        toast.success(data.message);
+      } else {
+        toast.error(data.message || "Gagal memproses rekaman");
+      }
+    } catch (err) {
+      toast.error("Terjadi kesalahan koneksi");
+    } finally {
+      setRecordLoading(false);
+    }
+  };
+
   // For previews, we always use RAW
   const getRawStreamUrl = (id: string) => {
-    // In a multi-camera setup, this would be dynamic based on user ID
-    // For now, we use the same stream as a demo if the person is online
     return '/mediamtx/live/stream/index.m3u8';
   };
 
@@ -61,8 +122,33 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* Recording Button */}
+          {isAdminOrSupervisor && (
+            <Button
+              onClick={handleToggleRecord}
+              disabled={recordLoading}
+              variant={isRecording ? "destructive" : "outline"}
+              size="sm"
+              className={cn(
+                "h-8 px-3 text-[10px] font-bold flex items-center gap-2 rounded-xl border-border/50 transition-all",
+                isRecording && "animate-pulse shadow-lg shadow-destructive/20"
+              )}
+            >
+              {recordLoading ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : isRecording ? (
+                <Square className="w-3.5 h-3.5 fill-current" />
+              ) : (
+                <Disc className="w-3.5 h-3.5" />
+              )}
+              {isRecording ? "STOP REC" : "RECORD"}
+            </Button>
+          )}
+
+          <div className="w-px h-4 bg-border/50 mx-1" />
+
           {/* Stream Type Switcher */}
-          <div className="flex bg-muted/50 p-1 rounded-lg border border-border/50 mr-2">
+          <div className="flex bg-muted/50 p-1 rounded-lg border border-border/50">
             <button 
               onClick={() => setStreamType('raw')}
               className={cn(
@@ -83,10 +169,11 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
               AI DETECT
             </button>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
+          
+          <Button variant="ghost" size="icon" className="text-muted-foreground h-8 w-8">
             <Volume2 className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
+          <Button variant="ghost" size="icon" className="text-muted-foreground h-8 w-8">
             <Maximize2 className="w-4 h-4" />
           </Button>
         </div>
@@ -114,6 +201,18 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
               </div>
             </div>
           )}
+
+          {/* Recording Overlay */}
+          {isRecording && (
+            <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-destructive/50">
+              <div className="w-2 h-2 rounded-full bg-destructive animate-ping" />
+              <span className="text-[10px] font-bold text-white tracking-widest uppercase">REC</span>
+              <div className="w-px h-3 bg-white/20 mx-1" />
+              <span className="text-[9px] font-mono text-white/80">
+                {selectedPerson?.name || "Global"}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Thumbnail Grid */}
@@ -136,7 +235,7 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
                       selectedPersonnelId === person.id ? "ring-2 ring-primary border-primary/50 shadow-lg shadow-primary/10" : "hover:border-primary/30"
                     )}
                     onClick={() => {
-                      // Logic to select this personnel would be handled by parent
+                      // Logic handled by parent through selectedPersonnelId prop
                     }}
                   >
                     {/* Live Mini Player */}
