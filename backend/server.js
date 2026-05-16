@@ -1029,7 +1029,7 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
         const safeStreamId = streamId.replace(/\//g, '_');
         const fileName = `rec_${safeStreamId}_${Date.now()}.mp4`;
         const filePath = path.join(recordingsDir, fileName);
-        const streamUrl = `http://mediamtx:8888/${streamId}/index.m3u8`;
+        const streamUrl = `rtsp://mediamtx:1485/${streamId}`;
 
         console.log(`[REC START] Memulai rekaman untuk ${streamId} ke ${fileName} via ${streamUrl}`);
 
@@ -1041,19 +1041,13 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
 
         const ffmpegProcess = spawn(ffmpegPath, [
             '-hide_banner',
-            '-loglevel', 'debug', // Pakai debug agar ketahuan semua errornya
-            '-reconnect', '1',
-            '-reconnect_at_eof', '1',
-            '-reconnect_streamed', '1',
-            '-reconnect_delay_max', '5',
-            '-rw_timeout', '10000000', 
-            '-probesize', '10M',
-            '-analyzeduration', '10M',
+            '-loglevel', 'debug',
+            '-rtsp_transport', 'tcp', 
             '-i', streamUrl,
             '-c', 'copy', 
-            '-bsf:a', 'aac_adtstoasc',
-            '-movflags', '+faststart', 
-            '-y', 
+            '-f', 'mp4',
+            '-movflags', '+faststart',
+            '-y',
             filePath
         ]);
 
