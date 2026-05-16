@@ -31,31 +31,35 @@ const Dashboard = () => {
         <StatusOverview personnel={personnel} onlineUsersCount={0} />
         
         {/* Layout Controls */}
-        <div className="flex items-center gap-2 bg-card/50 backdrop-blur-sm border border-border p-1.5 rounded-2xl shadow-sm self-end sm:self-center">
+        <div className="flex items-center gap-1.5 bg-muted/50 p-1 rounded-xl border border-border/50 shadow-inner self-end sm:self-center">
           <button
             onClick={() => setLayoutMode('classic')}
             className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
-              layoutMode === 'classic' ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:bg-muted"
+              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
+              layoutMode === 'classic' 
+                ? "bg-card text-primary shadow-sm ring-1 ring-border/50" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
             )}
           >
             <Layout className="w-3.5 h-3.5" />
-            Classic
+            {t('dashboard.classic')}
           </button>
           <button
             onClick={() => setLayoutMode('tactical')}
             className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
-              layoutMode === 'tactical' ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:bg-muted"
+              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
+              layoutMode === 'tactical' 
+                ? "bg-card text-primary shadow-sm ring-1 ring-border/50" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
             )}
           >
             <Maximize2 className="w-3.5 h-3.5" />
-            Tactical
+            {t('dashboard.tactical')}
           </button>
-          <div className="w-px h-4 bg-border mx-1" />
+          <div className="w-px h-4 bg-border/50 mx-1" />
           <button
             onClick={() => setIsSwapped(!isSwapped)}
-            className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+            className="p-1.5 text-muted-foreground hover:text-primary transition-colors"
             title="Swap View"
           >
             <Repeat className="w-4 h-4" />
