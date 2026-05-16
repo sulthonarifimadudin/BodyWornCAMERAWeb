@@ -1029,7 +1029,7 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
         const safeStreamId = streamId.replace(/\//g, '_');
         const fileName = `rec_${safeStreamId}_${Date.now()}.mp4`;
         const filePath = path.join(recordingsDir, fileName);
-        const streamUrl = `rtsp://mediamtx:1485/${streamId}`;
+        const streamUrl = `rtmp://mediamtx:1484/${streamId}`;
 
         console.log(`[REC START] Memulai rekaman untuk ${streamId} ke ${fileName} via ${streamUrl}`);
 
@@ -1042,7 +1042,6 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
         const ffmpegProcess = spawn(ffmpegPath, [
             '-hide_banner',
             '-loglevel', 'debug',
-            '-rtsp_transport', 'tcp', 
             '-i', streamUrl,
             '-c', 'copy', 
             '-f', 'mp4',
