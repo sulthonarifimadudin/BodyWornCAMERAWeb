@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Video, Trash2, Download, Calendar, HardDrive, Play, X, Loader2, AlertCircle } from "lucide-react";
+import { Video, Trash2, Download, Calendar, HardDrive, Play, X, Loader2, AlertCircle, Edit2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +9,7 @@ interface Recording {
   size: number;
   createdAt: string;
   url: string;
+  thumbnailUrl?: string | null;
 }
 
 const GalleryPage = () => {
@@ -61,6 +62,30 @@ const GalleryPage = () => {
       }
     } catch (err) {
       alert("Gagal menghapus file.");
+    }
+  };
+
+  const renameRecording = async (oldName: string) => {
+    const newName = prompt("Masukkan nama baru untuk rekaman ini (tanpa .mp4):");
+    if (!newName || newName.trim() === "") return;
+
+    try {
+      const res = await fetch("/api/admin/recordings/rename", {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ oldName, newName: newName.trim() })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        fetchRecordings(); // Refresh list
+      } else {
+        alert(data.message || "Gagal mengganti nama.");
+      }
+    } catch (err) {
+      alert("Terjadi kesalahan saat mengganti nama.");
     }
   };
 
@@ -128,7 +153,15 @@ const GalleryPage = () => {
               className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:border-primary/50 transition-all"
             >
               <div className="aspect-video bg-slate-900 relative flex items-center justify-center overflow-hidden">
-                <Video className="w-12 h-12 text-white/10" />
+                {rec.thumbnailUrl ? (
+                  <img 
+                    src={rec.thumbnailUrl} 
+                    alt={rec.name} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                ) : (
+                  <Video className="w-12 h-12 text-white/10" />
+                )}
                 
                 {/* Play Overlay */}
                 <div 
@@ -171,8 +204,16 @@ const GalleryPage = () => {
                     <Download className="w-4 h-4" />
                   </a>
                   <button 
+                    onClick={() => renameRecording(rec.name)}
+                    className="p-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-all"
+                    title="Ganti Nama"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button 
                     onClick={() => deleteRecording(rec.name)}
                     className="p-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-white rounded-lg transition-all"
+                    title="Hapus"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

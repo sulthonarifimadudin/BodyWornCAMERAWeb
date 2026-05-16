@@ -1066,6 +1066,26 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
             logStream.write(`[FINISHED] FFmpeg closed with code ${code}\n`);
             logStream.end();
             console.log(`[REC STOP] FFmpeg untuk ${streamId} ditutup dengan kode ${code}`);
+            
+            // Generate Thumbnail otomatis setelah rekaman selesai
+            const thumbName = fileName.replace('.mp4', '.jpg');
+            const thumbPath = path.join(recordingsDir, thumbName);
+            
+            // Ambil frame pada detik ke-1
+            const thumbProcess = spawn(ffmpegPath, [
+                '-ss', '00:00:01',
+                '-i', filePath,
+                '-vframes', '1',
+                '-q:v', '2',
+                '-f', 'image2',
+                '-y',
+                thumbPath
+            ]);
+            
+            thumbProcess.on('close', () => {
+                console.log(`[THUMB] Thumbnail berhasil dibuat untuk ${fileName}`);
+            });
+
             activeRecordings.delete(streamId);
         });
 
@@ -1111,19 +1131,55 @@ app.get('/api/admin/recordings', verifyToken, async (req, res) => {
             .filter(file => file.endsWith('.mp4'))
             .map(file => {
                 const stats = fs.statSync(path.join(recordingsDir, file));
+                const thumbName = file.replace('.mp4', '.jpg');
+                const hasThumb = fs.existsSync(path.join(recordingsDir, thumbName));
+
                 return {
                     name: file,
                     size: stats.size,
                     createdAt: stats.birthtime,
-                    url: `/recordings/${file}`
+                    url: `/recordings/${file}`,
+                    thumbnailUrl: hasThumb ? `/recordings/${thumbName}` : null
                 };
             })
-            .sort((a, b) => b.createdAt - a.createdAt);
-
         res.status(200).json({ success: true, recordings: files });
     } catch (error) {
         console.error('[FETCH RECORDINGS ERROR]', error);
         res.status(500).json({ success: false, message: 'Gagal mengambil daftar rekaman.' });
+    }
+});
+
+app.put('/api/admin/recordings/rename', verifyToken, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin' && req.user.role !== 'supervisor') {
+            return res.status(403).json({ success: false, message: 'Akses ditolak.' });
+        }
+
+        const { oldName, newName } = req.body;
+        if (!oldName || !newName) return res.status(400).json({ success: false, message: 'Nama lama dan baru wajib ada.' });
+
+        const safeNewName = newName.replace(/[^a-z0-9_\-\.]/gi, '_');
+        const finalNewName = safeNewName.endsWith('.mp4') ? safeNewName : `${safeNewName}.mp4`;
+
+        const oldPath = path.join(recordingsDir, oldName);
+        const newPath = path.join(recordingsDir, finalNewName);
+
+        if (!fs.existsSync(oldPath)) return res.status(404).json({ success: false, message: 'File tidak ditemukan.' });
+
+        // Rename Video
+        fs.renameSync(oldPath, newPath);
+
+        // Rename Thumbnail jika ada
+        const oldThumb = oldPath.replace('.mp4', '.jpg');
+        const newThumb = newPath.replace('.mp4', '.jpg');
+        if (fs.existsSync(oldThumb)) {
+            fs.renameSync(oldThumb, newThumb);
+        }
+
+        res.status(200).json({ success: true, message: 'File berhasil diganti namanya.' });
+    } catch (error) {
+        console.error('[RENAME ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal mengganti nama file.' });
     }
 });
 
@@ -1133,18 +1189,17 @@ app.delete('/api/admin/recordings/:filename', verifyToken, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Akses ditolak.' });
         }
 
-        const fileName = req.params.filename;
-        const filePath = path.join(recordingsDir, fileName);
+        const { filename } = req.params;
+        const filePath = path.join(recordingsDir, filename);
+        const thumbPath = filePath.replace('.mp4', '.jpg');
 
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-            res.status(200).json({ success: true, message: 'Rekaman berhasil dihapus.' });
-        } else {
-            res.status(404).json({ success: false, message: 'File tidak ditemukan.' });
-        }
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+
+        res.status(200).json({ success: true, message: 'File berhasil dihapus.' });
     } catch (error) {
-        console.error('[DELETE RECORDING ERROR]', error);
-        res.status(500).json({ success: false, message: 'Gagal menghapus rekaman.' });
+        console.error('[DELETE ERROR]', error);
+        res.status(500).json({ success: false, message: 'Gagal menghapus file.' });
     }
 });
 
