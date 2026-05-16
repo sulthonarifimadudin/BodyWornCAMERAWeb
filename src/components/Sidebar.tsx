@@ -77,8 +77,8 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
         {/* Logo */}
         <div className="p-6 flex items-center justify-between border-b border-[hsl(var(--sidebar-border))]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center border border-white/10">
-              <Shield className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center border border-white/20 shadow-sm">
+              <Shield className="w-5 h-5 text-white fill-white/10" />
             </div>
             <h1 className="text-lg font-black tracking-tighter text-white font-orbitron">
               BODY<span className="text-white/70">WORNCAM</span>

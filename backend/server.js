@@ -1035,8 +1035,8 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
 
         // Gunakan FFmpeg untuk merekam HLS stream ke MP4 dengan durabilitas tinggi
         const ffmpegPath = '/usr/bin/ffmpeg';
-        const logStream = fs.createWriteStream(path.join(recordingsDir, 'debug_ffmpeg.log'), { flags: 'a' });
-        logStream.write(`\n\n[${new Date().toISOString()}] STARTING RECORD: ${streamId} -> ${fileName}\n`);
+        const logStream = fs.createWriteStream(path.join(recordingsDir, 'debug_ffmpeg_BARU.log'), { flags: 'a' });
+        logStream.write(`\n\n[${new Date().toISOString()}] STARTING NEW RTMP RECORD: ${streamId} -> ${fileName}\n`);
         logStream.write(`URL: ${streamUrl}\n`);
 
         const ffmpegProcess = spawn(ffmpegPath, [
