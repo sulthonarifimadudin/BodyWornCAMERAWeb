@@ -76,11 +76,11 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
       >
         {/* Logo */}
         <div className="p-6 flex items-center justify-between border-b border-[hsl(var(--sidebar-border))]">
-          <div className="flex items-center gap-4">
-            <div className="w-11 h-11 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 border border-white/10 overflow-hidden">
-              <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-primary/20 rounded-lg flex items-center justify-center border border-primary/30">
+              <Shield className="w-5 h-5 text-primary" />
             </div>
-            <h1 className="text-xl font-black tracking-tighter text-white font-orbitron">
+            <h1 className="text-lg font-black tracking-tighter text-white font-orbitron">
               BODY<span className="text-white/70">WORNCAM</span>
             </h1>
           </div>
