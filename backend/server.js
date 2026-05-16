@@ -1034,14 +1034,17 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
         console.log(`[REC START] Memulai rekaman untuk ${streamId} ke ${fileName} via ${streamUrl}`);
 
         // Gunakan FFmpeg untuk merekam HLS stream ke MP4 dengan durabilitas tinggi
-        const ffmpegProcess = spawn('ffmpeg', [
+        const ffmpegPath = '/usr/bin/ffmpeg';
+        const ffmpegProcess = spawn(ffmpegPath, [
             '-hide_banner',
             '-loglevel', 'error',
             '-reconnect', '1',
             '-reconnect_at_eof', '1',
             '-reconnect_streamed', '1',
             '-reconnect_delay_max', '5',
-            '-rw_timeout', '5000000', // 5 seconds timeout
+            '-rw_timeout', '10000000', // 10 seconds timeout
+            '-probesize', '10M',
+            '-analyzeduration', '10M',
             '-i', streamUrl,
             '-c', 'copy', // Copy stream tanpa re-encoding untuk hemat CPU
             '-bsf:a', 'aac_adtstoasc',
@@ -1057,6 +1060,10 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
             personnelName: personnelName || streamId
         });
 
+        ffmpegProcess.on('error', (err) => {
+            console.error(`[FFMPEG SPAWN ERROR] ${streamId}:`, err);
+        });
+
         ffmpegProcess.on('close', (code) => {
             console.log(`[REC STOP] FFmpeg untuk ${streamId} ditutup dengan kode ${code}`);
             activeRecordings.delete(streamId);
@@ -1064,9 +1071,7 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
 
         ffmpegProcess.stderr.on('data', (data) => {
             const msg = data.toString();
-            if (msg.includes('Error') || msg.includes('failed')) {
-                console.error(`[FFMPEG ERROR] ${streamId}: ${msg}`);
-            }
+            console.error(`[FFMPEG STDERR] ${streamId}: ${msg}`);
         });
 
         res.status(200).json({ success: true, message: 'Perekaman dimulai.', fileName });
