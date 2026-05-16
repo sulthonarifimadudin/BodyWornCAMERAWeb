@@ -13,6 +13,7 @@ interface GpsRow {
     speed: number | null;
     battery: number | null;
     heart_rate: number | null;
+    temperature: number | null;
     created_at: string;
 }
 
@@ -29,6 +30,7 @@ export interface Personnel {
     speed: number | null;
     battery: number;
     heart_rate: number;
+    temperature: number;
     updated_at: string;
     profile_image?: string;
 }
@@ -62,6 +64,7 @@ function rowToPersonnel(row: GpsRow): Personnel {
         speed: row.speed,
         battery: row.battery || 100,
         heart_rate: row.heart_rate || 75,
+        temperature: row.temperature || 0,
         updated_at: waktuWIB,
         profile_image: row.profile_image || undefined
     };

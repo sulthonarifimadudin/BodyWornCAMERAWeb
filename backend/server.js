@@ -22,7 +22,12 @@ dotenv.config();
 
 const recordingsDir = path.join(__dirname, 'recordings');
 if (!fs.existsSync(recordingsDir)) {
-    fs.mkdirSync(recordingsDir);
+    fs.mkdirSync(recordingsDir, { recursive: true });
+}
+try {
+    fs.chmodSync(recordingsDir, '0777'); // Pastikan bisa ditulis oleh siapa saja di kontainer
+} catch (e) {
+    console.warn("[WARNING] Gagal set chmod recordingsDir:", e.message);
 }
 
 // In-memory storage for active recording processes
@@ -755,10 +760,6 @@ app.put('/api/update-profile', verifyToken, async (req, res) => {
  */
 app.put('/api/update-profile-image', verifyToken, upload.single('image'), async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: 'Mohon sertakan file gambar.' });
-        }
-
         const userId = req.user.id;
         const imagePath = req.file.filename;
 
@@ -858,16 +859,16 @@ app.post('/api/gps/update', async (req, res) => {
     try {
         // Kita tetap menerima 'user_id' dari Raspi lama agar tidak merusak kodenya,
         // Tapi kita memperlakukannya sebagai 'device_id'.
-        const { user_id, latitude, longitude, speed, battery, heart_rate } = req.body;
+        const { user_id, latitude, longitude, speed, battery, heart_rate, temperature } = req.body;
 
         if (!user_id || latitude === undefined || longitude === undefined) {
             return res.status(400).json({ success: false, message: 'Data GPS tidak lengkap (user_id, lat, lng wajib)' });
         }
 
         await pool.query(
-            `INSERT INTO device_tracking (device_id, latitude, longitude, speed, battery, heart_rate, created_at) 
-             VALUES (?, ?, ?, ?, ?, ?, NOW())`,
-            [user_id, latitude, longitude, speed || 0, battery || 100, heart_rate || 75]
+            `INSERT INTO device_tracking (device_id, latitude, longitude, speed, battery, heart_rate, temperature, created_at) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
+            [user_id, latitude, longitude, speed || 0, battery || 100, heart_rate || 75, temperature || 0]
         );
 
         res.status(200).json({ success: true, message: 'Data GPS Alat berhasil disimpan.' });
@@ -882,7 +883,7 @@ app.get('/api/gps/latest', async (req, res) => {
     try {
         // Ambil koordinat terbaru untuk setiap device_id unik dan join dengan data alat
         const query = `
-            SELECT t1.device_id as user_id, t1.latitude, t1.longitude, t1.speed, t1.battery, t1.heart_rate, t1.created_at, 
+            SELECT t1.device_id as user_id, t1.latitude, t1.longitude, t1.speed, t1.battery, t1.heart_rate, t1.temperature, t1.created_at, 
                    d.device_name, d.personnel_name as name, 'Petugas Lapangan' as job, 'operator' as system_role, null as profile_image
             FROM device_tracking t1
             INNER JOIN (
@@ -1034,13 +1035,17 @@ app.post('/api/admin/record/start', verifyToken, async (req, res) => {
 
         // Gunakan FFmpeg untuk merekam HLS stream ke MP4 dengan durabilitas tinggi
         const ffmpegProcess = spawn('ffmpeg', [
+            '-hide_banner',
+            '-loglevel', 'error',
             '-reconnect', '1',
             '-reconnect_at_eof', '1',
             '-reconnect_streamed', '1',
             '-reconnect_delay_max', '5',
+            '-rw_timeout', '5000000', // 5 seconds timeout
             '-i', streamUrl,
             '-c', 'copy', // Copy stream tanpa re-encoding untuk hemat CPU
             '-bsf:a', 'aac_adtstoasc',
+            '-movflags', '+faststart', // Optimal untuk web playback
             '-y', // Overwrite if exists
             filePath
         ]);

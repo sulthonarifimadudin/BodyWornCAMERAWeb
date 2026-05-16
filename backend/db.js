@@ -114,6 +114,7 @@ export const initDB = async () => {
                 speed DOUBLE DEFAULT 0,
                 battery INT DEFAULT 100,
                 heart_rate INT DEFAULT 75,
+                temperature DOUBLE DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 KEY user_id_idx (user_id),
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -143,6 +144,7 @@ export const initDB = async () => {
                 speed DOUBLE DEFAULT 0,
                 battery INT DEFAULT 100,
                 heart_rate INT DEFAULT 75,
+                temperature DOUBLE DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 KEY device_id_idx (device_id),
                 FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE CASCADE
@@ -159,7 +161,9 @@ export const initDB = async () => {
             "ALTER TABLE users ADD COLUMN is_online BOOLEAN DEFAULT FALSE",
             "ALTER TABLE users ADD COLUMN last_seen DATETIME NULL",
             "ALTER TABLE users ADD COLUMN role ENUM('admin', 'supervisor', 'operator') DEFAULT 'operator'",
-            "ALTER TABLE users ADD COLUMN status_acc ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'"
+            "ALTER TABLE users ADD COLUMN status_acc ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'",
+            "ALTER TABLE gps_tracking ADD COLUMN temperature DOUBLE DEFAULT 0",
+            "ALTER TABLE device_tracking ADD COLUMN temperature DOUBLE DEFAULT 0"
         ];
         
         // Jalankan migrasi dasar
