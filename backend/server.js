@@ -871,6 +871,18 @@ app.post('/api/gps/update', async (req, res) => {
             [user_id, latitude, longitude, speed || 0, battery || 100, heart_rate || 75, temperature || 0]
         );
 
+        // [REALTIME] Broadcast data GPS terbaru ke semua admin/supervisor yang sedang buka web
+        io.emit('gps_update', {
+            device_id: user_id,
+            latitude,
+            longitude,
+            speed: speed || 0,
+            battery: battery || 100,
+            heart_rate: heart_rate || 75,
+            temperature: temperature || 0,
+            timestamp: new Date().toISOString()
+        });
+
         res.status(200).json({ success: true, message: 'Data GPS Alat berhasil disimpan.' });
     } catch (error) {
         console.error('[GPS UPDATE ERROR]', error);
