@@ -10,7 +10,7 @@ import AIDetectionReport from "@/components/AIDetectionReport";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
-const socket = io('https://bodyworncamera.sbs');
+const socket = io();
 
 const Dashboard = () => {
   const { t } = useTranslation();

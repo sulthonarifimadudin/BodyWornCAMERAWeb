@@ -102,7 +102,7 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
       transition={{ delay: 0.2 }}
       className="glass-card rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(0,0,0,0.1)] border-border/50 h-full flex flex-col"
     >
-      <div className="p-4 border-b border-border/50 flex items-center justify-between bg-card/50 backdrop-blur-md flex-shrink-0">
+      <div className="p-4 border-b border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card/50 backdrop-blur-md flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
             <Video className="w-4 h-4 text-primary" />
@@ -121,7 +121,7 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Recording Button */}
           {isAdminOrSupervisor && (
             <Button
@@ -217,7 +217,7 @@ const VideoFeed = ({ selectedPersonnelId, personnel, hideThumbnails = false }: V
 
         {/* Thumbnail Grid */}
         {!hideThumbnails && (
-          <div className="space-y-3 lg:col-span-1">
+          <div className="hidden lg:block space-y-3 lg:col-span-1">
             <div className="flex items-center justify-between">
               <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Feed Lainnya</p>
               <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">

@@ -14,6 +14,19 @@ export default defineConfig(({ mode }) => ({
         target: "http://localhost:3000",
         changeOrigin: true,
       },
+      "/socket.io": {
+        target: "http://localhost:3000",
+        ws: true,
+      },
+      "/recordings": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
+      "/mediamtx": {
+        target: "http://localhost:8888",
+        rewrite: (path) => path.replace(/^\/mediamtx/, ""),
+        changeOrigin: true,
+      },
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
