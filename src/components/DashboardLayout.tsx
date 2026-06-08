@@ -33,7 +33,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-screen lg:pl-[260px] relative z-10 overflow-y-auto">
+      <div className="flex-1 flex flex-col h-screen lg:pl-[260px] relative z-10 overflow-y-auto min-w-0">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">
@@ -104,7 +104,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-4 lg:p-6 relative">
+        <main className="flex-1 p-4 lg:p-6 relative min-w-0 overflow-x-hidden">
           {/* Background Decoration */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />

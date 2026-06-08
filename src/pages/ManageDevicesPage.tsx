@@ -114,7 +114,7 @@ const ManageDevicesPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-foreground">Manajemen Perangkat</h2>
           <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mt-1">Konfigurasi & Monitoring Alat Raspi</p>

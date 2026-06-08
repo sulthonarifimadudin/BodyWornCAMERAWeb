@@ -122,11 +122,11 @@ const VerifyAccountsPage = () => {
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Left Column: Pending Users (1/3) */}
-        <div className="lg:col-span-1 space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <UserCog className="w-5 h-5 text-primary" />
+        <div className="lg:col-span-1 space-y-4 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <UserCog className="w-5 h-5 text-primary shrink-0" />
             <h3 className="font-bold text-foreground">Tunggu Persetujuan</h3>
-            <span className="ml-auto bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full border border-primary/20">
+            <span className="ml-auto bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full border border-primary/20 shrink-0">
               {pendingUsers.length}
             </span>
           </div>
@@ -178,11 +178,11 @@ const VerifyAccountsPage = () => {
         </div>
 
         {/* Right Column: All Users (2/3) */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <User className="w-5 h-5 text-muted-foreground" />
+        <div className="lg:col-span-2 space-y-4 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <User className="w-5 h-5 text-muted-foreground shrink-0" />
             <h3 className="font-bold text-foreground">Daftar Semua Pengguna</h3>
-            <span className="ml-auto bg-muted text-muted-foreground text-[10px] font-bold px-2 py-0.5 rounded-full border border-border">
+            <span className="ml-auto bg-muted text-muted-foreground text-[10px] font-bold px-2 py-0.5 rounded-full border border-border shrink-0">
               {allUsers.length} TOTAL
             </span>
           </div>
