@@ -97,7 +97,6 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
           {[
             { title: t('dashboard.home'), href: "/", icon: Home },
             { title: t('dashboard.title'), href: "/dashboard", icon: Shield },
-            { title: t('dashboard.notifications'), href: "/notifications", icon: Bell },
             { title: t('dashboard.settings'), href: "/settings", icon: Settings },
             ...(user?.role === 'admin' || user?.role === 'supervisor' ? [
               { title: "Verifikasi Akun", href: "/verify-accounts", icon: UserCheck },
